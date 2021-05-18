@@ -1,4 +1,4 @@
-ARENA_ALLOCATOR_OBJECTS=ArenaAllocator.o ArenaAllocatorHooks.o NativeAllocator.o Logger.o ArenaMap.o
+ARENA_ALLOCATOR_OBJECTS=ArenaAllocator.o ArenaAllocatorHooks.o NativeAllocator.o Logger.o ArenaMap.o Arena.o ChunkMap.o
 CXXFLAGS=-O
 
 all: libArenaAllocator.so ArenaAllocator
