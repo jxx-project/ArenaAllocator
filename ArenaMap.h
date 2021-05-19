@@ -2,13 +2,14 @@
 #define ARENA_MAP_H_INCLUDED
 
 #include "Arena.h"
+#include "Optional.h"
 #include <cstdint>
 #include <map>
 
 class ArenaMap
 {
 public:
-	Arena* find(std::size_t chunkSize) noexcept;
+	Optional<Arena*> find(std::size_t chunkSize) noexcept;
 
 private:
 	struct Range
