@@ -2,7 +2,7 @@
 #include <cstdlib>
 
 EnvironmentConfiguration::EnvironmentConfiguration(Logger& logger) noexcept :
-	logger{logger}, arenas{{8, 1}, {16, 1}, {17, 1}, {22, 1}, {31, 1}}
+	logger{logger}, arenas{{8, 100}, {16, 100}, {17, 100}, {22, 100}, {31, 100}}
 {
 }
 

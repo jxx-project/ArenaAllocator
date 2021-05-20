@@ -3,6 +3,7 @@
 
 #include "Allocator.h"
 #include "ArenaMap.h"
+#include "ChunkMap.h"
 #include "Configuration.h"
 #include "Logger.h"
 #include <cstdint>
@@ -24,6 +25,7 @@ private:
 	Logger const& logger;
 	Allocator*& activeAllocator;
 	const ArenaMap arenas;
+	const ChunkMap chunks;
 };
 
 #endif // ARENA_ALLOCATOR_H_INCLUDED

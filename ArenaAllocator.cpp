@@ -2,7 +2,7 @@
 #include "Timer.h"
 
 ArenaAllocator::ArenaAllocator(Configuration const& configuration, Logger const& logger, Allocator*& activeAllocator) noexcept :
-	logger{logger}, activeAllocator{activeAllocator}, arenas{configuration, logger}
+	logger{logger}, activeAllocator{activeAllocator}, arenas{configuration, logger}, chunks{arenas, logger}
 {
 }
 

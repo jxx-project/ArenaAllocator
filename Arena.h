@@ -18,6 +18,17 @@ public:
 	void deallocate(std::list<Chunk>::const_iterator it) noexcept;
 	std::size_t nChunks() const noexcept;
 
+	template<typename F>
+	void forEachChunk(F func) const noexcept
+	{
+		for (ListType::const_iterator it = free.begin(); it != free.end(); ++it) {
+			func(it);
+		}
+		for (ListType::const_iterator it = allocated.begin(); it != allocated.end(); ++it) {
+			func(it);
+		}
+	}
+
 private:
 	using StorageType = std::vector<WordType, NativeCXXAllocator<WordType>>;
 	StorageType storage;

@@ -16,6 +16,14 @@ public:
 	Optional<Arena*> find(std::size_t chunkSize) noexcept;
 	std::size_t nChunks() const noexcept;
 
+	template<typename F>
+	void forEachChunk(F func) const noexcept
+	{
+		for (std::pair<const ArenaMap::Range, Arena> const& mapEntry : arenas) {
+			mapEntry.second.forEachChunk(func);
+		}
+	}
+
 private:
 	struct Range
 	{
