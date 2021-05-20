@@ -3,6 +3,7 @@
 
 #include "Arena.h"
 #include "Configuration.h"
+#include "Logger.h"
 #include "NativeCXXAllocator.h"
 #include "Optional.h"
 #include <cstdint>
@@ -11,7 +12,7 @@
 class ArenaMap
 {
 public:
-	ArenaMap(Configuration const& configuration) noexcept;
+	ArenaMap(Configuration const& configuration, Logger const& logger) noexcept;
 	Optional<Arena*> find(std::size_t chunkSize) noexcept;
 	std::size_t nChunks() const noexcept;
 
@@ -25,7 +26,9 @@ private:
 
 	using MapType = std::map<Range, Arena, bool (*)(Range const&, Range const&), NativeCXXAllocator<std::pair<const Range, Arena>>>;
 
-	Configuration const& configuration;
+	void insertArena(Range const& range, std::size_t nChunks, std::size_t chunkSize) noexcept;
+
+	Logger const& logger;
 	MapType arenas{Range::below};
 };
 

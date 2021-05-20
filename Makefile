@@ -1,4 +1,4 @@
-ARENA_ALLOCATOR_OBJECTS=ArenaAllocator.o ArenaAllocatorHooks.o NativeAllocator.o ConsoleLogger.o ArenaMap.o Arena.o ChunkMap.o EnvironmentConfiguration.o
+ARENA_ALLOCATOR_OBJECTS=ArenaAllocator.o ArenaAllocatorHooks.o NativeAllocator.o ConsoleLogger.o ArenaMap.o Arena.o ChunkMap.o EnvironmentConfiguration.o Timer.o
 #CXXFLAGS=-g -fno-exceptions -fno-rtti -fno-threadsafe-statics
 CXXFLAGS=-g
 

@@ -8,7 +8,7 @@
 class NativeAllocator : public Allocator
 {
 public:
-	NativeAllocator(Logger const& logger) noexcept;
+	explicit NativeAllocator(Logger const& logger) noexcept;
 	NativeAllocator(NativeAllocator const&) = delete;
 	NativeAllocator& operator=(NativeAllocator const&) = delete;
 	virtual ~NativeAllocator() noexcept;

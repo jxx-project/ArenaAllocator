@@ -26,7 +26,7 @@ private:
 	ConsoleLogger logger;
 	NativeAllocator nativeAllocator{logger};
 	Allocator* activeAllocator{&nativeAllocator};
-	EnvironmentConfiguration configuration;
+	EnvironmentConfiguration configuration{logger};
 	ArenaAllocator arenaAllocator{configuration, logger, activeAllocator};
 };
 

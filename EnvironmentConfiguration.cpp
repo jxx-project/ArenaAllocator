@@ -1,7 +1,7 @@
 #include "EnvironmentConfiguration.h"
 #include <cstdlib>
 
-EnvironmentConfiguration::EnvironmentConfiguration() noexcept : arenas{{8, 1}, {16, 1}, {24, 1}, {32, 1}}
+EnvironmentConfiguration::EnvironmentConfiguration(Logger& logger) noexcept : logger{logger}, arenas{{8, 1}, {16, 1}, {17, 1}, {22, 1}, {31, 1}}
 {
 }
 
