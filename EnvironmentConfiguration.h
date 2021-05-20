@@ -10,10 +10,10 @@ public:
 	EnvironmentConfiguration(Configuration const&) = delete;
 	void operator=(Configuration const&) = delete;
 	~EnvironmentConfiguration() noexcept;
-	virtual std::map<std::size_t, std::size_t> const& getArenas() const noexcept override;
+	virtual Configuration::MapType const& getArenas() const noexcept override;
 
 private:
-	std::map<std::size_t, std::size_t> arenas;
+	Configuration::MapType arenas;
 };
 
 

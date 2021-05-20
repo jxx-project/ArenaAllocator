@@ -23,7 +23,7 @@ public:
 private:
 	Logger const& logger;
 	Allocator*& activeAllocator;
-	ArenaMap arenas;
+	const ArenaMap arenas;
 };
 
 #endif // ARENA_ALLOCATOR_H_INCLUDED

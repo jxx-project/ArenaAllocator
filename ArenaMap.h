@@ -3,6 +3,7 @@
 
 #include "Arena.h"
 #include "Configuration.h"
+#include "NativeCXXAllocator.h"
 #include "Optional.h"
 #include <cstdint>
 #include <map>
@@ -22,8 +23,10 @@ private:
 		static bool below(Range const& lhs, Range const& rhs) noexcept;
 	};
 
+	using MapType = std::map<Range, Arena, bool (*)(Range const&, Range const&), NativeCXXAllocator<std::pair<const Range, Arena>>>;
+
 	Configuration const& configuration;
-	std::map<Range, Arena, bool (*)(Range const&, Range const&)> arenas{Range::below};
+	MapType arenas{Range::below};
 };
 
 #endif // ARENA_MAP_H_INCLUDED

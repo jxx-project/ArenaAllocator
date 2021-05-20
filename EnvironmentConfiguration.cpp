@@ -9,7 +9,7 @@ EnvironmentConfiguration::~EnvironmentConfiguration() noexcept
 {
 }
 
-std::map<std::size_t, std::size_t> const& EnvironmentConfiguration::getArenas() const noexcept
+Configuration::MapType const& EnvironmentConfiguration::getArenas() const noexcept
 {
 	return arenas;
 }

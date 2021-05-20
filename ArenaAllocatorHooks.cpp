@@ -3,14 +3,14 @@
 #include "EnvironmentConfiguration.h"
 #include "NativeAllocator.h"
 
-class StaticAllocatorSingleton
+class AllocatorSingleton
 {
 public:
-	StaticAllocatorSingleton(StaticAllocatorSingleton const&) = delete;
-	StaticAllocatorSingleton& operator=(StaticAllocatorSingleton const&) = delete;
-	static StaticAllocatorSingleton& getInstance() noexcept
+	AllocatorSingleton(AllocatorSingleton const&) = delete;
+	AllocatorSingleton& operator=(AllocatorSingleton const&) = delete;
+	static AllocatorSingleton& getInstance() noexcept
 	{
-		static StaticAllocatorSingleton instance;
+		static AllocatorSingleton instance;
 		return instance;
 	}
 	Allocator& getActiveAllocator() noexcept
@@ -19,7 +19,7 @@ public:
 	}
 
 private:
-	StaticAllocatorSingleton() noexcept
+	AllocatorSingleton() noexcept
 	{
 	}
 
@@ -32,25 +32,25 @@ private:
 
 extern "C" void* malloc(std::size_t size)
 {
-	return StaticAllocatorSingleton::getInstance().getActiveAllocator().malloc(size);
+	return AllocatorSingleton::getInstance().getActiveAllocator().malloc(size);
 }
 
 extern "C" void free(void* ptr)
 {
-	StaticAllocatorSingleton::getInstance().getActiveAllocator().free(ptr);
+	AllocatorSingleton::getInstance().getActiveAllocator().free(ptr);
 }
 
 extern "C" void* calloc(std::size_t nmemb, std::size_t size)
 {
-	return StaticAllocatorSingleton::getInstance().getActiveAllocator().calloc(nmemb, size);
+	return AllocatorSingleton::getInstance().getActiveAllocator().calloc(nmemb, size);
 }
 
 extern "C" void* realloc(void* ptr, std::size_t size)
 {
-	return StaticAllocatorSingleton::getInstance().getActiveAllocator().realloc(ptr, size);
+	return AllocatorSingleton::getInstance().getActiveAllocator().realloc(ptr, size);
 }
 
 extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 {
-	return StaticAllocatorSingleton::getInstance().getActiveAllocator().reallocarray(ptr, nmemb, size);
+	return AllocatorSingleton::getInstance().getActiveAllocator().reallocarray(ptr, nmemb, size);
 }

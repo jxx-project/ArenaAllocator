@@ -27,7 +27,7 @@ ArenaMap::ArenaMap(Configuration const& configuration) noexcept : configuration{
 Optional<Arena*> ArenaMap::find(std::size_t chunkSize) noexcept
 {
 	Optional<Arena*> result;
-	std::map<Range, Arena, bool (*)(Range const&, Range const&)>::iterator it{arenas.find(Range{chunkSize, chunkSize})};
+	MapType::iterator it{arenas.find(Range{chunkSize, chunkSize})};
 	if (it != arenas.end()) {
 		result.emplace(&it->second);
 	}
