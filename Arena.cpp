@@ -1,8 +1,10 @@
 #include "Arena.h"
 #include "Chunk.h"
+#include "Logger.h"
 
 Arena::Arena(std::size_t nChunks, std::size_t chunkSize) noexcept
 {
+	// Logger::log("Arena::Arena(%ul, %ul)\n", nChunks, chunkSize);
 	const std::size_t wordsPerChunk{(chunkSize + sizeof(Arena::WordType) - 1U) / sizeof(Arena::WordType)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
@@ -29,4 +31,9 @@ void Arena::deallocate(std::list<Chunk>::const_iterator it) noexcept
 		allocated.splice(free.begin(), allocated, it);
 		free.front().allocated = false;
 	}
+}
+
+std::size_t Arena::nChunks() const noexcept
+{
+	return free.size() + allocated.size();
 }

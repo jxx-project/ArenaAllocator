@@ -1,7 +1,11 @@
-#include "Logger.h"
+#include "ConsoleLogger.h"
 #include <cstdio>
 
-Logger::Logger() noexcept
+ConsoleLogger::ConsoleLogger() noexcept
+{
+}
+
+ConsoleLogger::~ConsoleLogger() noexcept
 {
 }
 

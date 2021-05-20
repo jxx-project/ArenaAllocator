@@ -1,27 +1,29 @@
 #ifndef ARENA_ALLOCATOR_H_INCLUDED
 #define ARENA_ALLOCATOR_H_INCLUDED
 
+#include "Allocator.h"
+#include "ArenaMap.h"
+#include "Configuration.h"
+#include "Logger.h"
 #include <cstdint>
 
-class ArenaAllocator
+class ArenaAllocator : public Allocator
 {
 public:
+	ArenaAllocator(Configuration const& configuration, Logger const& logger, Allocator*& activeAllocator) noexcept;
 	ArenaAllocator(ArenaAllocator const&) = delete;
 	void operator=(ArenaAllocator const&) = delete;
-	static ArenaAllocator& getInstance() noexcept
-	{
-		static ArenaAllocator instance;
-		return instance;
-	}
-	void* malloc(std::size_t size) noexcept;
-	void free(void* ptr) noexcept;
-	void* calloc(std::size_t nmemb, std::size_t size) noexcept;
-	void* realloc(void* ptr, std::size_t size) noexcept;
-	void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept;
+	virtual ~ArenaAllocator() noexcept;
+	virtual void* malloc(std::size_t size) noexcept override;
+	virtual void free(void* ptr) noexcept override;
+	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
+	virtual void* realloc(void* ptr, std::size_t size) noexcept override;
+	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
 
 private:
-	ArenaAllocator() noexcept;
-	bool passthrough;
+	Logger const& logger;
+	Allocator*& activeAllocator;
+	ArenaMap arenas;
 };
 
 #endif // ARENA_ALLOCATOR_H_INCLUDED

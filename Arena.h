@@ -13,6 +13,7 @@ public:
 	Arena(std::size_t nChunks, std::size_t chunkSize) noexcept;
 	void* allocate() noexcept;
 	void deallocate(std::list<Chunk>::const_iterator it) noexcept;
+	std::size_t nChunks() const noexcept;
 
 private:
 	std::vector<WordType> storage;
