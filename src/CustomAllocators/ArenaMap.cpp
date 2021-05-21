@@ -1,4 +1,13 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "ArenaMap.h"
+
+namespace CustomAllocators {
 
 ArenaMap::ArenaMap(Configuration const& configuration, Logger const& logger) noexcept : logger{logger}
 {
@@ -55,3 +64,5 @@ std::size_t ArenaMap::nChunks() const noexcept
 	}
 	return result;
 }
+
+} // namespace CustomAllocators

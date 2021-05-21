@@ -1,3 +1,10 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef ARENA_MAP_H_INCLUDED
 #define ARENA_MAP_H_INCLUDED
 
@@ -8,6 +15,8 @@
 #include "Optional.h"
 #include <cstdint>
 #include <map>
+
+namespace CustomAllocators {
 
 class ArenaMap
 {
@@ -39,5 +48,7 @@ private:
 	Logger const& logger;
 	MapType arenas{Range::below};
 };
+
+} // namespace CustomAllocators
 
 #endif // ARENA_MAP_H_INCLUDED

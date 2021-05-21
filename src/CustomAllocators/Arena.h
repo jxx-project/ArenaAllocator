@@ -1,3 +1,10 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef ARENA_H_INCLUDED
 #define ARENA_H_INCLUDED
 
@@ -6,6 +13,8 @@
 #include <cstdint>
 #include <list>
 #include <vector>
+
+namespace CustomAllocators {
 
 class Arena
 {
@@ -35,5 +44,7 @@ private:
 	ListType free;
 	ListType allocated;
 };
+
+} // namespace CustomAllocators
 
 #endif // ARENA_H_INCLUDED

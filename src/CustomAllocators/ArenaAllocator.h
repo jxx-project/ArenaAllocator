@@ -1,3 +1,10 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef ARENA_ALLOCATOR_H_INCLUDED
 #define ARENA_ALLOCATOR_H_INCLUDED
 
@@ -7,6 +14,8 @@
 #include "Configuration.h"
 #include "Logger.h"
 #include <cstdint>
+
+namespace CustomAllocators {
 
 class ArenaAllocator : public Allocator
 {
@@ -26,5 +35,7 @@ private:
 	ArenaMap arenas;
 	const ChunkMap chunks;
 };
+
+} // namespace CustomAllocators
 
 #endif // ARENA_ALLOCATOR_H_INCLUDED

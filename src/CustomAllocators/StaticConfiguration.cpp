@@ -1,5 +1,14 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "StaticConfiguration.h"
 #include <cstdlib>
+
+namespace CustomAllocators {
 
 StaticConfiguration::StaticConfiguration(Allocator*& activeAllocator, Logger& logger) noexcept :
 	activeAllocator{activeAllocator}, logger{logger}
@@ -17,3 +26,5 @@ Configuration::MapType const& StaticConfiguration::getArenas() const noexcept
 {
 	return arenas;
 }
+
+} // namespace CustomAllocators

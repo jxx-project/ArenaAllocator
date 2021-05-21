@@ -1,8 +1,17 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef CONSOLE_LOGGER_H_INCLUDED
 #define CONSOLE_LOGGER_H_INCLUDED
 
 #include "Logger.h"
 #include <cstdarg>
+
+namespace CustomAllocators {
 
 class ConsoleLogger : public Logger
 {
@@ -19,5 +28,7 @@ private:
 	void write(const char* fmt, std::va_list argp) const noexcept;
 	bool active;
 };
+
+} // namespace CustomAllocators
 
 #endif // CONSOLE_LOGGER_H_INCLUDED

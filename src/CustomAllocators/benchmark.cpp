@@ -1,3 +1,10 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include <cstdlib>
 #include <iostream>
 #include <list>

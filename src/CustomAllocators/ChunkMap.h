@@ -1,3 +1,10 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef CHUNK_MAP_H_INCLUDED
 #define CHUNK_MAP_H_INCLUDED
 
@@ -7,6 +14,8 @@
 #include "Optional.h"
 #include <list>
 #include <unordered_map>
+
+namespace CustomAllocators {
 
 class ChunkMap
 {
@@ -25,5 +34,7 @@ private:
 	Logger const& logger;
 	MapType chunks;
 };
+
+} // namespace CustomAllocators
 
 #endif // CHUNK_MAP_H_INCLUDED

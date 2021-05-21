@@ -1,7 +1,16 @@
+//
+// Copyright (C) 2018 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "ArenaAllocator.h"
 #include "ConsoleLogger.h"
 #include "NativeAllocator.h"
 #include "StaticConfiguration.h"
+
+namespace CustomAllocators {
 
 class AllocatorHooks
 {
@@ -54,3 +63,5 @@ extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 {
 	return AllocatorHooks::getInstance().getActiveAllocator().reallocarray(ptr, nmemb, size);
 }
+
+} // namespace CustomAllocators

@@ -1,9 +1,18 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef STATIC_CONFIGURATION_H_INCLUDED
 #define STATIC_CONFIGURATION_H_INCLUDED
 
 #include "Allocator.h"
 #include "Configuration.h"
 #include "Logger.h"
+
+namespace CustomAllocators {
 
 class StaticConfiguration : public Configuration
 {
@@ -20,5 +29,6 @@ private:
 	Configuration::MapType arenas;
 };
 
+} // namespace CustomAllocators
 
 #endif // STATIC_CONFIGURATION_H_INCLUDED

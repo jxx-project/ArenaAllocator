@@ -1,7 +1,16 @@
+//
+// Copyright (C) 2018 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef TIMER_H_INCLUDED
 #define TIMER_H_INCLUDED
 
 #include <chrono>
+
+namespace CustomAllocators {
 
 class Timer
 {
@@ -12,5 +21,7 @@ public:
 private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
 };
+
+} // namespace CustomAllocators
 
 #endif // TIMER_H_INCLUDED

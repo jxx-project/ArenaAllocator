@@ -1,4 +1,13 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "ChunkMap.h"
+
+namespace CustomAllocators {
 
 ChunkMap::ChunkMap(ArenaMap const& arenas, Logger const& logger) noexcept : logger{logger}
 {
@@ -17,3 +26,5 @@ Optional<Arena::ListType::const_iterator> ChunkMap::find(void* ptr) const noexce
 	}
 	return result;
 }
+
+} // namespace CustomAllocators

@@ -1,3 +1,10 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "NativeAllocator.h"
 #include "Timer.h"
 
@@ -6,6 +13,8 @@ extern "C" void __libc_free(void* ptr);
 extern "C" void* __libc_calloc(std::size_t nmemb, std::size_t size);
 extern "C" void* __libc_realloc(void* ptr, std::size_t size);
 extern "C" void* __libc_reallocarray(void* ptr, std::size_t nmemb, std::size_t size);
+
+namespace CustomAllocators {
 
 NativeAllocator::NativeAllocator(Logger const& logger) noexcept : logger{logger}
 {
@@ -53,3 +62,5 @@ void* NativeAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t si
 	logger.log("NativeAllocator::reallocarray(%p, %ld, %ld): %p, %ld ns\n", ptr, nmemb, size, result, timer.getNanoseconds());
 	return result;
 }
+
+} // namespace CustomAllocators

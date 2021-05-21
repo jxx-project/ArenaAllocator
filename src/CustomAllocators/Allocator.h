@@ -1,7 +1,16 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef ALLOCATOR_H_INCLUDED
 #define ALLOCATOR_H_INCLUDED
 
 #include <cstdint>
+
+namespace CustomAllocators {
 
 class Allocator
 {
@@ -13,5 +22,7 @@ public:
 	virtual void* realloc(void* ptr, std::size_t size) noexcept = 0;
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept = 0;
 };
+
+} // namespace CustomAllocators
 
 #endif // ALLOCATOR_H_INCLUDED

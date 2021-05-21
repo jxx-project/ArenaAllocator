@@ -1,9 +1,18 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef NATIVE_ALLOCATOR_H_INCLUDED
 #define NATIVE_ALLOCATOR_H_INCLUDED
 
 #include "Allocator.h"
 #include "Logger.h"
 #include <cstdint>
+
+namespace CustomAllocators {
 
 class NativeAllocator : public Allocator
 {
@@ -21,5 +30,7 @@ public:
 private:
 	Logger const& logger;
 };
+
+} // namespace CustomAllocators
 
 #endif // NATIVE_ALLOCATOR_H_INCLUDED

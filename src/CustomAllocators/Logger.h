@@ -1,5 +1,14 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef LOGGER_H_INCLUDED
 #define LOGGER_H_INCLUDED
+
+namespace CustomAllocators {
 
 class Logger
 {
@@ -9,5 +18,7 @@ public:
 	virtual bool isActive() const noexcept = 0;
 	virtual void setActive(bool active) noexcept = 0;
 };
+
+} // namespace CustomAllocators
 
 #endif // LOGGER_H_INCLUDED

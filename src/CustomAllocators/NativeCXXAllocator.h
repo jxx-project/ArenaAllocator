@@ -1,3 +1,10 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef NATIVE_CXX_ALLOCATOR_H_INCLUDED
 #define NATIVE_CXX_ALLOCATOR_H_INCLUDED
 
@@ -5,6 +12,8 @@
 
 extern "C" void* __libc_malloc(std::size_t size);
 extern "C" void __libc_free(void* ptr);
+
+namespace CustomAllocators {
 
 template<typename T>
 class NativeCXXAllocator
@@ -43,5 +52,7 @@ bool operator!=(NativeCXXAllocator<T1> const&, NativeCXXAllocator<T2> const&) no
 {
 	return false;
 }
+
+} // namespace CustomAllocators
 
 #endif // NATIVE_CXX_ALLOCATOR_H_INCLUDED

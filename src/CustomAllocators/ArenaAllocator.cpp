@@ -1,7 +1,16 @@
+//
+// Copyright (C) 2018 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "ArenaAllocator.h"
 #include "Timer.h"
 #include <cerrno>
 #include <cstring>
+
+namespace CustomAllocators {
 
 ArenaAllocator::ArenaAllocator(Configuration const& configuration, Logger const& logger) noexcept :
 	logger{logger}, arenas{configuration, logger}, chunks{arenas, logger}
@@ -88,3 +97,5 @@ void* ArenaAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t siz
 	logger.log("ArenaAllocator::reallocarray(%p, %ld, %ld) = %p, %ld ns\n", ptr, nmemb, size, result, timer.getNanoseconds());
 	return result;
 }
+
+} // namespace CustomAllocators

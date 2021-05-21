@@ -1,5 +1,14 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "ConsoleLogger.h"
 #include <cstdio>
+
+namespace CustomAllocators {
 
 ConsoleLogger::ConsoleLogger() noexcept : active{true}
 {
@@ -32,3 +41,5 @@ void ConsoleLogger::write(const char* fmt, std::va_list argp) const noexcept
 {
 	std::vfprintf(stderr, fmt, argp);
 }
+
+} // namespace CustomAllocators

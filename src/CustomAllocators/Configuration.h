@@ -1,9 +1,18 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef CONFIGURATION_H_INCLUDED
 #define CONFIGURATION_H_INCLUDED
 
 #include "NativeCXXAllocator.h"
 #include <cstdint>
 #include <map>
+
+namespace CustomAllocators {
 
 class Configuration
 {
@@ -14,5 +23,7 @@ public:
 	virtual ~Configuration() noexcept = default;
 	virtual MapType const& getArenas() const noexcept = 0;
 };
+
+} // namespace CustomAllocators
 
 #endif // CONFIGURATION_H_INCLUDED

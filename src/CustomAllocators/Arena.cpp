@@ -1,6 +1,15 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #include "Arena.h"
 #include "Chunk.h"
 #include "Logger.h"
+
+namespace CustomAllocators {
 
 Arena::Arena(std::size_t nChunks, std::size_t chunkSize) noexcept
 {
@@ -36,3 +45,5 @@ std::size_t Arena::nChunks() const noexcept
 {
 	return free.size() + allocated.size();
 }
+
+} // namespace CustomAllocators

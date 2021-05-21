@@ -1,7 +1,16 @@
+//
+// Copyright (C) 2021 Dr. Michael Steffens
+//
+// SPDX-License-Identifier:     BSL-1.0
+//
+
+
 #ifndef OPTIONAL_H_INCLUDED
 #define OPTIONAL_H_INCLUDED
 
 #include <utility>
+
+namespace CustomAllocators {
 
 template<typename T>
 class Optional
@@ -51,5 +60,7 @@ private:
 		T val;
 	};
 };
+
+} // namespace CustomAllocators
 
 #endif // OPTIONAL_H_INCLUDED
