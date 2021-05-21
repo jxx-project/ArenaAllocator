@@ -11,7 +11,7 @@
 class ArenaAllocator : public Allocator
 {
 public:
-	ArenaAllocator(Configuration const& configuration, Logger const& logger, Allocator*& activeAllocator) noexcept;
+	ArenaAllocator(Configuration const& configuration, Logger const& logger) noexcept;
 	ArenaAllocator(ArenaAllocator const&) = delete;
 	void operator=(ArenaAllocator const&) = delete;
 	virtual ~ArenaAllocator() noexcept;
@@ -23,8 +23,7 @@ public:
 
 private:
 	Logger const& logger;
-	Allocator*& activeAllocator;
-	const ArenaMap arenas;
+	ArenaMap arenas;
 	const ChunkMap chunks;
 };
 
