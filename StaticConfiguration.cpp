@@ -5,7 +5,7 @@ StaticConfiguration::StaticConfiguration(Allocator*& activeAllocator, Logger& lo
 	activeAllocator{activeAllocator}, logger{logger}
 {
 	for (std::size_t size = 8; size <= 1000; size += 8) {
-		arenas.insert(std::pair<const std::size_t, std::size_t>(size, 100));
+		arenas.insert(std::pair<const std::size_t, std::size_t>(size, 200));
 	}
 }
 

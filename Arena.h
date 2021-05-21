@@ -14,7 +14,7 @@ public:
 	using ListType = std::list<Chunk, NativeCXXAllocator<Chunk>>;
 
 	Arena(std::size_t nChunks, std::size_t chunkSize) noexcept;
-	void* allocate() noexcept;
+	void* allocate(std::size_t size) noexcept;
 	void deallocate(std::list<Chunk>::const_iterator it) noexcept;
 	std::size_t nChunks() const noexcept;
 

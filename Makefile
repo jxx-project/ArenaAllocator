@@ -1,6 +1,6 @@
 ARENA_ALLOCATOR_OBJECTS=AllocatorHooks.o ArenaAllocator.o NativeAllocator.o ConsoleLogger.o ArenaMap.o Arena.o ChunkMap.o StaticConfiguration.o Timer.o
 #CXXFLAGS=-g -fno-exceptions -fno-rtti -fno-threadsafe-statics
-CXXFLAGS=-O
+CXXFLAGS=-g
 
 all: libArenaAllocator.so benchmark
 
@@ -18,3 +18,6 @@ libArenaAllocator.so: $(ARENA_ALLOCATOR_OBJECTS)
 
 benchmark: benchmark.o
 	$(CXX) -o $@ benchmark.o
+
+debug:
+	gdb --args env LD_PRELOAD=./libArenaAllocator.so ./benchmark

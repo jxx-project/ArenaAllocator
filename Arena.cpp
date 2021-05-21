@@ -7,18 +7,18 @@ Arena::Arena(std::size_t nChunks, std::size_t chunkSize) noexcept
 	const std::size_t wordsPerChunk{(chunkSize + sizeof(Arena::WordType) - 1U) / sizeof(Arena::WordType)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
-		free.emplace_back(Chunk{storage.data() + offset, this, false});
+		free.emplace_back(Chunk{storage.data() + offset, this, 0});
 	}
 }
 
-void* Arena::allocate() noexcept
+void* Arena::allocate(std::size_t size) noexcept
 {
 	void* result;
 	if (free.empty()) {
 		result = nullptr;
 	} else {
 		result = free.front().data;
-		free.front().allocated = true;
+		free.front().allocated = size;
 		allocated.splice(allocated.begin(), free, free.begin());
 	}
 	return result;
@@ -28,7 +28,7 @@ void Arena::deallocate(ListType::const_iterator it) noexcept
 {
 	if (it->allocated) {
 		allocated.splice(free.begin(), allocated, it);
-		free.front().allocated = false;
+		free.front().allocated = 0;
 	}
 }
 
