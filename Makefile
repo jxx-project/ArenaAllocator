@@ -5,7 +5,7 @@ CXXFLAGS=-g
 all: libArenaAllocator.so benchmark
 
 clean:
-	rm -f libArenaAllocator.so ArenaAllocator $(ARENA_ALLOCATOR_OBJECTS) benchmark.o
+	rm -f libArenaAllocator.so ArenaAllocator $(ARENA_ALLOCATOR_OBJECTS) benchmark benchmark.o
 
 .cpp.o:
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -fPIC -o $@ $<
