@@ -5,22 +5,20 @@
 //
 
 
-#include "ArenaMap.h"
+#include "CustomAllocators/ArenaMap.h"
+#include <cassert>
 
 namespace CustomAllocators {
 
 ArenaMap::ArenaMap(Configuration const& configuration, Logger const& logger) noexcept : logger{logger}
 {
-	logger.log(
-		"ArenaMap::ArenaMap(Configuration const&, Logger const&): configuration.getArenas().size() = %ld\n",
-		configuration.getArenas().size());
-	Range range{0, 0};
+	Arena::Range range{0, 0};
 	std::size_t nChunks{0};
 	std::size_t chunkSize{0};
-	for (std::pair<const std::size_t, std::size_t> const& arena : configuration.getArenas()) {
+	for (Configuration::MapType::value_type const& arena : configuration.getArenas()) {
 		if (arena.first > range.last) {
 			if (nChunks) {
-				insertArena(range, nChunks, chunkSize);
+				insertArena(range, nChunks);
 				nChunks = 0;
 				range.first = range.last + 1;
 			}
@@ -30,28 +28,28 @@ ArenaMap::ArenaMap(Configuration const& configuration, Logger const& logger) noe
 		chunkSize = arena.first;
 	}
 	if (nChunks) {
-		insertArena(range, nChunks, chunkSize);
+		insertArena(range, nChunks);
 	}
 }
 
-void ArenaMap::insertArena(Range const& range, std::size_t nChunks, std::size_t chunkSize) noexcept
+void ArenaMap::insertArena(Arena::Range const& range, std::size_t nChunks) noexcept
 {
-	logger.log("ArenaMap::insertArena:(Range{%ld, %ld}, %ld, %ld)\n", range.first, range.last, nChunks, chunkSize);
-	arenas.emplace(
-		std::pair<Range, Arena>(std::piecewise_construct, std::forward_as_tuple(range), std::forward_as_tuple(nChunks, chunkSize)));
+	std::pair<MapType::iterator, bool> emplaceResult{
+		arenas.emplace(std::piecewise_construct, std::forward_as_tuple(range), std::forward_as_tuple(range, nChunks, logger))};
+	assert(emplaceResult.second);
 }
 
 Optional<Arena*> ArenaMap::find(std::size_t chunkSize) noexcept
 {
 	Optional<Arena*> result;
-	MapType::iterator it{arenas.find(Range{chunkSize, chunkSize})};
+	MapType::iterator it{arenas.find(Arena::Range{chunkSize, chunkSize})};
 	if (it != arenas.end()) {
 		result.emplace(&it->second);
 	}
 	return result;
 }
 
-bool ArenaMap::Range::below(Range const& lhs, Range const& rhs) noexcept
+bool ArenaMap::rangeBelow(Arena::Range const& lhs, Arena::Range const& rhs) noexcept
 {
 	return lhs.last < rhs.first;
 }
@@ -59,7 +57,7 @@ bool ArenaMap::Range::below(Range const& lhs, Range const& rhs) noexcept
 std::size_t ArenaMap::nChunks() const noexcept
 {
 	std::size_t result{0};
-	for (std::pair<const Range, Arena> const& arena : arenas) {
+	for (MapType::value_type const& arena : arenas) {
 		result += arena.second.nChunks();
 	}
 	return result;

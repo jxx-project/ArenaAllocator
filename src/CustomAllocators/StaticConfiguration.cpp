@@ -5,13 +5,13 @@
 //
 
 
-#include "StaticConfiguration.h"
+#include "CustomAllocators/StaticConfiguration.h"
 #include <cstdlib>
 
 namespace CustomAllocators {
 
 StaticConfiguration::StaticConfiguration(Allocator*& activeAllocator, Logger& logger) noexcept :
-	activeAllocator{activeAllocator}, logger{logger}
+	activeAllocator{activeAllocator}, logger{logger}, arenas{{72704, 1}}
 {
 	for (std::size_t size = 8; size <= 1000; size += 8) {
 		arenas.insert(std::pair<const std::size_t, std::size_t>(size, 200));

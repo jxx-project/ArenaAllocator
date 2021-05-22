@@ -5,8 +5,8 @@
 //
 
 
-#include "NativeAllocator.h"
-#include "Timer.h"
+#include "CustomAllocators/NativeAllocator.h"
+#include "CustomAllocators/Timer.h"
 
 extern "C" void* __libc_malloc(std::size_t size);
 extern "C" void __libc_free(void* ptr);
@@ -28,7 +28,7 @@ void* NativeAllocator::malloc(std::size_t size) noexcept
 {
 	Timer timer;
 	void* result = __libc_malloc(size);
-	logger.log("NativeAllocator::malloc(%ld): %p, %ld ns\n", size, result, timer.getNanoseconds());
+	logger.log("NativeAllocator::malloc(%ld) -> %p [%ld ns]\n", size, result, timer.getNanoseconds());
 	return result;
 }
 
@@ -36,14 +36,14 @@ void NativeAllocator::free(void* ptr) noexcept
 {
 	Timer timer;
 	__libc_free(ptr);
-	logger.log("NativeAllocator::free(%p), %ld ns\n", ptr, timer.getNanoseconds());
+	logger.log("NativeAllocator::free(%p) [%ld ns]\n", ptr, timer.getNanoseconds());
 }
 
 void* NativeAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	Timer timer;
 	void* result = __libc_calloc(nmemb, size);
-	logger.log("NativeAllocator::calloc(%ld, %ld): %p, %ld ns\n", nmemb, size, result, timer.getNanoseconds());
+	logger.log("NativeAllocator::calloc(%ld, %ld) -> %p [%ld ns]\n", nmemb, size, result, timer.getNanoseconds());
 	return result;
 }
 
@@ -51,7 +51,7 @@ void* NativeAllocator::realloc(void* ptr, std::size_t size) noexcept
 {
 	Timer timer;
 	void* result = __libc_realloc(ptr, size);
-	logger.log("NativeAllocator::realloc(%p, %ld): %p, %ld ns\n", ptr, size, result, timer.getNanoseconds());
+	logger.log("NativeAllocator::realloc(%p, %ld) -> %p [%ld ns]\n", ptr, size, result, timer.getNanoseconds());
 	return result;
 }
 
@@ -59,7 +59,7 @@ void* NativeAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t si
 {
 	Timer timer;
 	void* result = __libc_reallocarray(ptr, nmemb, size);
-	logger.log("NativeAllocator::reallocarray(%p, %ld, %ld): %p, %ld ns\n", ptr, nmemb, size, result, timer.getNanoseconds());
+	logger.log("NativeAllocator::reallocarray(%p, %ld, %ld) -> %p [%ld ns]\n", ptr, nmemb, size, result, timer.getNanoseconds());
 	return result;
 }
 

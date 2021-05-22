@@ -8,7 +8,7 @@
 #ifndef CONSOLE_LOGGER_H_INCLUDED
 #define CONSOLE_LOGGER_H_INCLUDED
 
-#include "Logger.h"
+#include "CustomAllocators/Logger.h"
 #include <cstdarg>
 
 namespace CustomAllocators {

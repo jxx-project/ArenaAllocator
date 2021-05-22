@@ -8,10 +8,10 @@
 #ifndef CHUNK_MAP_H_INCLUDED
 #define CHUNK_MAP_H_INCLUDED
 
-#include "ArenaMap.h"
-#include "Chunk.h"
-#include "Logger.h"
-#include "Optional.h"
+#include "CustomAllocators/ArenaMap.h"
+#include "CustomAllocators/Chunk.h"
+#include "CustomAllocators/Logger.h"
+#include "CustomAllocators/Optional.h"
 #include <list>
 #include <unordered_map>
 

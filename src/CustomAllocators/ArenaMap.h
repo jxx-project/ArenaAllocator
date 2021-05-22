@@ -8,11 +8,11 @@
 #ifndef ARENA_MAP_H_INCLUDED
 #define ARENA_MAP_H_INCLUDED
 
-#include "Arena.h"
-#include "Configuration.h"
-#include "Logger.h"
-#include "NativeCXXAllocator.h"
-#include "Optional.h"
+#include "CustomAllocators/Arena.h"
+#include "CustomAllocators/Configuration.h"
+#include "CustomAllocators/Logger.h"
+#include "CustomAllocators/NativeCXXAllocator.h"
+#include "CustomAllocators/Optional.h"
 #include <cstdint>
 #include <map>
 
@@ -28,25 +28,23 @@ public:
 	template<typename F>
 	void forEachChunk(F func) const noexcept
 	{
-		for (std::pair<const ArenaMap::Range, Arena> const& mapEntry : arenas) {
+		for (MapType::value_type const& mapEntry : arenas) {
 			mapEntry.second.forEachChunk(func);
 		}
 	}
 
 private:
-	struct Range
-	{
-		std::size_t first;
-		std::size_t last;
-		static bool below(Range const& lhs, Range const& rhs) noexcept;
-	};
+	using MapType = std::map<
+		Arena::Range,
+		Arena,
+		bool (*)(Arena::Range const&, Arena::Range const&),
+		NativeCXXAllocator<std::pair<const Arena::Range, Arena>>>;
 
-	using MapType = std::map<Range, Arena, bool (*)(Range const&, Range const&), NativeCXXAllocator<std::pair<const Range, Arena>>>;
+	static bool rangeBelow(Arena::Range const& lhs, Arena::Range const& rhs) noexcept;
+	void insertArena(Arena::Range const& range, std::size_t nChunks) noexcept;
 
-	void insertArena(Range const& range, std::size_t nChunks, std::size_t chunkSize) noexcept;
-
+	MapType arenas{rangeBelow};
 	Logger const& logger;
-	MapType arenas{Range::below};
 };
 
 } // namespace CustomAllocators

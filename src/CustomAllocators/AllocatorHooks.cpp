@@ -5,10 +5,10 @@
 //
 
 
-#include "ArenaAllocator.h"
-#include "ConsoleLogger.h"
-#include "NativeAllocator.h"
-#include "StaticConfiguration.h"
+#include "CustomAllocators/ArenaAllocator.h"
+#include "CustomAllocators/ConsoleLogger.h"
+#include "CustomAllocators/NativeAllocator.h"
+#include "CustomAllocators/StaticConfiguration.h"
 
 namespace CustomAllocators {
 

@@ -8,9 +8,9 @@
 #ifndef STATIC_CONFIGURATION_H_INCLUDED
 #define STATIC_CONFIGURATION_H_INCLUDED
 
-#include "Allocator.h"
-#include "Configuration.h"
-#include "Logger.h"
+#include "CustomAllocators/Allocator.h"
+#include "CustomAllocators/Configuration.h"
+#include "CustomAllocators/Logger.h"
 
 namespace CustomAllocators {
 

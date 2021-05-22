@@ -8,8 +8,9 @@
 #ifndef ARENA_H_INCLUDED
 #define ARENA_H_INCLUDED
 
-#include "Chunk.h"
-#include "NativeCXXAllocator.h"
+#include "CustomAllocators/Chunk.h"
+#include "CustomAllocators/Logger.h"
+#include "CustomAllocators/NativeCXXAllocator.h"
 #include <cstdint>
 #include <list>
 #include <vector>
@@ -19,12 +20,20 @@ namespace CustomAllocators {
 class Arena
 {
 public:
+	struct Range
+	{
+		std::size_t first;
+		std::size_t last;
+	};
+
 	using WordType = long;
 	using ListType = std::list<Chunk, NativeCXXAllocator<Chunk>>;
 
-	Arena(std::size_t nChunks, std::size_t chunkSize) noexcept;
+	Arena(Range const& range, std::size_t nChunks, Logger const& logger) noexcept;
+	Arena(Arena const& other) = delete;
+	Arena& operator=(Arena const& other) = delete;
 	void* allocate(std::size_t size) noexcept;
-	void deallocate(std::list<Chunk>::const_iterator it) noexcept;
+	void deallocate(ListType::const_iterator it) noexcept;
 	std::size_t nChunks() const noexcept;
 
 	template<typename F>

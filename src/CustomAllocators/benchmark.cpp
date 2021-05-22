@@ -5,6 +5,7 @@
 //
 
 
+#include <cstdint>
 #include <cstdlib>
 #include <iostream>
 #include <list>
@@ -26,7 +27,6 @@ private:
 	void* ptr;
 };
 
-
 void stressAllocator(int seed)
 {
 	std::mt19937 gen(seed);
@@ -44,10 +44,10 @@ void stressAllocator(int seed)
 			allocations.emplace_front(sizeDistribution(gen));
 		} else {
 			if (!allocations.empty()) {
-				std::uniform_int_distribution<> indexDistribution{0, allocations.size() - 1};
-				int index{indexDistribution(gen)};
+				std::uniform_int_distribution<std::size_t> indexDistribution{0, allocations.size() - 1};
+				std::size_t index{indexDistribution(gen)};
 				std::list<Allocation>::iterator pos{allocations.begin()};
-				for (int j = 0; j < index; ++j) {
+				for (std::size_t j = 0; j < index; ++j) {
 					++pos;
 				}
 				allocations.erase(pos);

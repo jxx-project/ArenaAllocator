@@ -1,6 +1,6 @@
 ARENA_ALLOCATOR_OBJECTS=AllocatorHooks.o ArenaAllocator.o NativeAllocator.o ConsoleLogger.o ArenaMap.o Arena.o ChunkMap.o StaticConfiguration.o Timer.o
 #CXXFLAGS=-g -fno-exceptions -fno-rtti -fno-threadsafe-statics
-CXXFLAGS=-g
+CXXFLAGS=-O
 
 all: libArenaAllocator.so benchmark
 

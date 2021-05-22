@@ -8,8 +8,8 @@
 #ifndef NATIVE_ALLOCATOR_H_INCLUDED
 #define NATIVE_ALLOCATOR_H_INCLUDED
 
-#include "Allocator.h"
-#include "Logger.h"
+#include "CustomAllocators/Allocator.h"
+#include "CustomAllocators/Logger.h"
 #include <cstdint>
 
 namespace CustomAllocators {

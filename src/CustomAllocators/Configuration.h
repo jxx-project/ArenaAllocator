@@ -8,7 +8,7 @@
 #ifndef CONFIGURATION_H_INCLUDED
 #define CONFIGURATION_H_INCLUDED
 
-#include "NativeCXXAllocator.h"
+#include "CustomAllocators/NativeCXXAllocator.h"
 #include <cstdint>
 #include <map>
 

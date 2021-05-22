@@ -8,11 +8,11 @@
 #ifndef ARENA_ALLOCATOR_H_INCLUDED
 #define ARENA_ALLOCATOR_H_INCLUDED
 
-#include "Allocator.h"
-#include "ArenaMap.h"
-#include "ChunkMap.h"
-#include "Configuration.h"
-#include "Logger.h"
+#include "CustomAllocators/Allocator.h"
+#include "CustomAllocators/ArenaMap.h"
+#include "CustomAllocators/ChunkMap.h"
+#include "CustomAllocators/Configuration.h"
+#include "CustomAllocators/Logger.h"
 #include <cstdint>
 
 namespace CustomAllocators {

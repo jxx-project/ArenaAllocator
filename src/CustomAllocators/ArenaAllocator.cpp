@@ -5,8 +5,8 @@
 //
 
 
-#include "ArenaAllocator.h"
-#include "Timer.h"
+#include "CustomAllocators/ArenaAllocator.h"
+#include "CustomAllocators/Timer.h"
 #include <cerrno>
 #include <cstring>
 
@@ -32,7 +32,7 @@ void* ArenaAllocator::malloc(std::size_t size) noexcept
 	if (!result) {
 		errno = ENOMEM;
 	}
-	logger.log("ArenaAllocator::malloc(%ld) = %p, %ld ns\n", size, result, timer.getNanoseconds());
+	logger.log("ArenaAllocator::malloc(%ld) -> %p [%ld ns]\n", size, result, timer.getNanoseconds());
 	return result;
 }
 
@@ -43,7 +43,7 @@ void ArenaAllocator::free(void* ptr) noexcept
 	if (chunk.hasValue()) {
 		chunk.value()->arena->deallocate(chunk.value());
 	}
-	logger.log("ArenaAllocator::free(%p)\n", ptr, timer.getNanoseconds());
+	logger.log("ArenaAllocator::free(%p) [%ld ns]\n", ptr, timer.getNanoseconds());
 }
 
 void* ArenaAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
@@ -55,7 +55,7 @@ void* ArenaAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 	if (!result) {
 		errno = ENOMEM;
 	}
-	logger.log("ArenaAllocator::calloc(%ld, %ld) = %p, %ld ns\n", nmemb, size, result, timer.getNanoseconds());
+	logger.log("ArenaAllocator::calloc(%ld, %ld) -> %p [%ld ns]\n", nmemb, size, result, timer.getNanoseconds());
 	return result;
 }
 
@@ -81,7 +81,7 @@ void* ArenaAllocator::realloc(void* ptr, std::size_t size) noexcept
 	if (!result) {
 		errno = ENOMEM;
 	}
-	logger.log("ArenaAllocator::realloc(%p, %ld) = %p, %ld ns\n", ptr, size, result, timer.getNanoseconds());
+	logger.log("ArenaAllocator::realloc(%p, %ld) -> %p [%ld ns]\n", ptr, size, result, timer.getNanoseconds());
 	return result;
 }
 
@@ -94,7 +94,7 @@ void* ArenaAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t siz
 	if (!result) {
 		errno = ENOMEM;
 	}
-	logger.log("ArenaAllocator::reallocarray(%p, %ld, %ld) = %p, %ld ns\n", ptr, nmemb, size, result, timer.getNanoseconds());
+	logger.log("ArenaAllocator::reallocarray(%p, %ld, %ld) -> %p [%ld ns]\n", ptr, nmemb, size, result, timer.getNanoseconds());
 	return result;
 }
 
