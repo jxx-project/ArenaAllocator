@@ -9,14 +9,14 @@ clean:
 $(CUSTOM_ALLOCATORS_OBJECTS): %.o: src/CustomAllocators/%.cpp
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -fno-exceptions -fno-rtti -fPIC -o $@ $<
 
-benchmark.o: src/CustomAllocators/benchmark.c
+benchmark.o: src/CustomAllocators/benchmark.cpp
 	$(CXX) -c $(CPPFLAGS) -g -o $@ $<
 
 libCustomAllocators.so: $(CUSTOM_ALLOCATORS_OBJECTS)
 	$(CXX) -shared -o $@ $^
 
 benchmark: benchmark.o
-	$(CC) -o $@ benchmark.o
+	$(CXX) -o $@ benchmark.o
 
 debug:
 	gdb --args env LD_PRELOAD=./libCustomAllocators.so ./benchmark

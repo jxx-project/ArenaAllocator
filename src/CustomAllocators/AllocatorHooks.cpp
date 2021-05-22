@@ -34,7 +34,7 @@ private:
 
 	ConsoleLogger logger;
 	NativeAllocator nativeAllocator{logger};
-	Allocator* activeAllocator{&arenaAllocator};
+	Allocator* activeAllocator{&nativeAllocator};
 	StaticConfiguration configuration{activeAllocator, logger};
 	ArenaAllocator arenaAllocator{configuration, logger};
 };
