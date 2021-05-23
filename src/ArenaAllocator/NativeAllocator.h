@@ -8,11 +8,11 @@
 #ifndef NATIVE_ALLOCATOR_H_INCLUDED
 #define NATIVE_ALLOCATOR_H_INCLUDED
 
-#include "CustomAllocators/Allocator.h"
-#include "CustomAllocators/Logger.h"
+#include "ArenaAllocator/Allocator.h"
+#include "ArenaAllocator/Logger.h"
 #include <cstdint>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class NativeAllocator : public Allocator
 {
@@ -31,6 +31,6 @@ private:
 	Logger const& logger;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // NATIVE_ALLOCATOR_H_INCLUDED

@@ -5,9 +5,9 @@
 //
 
 
-#include "CustomAllocators/Timer.h"
+#include "ArenaAllocator/Timer.h"
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 Timer::Timer() noexcept : startTime{std::chrono::high_resolution_clock::now()}
 {
@@ -18,4 +18,4 @@ long Timer::getNanoseconds() const noexcept
 	return std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::high_resolution_clock::now() - startTime).count();
 }
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator

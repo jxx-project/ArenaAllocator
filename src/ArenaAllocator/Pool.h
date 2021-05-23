@@ -5,19 +5,19 @@
 //
 
 
-#ifndef ARENA_H_INCLUDED
-#define ARENA_H_INCLUDED
+#ifndef POOL_H_INCLUDED
+#define POOL_H_INCLUDED
 
-#include "CustomAllocators/Chunk.h"
-#include "CustomAllocators/Logger.h"
-#include "CustomAllocators/NativeCXXAllocator.h"
+#include "ArenaAllocator/Chunk.h"
+#include "ArenaAllocator/Logger.h"
+#include "ArenaAllocator/NativeCXXAllocator.h"
 #include <cstdint>
 #include <list>
 #include <vector>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
-class Arena
+class Pool
 {
 public:
 	struct Range
@@ -29,10 +29,10 @@ public:
 	using WordType = long;
 	using ListType = std::list<Chunk, NativeCXXAllocator<Chunk>>;
 
-	Arena(Range const& range, std::size_t nChunks, Logger const& logger) noexcept;
-	Arena(Arena const& other) = delete;
-	Arena& operator=(Arena const& other) = delete;
-	~Arena() noexcept;
+	Pool(Range const& range, std::size_t nChunks, Logger const& logger) noexcept;
+	Pool(Pool const& other) = delete;
+	Pool& operator=(Pool const& other) = delete;
+	~Pool() noexcept;
 
 	void* allocate(std::size_t size) noexcept;
 	void deallocate(ListType::const_iterator it) noexcept;
@@ -59,6 +59,6 @@ private:
 	Logger const& logger;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
-#endif // ARENA_H_INCLUDED
+#endif // POOL_H_INCLUDED

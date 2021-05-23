@@ -8,11 +8,11 @@
 #ifndef STATIC_CONFIGURATION_H_INCLUDED
 #define STATIC_CONFIGURATION_H_INCLUDED
 
-#include "CustomAllocators/Allocator.h"
-#include "CustomAllocators/Configuration.h"
-#include "CustomAllocators/Logger.h"
+#include "ArenaAllocator/Allocator.h"
+#include "ArenaAllocator/Configuration.h"
+#include "ArenaAllocator/Logger.h"
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class StaticConfiguration : public Configuration
 {
@@ -26,9 +26,9 @@ public:
 private:
 	Allocator*& activeAllocator;
 	Logger& logger;
-	Configuration::MapType arenas;
+	Configuration::MapType pools;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // STATIC_CONFIGURATION_H_INCLUDED

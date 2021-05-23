@@ -13,7 +13,7 @@
 extern "C" void* __libc_malloc(std::size_t size);
 extern "C" void __libc_free(void* ptr);
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 template<typename T>
 class NativeCXXAllocator
@@ -53,6 +53,6 @@ bool operator!=(NativeCXXAllocator<T1> const&, NativeCXXAllocator<T2> const&) no
 	return false;
 }
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // NATIVE_CXX_ALLOCATOR_H_INCLUDED

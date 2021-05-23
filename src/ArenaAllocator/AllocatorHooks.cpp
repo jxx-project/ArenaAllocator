@@ -5,12 +5,12 @@
 //
 
 
-#include "CustomAllocators/ArenaAllocator.h"
-#include "CustomAllocators/ConsoleLogger.h"
-#include "CustomAllocators/NativeAllocator.h"
-#include "CustomAllocators/StaticConfiguration.h"
+#include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/NativeAllocator.h"
+#include "ArenaAllocator/PoolAllocator.h"
+#include "ArenaAllocator/StaticConfiguration.h"
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class AllocatorHooks
 {
@@ -36,7 +36,7 @@ private:
 	NativeAllocator nativeAllocator{logger};
 	Allocator* activeAllocator{&nativeAllocator};
 	StaticConfiguration configuration{activeAllocator, logger};
-	ArenaAllocator arenaAllocator{configuration, logger};
+	PoolAllocator poolAllocator{configuration, logger};
 };
 
 extern "C" void* malloc(std::size_t size)
@@ -64,4 +64,4 @@ extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 	return AllocatorHooks::getInstance().getActiveAllocator().reallocarray(ptr, nmemb, size);
 }
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator

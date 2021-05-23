@@ -10,7 +10,7 @@
 
 #include <cstdint>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class Allocator
 {
@@ -23,6 +23,6 @@ public:
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept = 0;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // ALLOCATOR_H_INCLUDED

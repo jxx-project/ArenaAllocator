@@ -8,7 +8,7 @@
 #ifndef LOGGER_H_INCLUDED
 #define LOGGER_H_INCLUDED
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class Logger
 {
@@ -19,6 +19,6 @@ public:
 	virtual void setActive(bool active) noexcept = 0;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // LOGGER_H_INCLUDED

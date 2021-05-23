@@ -10,7 +10,7 @@
 
 #include <chrono>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class Timer
 {
@@ -22,6 +22,6 @@ private:
 	std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // TIMER_H_INCLUDED

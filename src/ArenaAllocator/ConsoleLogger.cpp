@@ -5,10 +5,10 @@
 //
 
 
-#include "CustomAllocators/ConsoleLogger.h"
+#include "ArenaAllocator/ConsoleLogger.h"
 #include <cstdio>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 ConsoleLogger::ConsoleLogger() noexcept : active{true}
 {
@@ -42,4 +42,4 @@ void ConsoleLogger::write(const char* fmt, std::va_list argp) const noexcept
 	std::vfprintf(stderr, fmt, argp);
 }
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator

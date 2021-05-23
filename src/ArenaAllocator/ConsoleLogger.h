@@ -8,10 +8,10 @@
 #ifndef CONSOLE_LOGGER_H_INCLUDED
 #define CONSOLE_LOGGER_H_INCLUDED
 
-#include "CustomAllocators/Logger.h"
+#include "ArenaAllocator/Logger.h"
 #include <cstdarg>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class ConsoleLogger : public Logger
 {
@@ -29,6 +29,6 @@ private:
 	bool active;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // CONSOLE_LOGGER_H_INCLUDED

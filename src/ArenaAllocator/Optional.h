@@ -10,7 +10,7 @@
 
 #include <utility>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 template<typename T>
 class Optional
@@ -61,6 +61,6 @@ private:
 	};
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // OPTIONAL_H_INCLUDED

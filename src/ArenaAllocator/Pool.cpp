@@ -5,14 +5,14 @@
 //
 
 
-#include "CustomAllocators/Arena.h"
-#include "CustomAllocators/Chunk.h"
+#include "ArenaAllocator/Pool.h"
+#include "ArenaAllocator/Chunk.h"
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
-Arena::Arena(Range const& range, std::size_t nChunks, Logger const& logger) noexcept : range{range}, logger{logger}, hwm{0}
+Pool::Pool(Range const& range, std::size_t nChunks, Logger const& logger) noexcept : range{range}, logger{logger}, hwm{0}
 {
-	logger.log("Arena::Arena(Range{%ld, %ld}, %ld)\n", range.first, range.last, nChunks);
+	logger.log("Pool::Pool(Range{%ld, %ld}, %ld)\n", range.first, range.last, nChunks);
 	const std::size_t wordsPerChunk{(range.last + sizeof(WordType) - 1U) / sizeof(WordType)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
@@ -20,13 +20,13 @@ Arena::Arena(Range const& range, std::size_t nChunks, Logger const& logger) noex
 	}
 }
 
-Arena::~Arena() noexcept
+Pool::~Pool() noexcept
 {
-	logger.log("Arena::~Arena() Range{%ld, %ld} [hwm %ld]\n", range.first, range.last, hwm);
+	logger.log("Pool::~Pool() Range{%ld, %ld} [hwm %ld]\n", range.first, range.last, hwm);
 }
 
 
-void* Arena::allocate(std::size_t size) noexcept
+void* Pool::allocate(std::size_t size) noexcept
 {
 	void* result;
 	if (free.empty()) {
@@ -40,7 +40,7 @@ void* Arena::allocate(std::size_t size) noexcept
 	return result;
 }
 
-void Arena::deallocate(ListType::const_iterator it) noexcept
+void Pool::deallocate(ListType::const_iterator it) noexcept
 {
 	if (it->allocated) {
 		free.splice(free.begin(), allocated, it);
@@ -48,9 +48,9 @@ void Arena::deallocate(ListType::const_iterator it) noexcept
 	}
 }
 
-std::size_t Arena::nChunks() const noexcept
+std::size_t Pool::nChunks() const noexcept
 {
 	return free.size() + allocated.size();
 }
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator

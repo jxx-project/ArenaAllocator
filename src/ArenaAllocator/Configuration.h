@@ -8,11 +8,11 @@
 #ifndef CONFIGURATION_H_INCLUDED
 #define CONFIGURATION_H_INCLUDED
 
-#include "CustomAllocators/NativeCXXAllocator.h"
+#include "ArenaAllocator/NativeCXXAllocator.h"
 #include <cstdint>
 #include <map>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 class Configuration
 {
@@ -24,6 +24,6 @@ public:
 	virtual MapType const& getArenas() const noexcept = 0;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // CONFIGURATION_H_INCLUDED

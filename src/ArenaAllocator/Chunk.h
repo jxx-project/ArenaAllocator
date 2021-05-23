@@ -10,17 +10,17 @@
 
 #include <cstdint>
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
-class Arena;
+class Pool;
 
 struct Chunk
 {
 	void* data;
-	Arena* arena;
+	Pool* pool;
 	std::size_t allocated;
 };
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator
 
 #endif // CHUNK_H_INCLUDED

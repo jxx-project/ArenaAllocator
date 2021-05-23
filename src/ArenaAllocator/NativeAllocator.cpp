@@ -5,8 +5,8 @@
 //
 
 
-#include "CustomAllocators/NativeAllocator.h"
-#include "CustomAllocators/Timer.h"
+#include "ArenaAllocator/NativeAllocator.h"
+#include "ArenaAllocator/Timer.h"
 
 extern "C" void* __libc_malloc(std::size_t size);
 extern "C" void __libc_free(void* ptr);
@@ -14,7 +14,7 @@ extern "C" void* __libc_calloc(std::size_t nmemb, std::size_t size);
 extern "C" void* __libc_realloc(void* ptr, std::size_t size);
 extern "C" void* __libc_reallocarray(void* ptr, std::size_t nmemb, std::size_t size);
 
-namespace CustomAllocators {
+namespace ArenaAllocator {
 
 NativeAllocator::NativeAllocator(Logger const& logger) noexcept : logger{logger}
 {
@@ -63,4 +63,4 @@ void* NativeAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t si
 	return result;
 }
 
-} // namespace CustomAllocators
+} // namespace ArenaAllocator

@@ -1,22 +1,22 @@
-CUSTOM_ALLOCATORS_OBJECTS=AllocatorHooks.o ArenaAllocator.o NativeAllocator.o ConsoleLogger.o ArenaMap.o Arena.o ChunkMap.o StaticConfiguration.o Timer.o
+CUSTOM_ALLOCATORS_OBJECTS=AllocatorHooks.o PoolAllocator.o NativeAllocator.o ConsoleLogger.o PoolMap.o Pool.o ChunkMap.o StaticConfiguration.o Timer.o
 CXXFLAGS=-O3
 CPPFLAGS=-Isrc
-all: libCustomAllocators.so benchmark
+all: libArenaAllocator.so benchmark
 
 clean:
-	rm -f libCustomAllocators.so $(CUSTOM_ALLOCATORS_OBJECTS) benchmark benchmark.o
+	rm -f libArenaAllocator.so $(CUSTOM_ALLOCATORS_OBJECTS) benchmark benchmark.o
 
-$(CUSTOM_ALLOCATORS_OBJECTS): %.o: src/CustomAllocators/%.cpp
+$(CUSTOM_ALLOCATORS_OBJECTS): %.o: src/ArenaAllocator/%.cpp
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -fno-exceptions -fno-rtti -fPIC -o $@ $<
 
-benchmark.o: src/CustomAllocators/benchmark.cpp
+benchmark.o: src/ArenaAllocator/benchmark.cpp
 	$(CXX) -c $(CPPFLAGS) -g -o $@ $<
 
-libCustomAllocators.so: $(CUSTOM_ALLOCATORS_OBJECTS)
+libArenaAllocator.so: $(CUSTOM_ALLOCATORS_OBJECTS)
 	$(CXX) -shared -o $@ $^
 
 benchmark: benchmark.o
 	$(CXX) -o $@ benchmark.o
 
 debug:
-	gdb --args env LD_PRELOAD=./libCustomAllocators.so ./benchmark
+	gdb --args env LD_PRELOAD=./libArenaAllocator.so ./benchmark
