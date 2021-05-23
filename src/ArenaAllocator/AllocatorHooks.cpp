@@ -6,7 +6,7 @@
 
 
 #include "ArenaAllocator/ConsoleLogger.h"
-#include "ArenaAllocator/NativeAllocator.h"
+#include "ArenaAllocator/PassThroughAllocator.h"
 #include "ArenaAllocator/PoolAllocator.h"
 #include "ArenaAllocator/StaticConfiguration.h"
 
@@ -33,8 +33,8 @@ private:
 	}
 
 	ConsoleLogger logger;
-	NativeAllocator nativeAllocator{logger};
-	Allocator* activeAllocator{&nativeAllocator};
+	PassThroughAllocator passThroughAllocator{logger};
+	Allocator* activeAllocator{&passThroughAllocator};
 	StaticConfiguration configuration{activeAllocator, logger};
 	PoolAllocator poolAllocator{configuration, logger};
 };

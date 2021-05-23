@@ -5,8 +5,8 @@
 //
 
 
-#ifndef NATIVE_ALLOCATOR_H_INCLUDED
-#define NATIVE_ALLOCATOR_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_PASS_THROUGH_ALLOCATOR_H_INCLUDED
+#define ARENA_ALLOCATOR_PASS_THROUGH_ALLOCATOR_H_INCLUDED
 
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Logger.h"
@@ -14,13 +14,13 @@
 
 namespace ArenaAllocator {
 
-class NativeAllocator : public Allocator
+class PassThroughAllocator : public Allocator
 {
 public:
-	explicit NativeAllocator(Logger const& logger) noexcept;
-	NativeAllocator(NativeAllocator const&) = delete;
-	NativeAllocator& operator=(NativeAllocator const&) = delete;
-	virtual ~NativeAllocator() noexcept;
+	explicit PassThroughAllocator(Logger const& logger) noexcept;
+	PassThroughAllocator(PassThroughAllocator const&) = delete;
+	PassThroughAllocator& operator=(PassThroughAllocator const&) = delete;
+	virtual ~PassThroughAllocator() noexcept;
 	virtual void* malloc(std::size_t size) noexcept override;
 	virtual void free(void* ptr) noexcept override;
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
@@ -33,4 +33,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // NATIVE_ALLOCATOR_H_INCLUDED
+#endif // ARENA_ALLOCATOR_PASS_THROUGH_ALLOCATOR_H_INCLUDED

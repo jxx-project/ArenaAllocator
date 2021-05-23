@@ -1,4 +1,4 @@
-CUSTOM_ALLOCATORS_OBJECTS=AllocatorHooks.o PoolAllocator.o NativeAllocator.o ConsoleLogger.o PoolMap.o Pool.o ChunkMap.o StaticConfiguration.o Timer.o
+CUSTOM_ALLOCATORS_OBJECTS=AllocatorHooks.o PoolAllocator.o PassThroughAllocator.o ConsoleLogger.o PoolMap.o Pool.o ChunkMap.o StaticConfiguration.o Timer.o
 CXXFLAGS=-O3
 CPPFLAGS=-Isrc
 all: libArenaAllocator.so benchmark

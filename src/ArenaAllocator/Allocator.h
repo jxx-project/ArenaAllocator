@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ALLOCATOR_H_INCLUDED
-#define ALLOCATOR_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_ALLOCATOR_H_INCLUDED
+#define ARENA_ALLOCATOR_ALLOCATOR_H_INCLUDED
 
 #include <cstdint>
 
@@ -25,4 +25,4 @@ public:
 
 } // namespace ArenaAllocator
 
-#endif // ALLOCATOR_H_INCLUDED
+#endif // ARENA_ALLOCATOR_ALLOCATOR_H_INCLUDED

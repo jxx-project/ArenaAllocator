@@ -5,8 +5,8 @@
 //
 
 
-#ifndef OPTIONAL_H_INCLUDED
-#define OPTIONAL_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_OPTIONAL_H_INCLUDED
+#define ARENA_ALLOCATOR_OPTIONAL_H_INCLUDED
 
 #include <utility>
 
@@ -63,4 +63,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // OPTIONAL_H_INCLUDED
+#endif // ARENA_ALLOCATOR_OPTIONAL_H_INCLUDED

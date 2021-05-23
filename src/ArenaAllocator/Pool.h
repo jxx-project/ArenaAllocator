@@ -5,12 +5,12 @@
 //
 
 
-#ifndef POOL_H_INCLUDED
-#define POOL_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_POOL_H_INCLUDED
+#define ARENA_ALLOCATOR_POOL_H_INCLUDED
 
 #include "ArenaAllocator/Chunk.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/NativeCXXAllocator.h"
+#include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include <cstdint>
 #include <list>
 #include <vector>
@@ -27,7 +27,7 @@ public:
 	};
 
 	using WordType = long;
-	using ListType = std::list<Chunk, NativeCXXAllocator<Chunk>>;
+	using ListType = std::list<Chunk, PassThroughCXXAllocator<Chunk>>;
 
 	Pool(Range const& range, std::size_t nChunks, Logger const& logger) noexcept;
 	Pool(Pool const& other) = delete;
@@ -50,7 +50,7 @@ public:
 	}
 
 private:
-	using StorageType = std::vector<WordType, NativeCXXAllocator<WordType>>;
+	using StorageType = std::vector<WordType, PassThroughCXXAllocator<WordType>>;
 	const Range range;
 	StorageType storage;
 	ListType free;
@@ -61,4 +61,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // POOL_H_INCLUDED
+#endif // ARENA_ALLOCATOR_POOL_H_INCLUDED

@@ -5,12 +5,12 @@
 //
 
 
-#ifndef POOL_MAP_H_INCLUDED
-#define POOL_MAP_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_POOL_MAP_H_INCLUDED
+#define ARENA_ALLOCATOR_POOL_MAP_H_INCLUDED
 
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/NativeCXXAllocator.h"
+#include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/Optional.h"
 #include "ArenaAllocator/Pool.h"
 #include <cstdint>
@@ -38,7 +38,7 @@ private:
 		Pool::Range,
 		Pool,
 		bool (*)(Pool::Range const&, Pool::Range const&),
-		NativeCXXAllocator<std::pair<const Pool::Range, Pool>>>;
+		PassThroughCXXAllocator<std::pair<const Pool::Range, Pool>>>;
 
 	static bool rangeBelow(Pool::Range const& lhs, Pool::Range const& rhs) noexcept;
 	void insertArena(Pool::Range const& range, std::size_t nChunks) noexcept;
@@ -49,4 +49,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // POOL_MAP_H_INCLUDED
+#endif // ARENA_ALLOCATOR_POOL_MAP_H_INCLUDED

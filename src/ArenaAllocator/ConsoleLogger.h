@@ -5,8 +5,8 @@
 //
 
 
-#ifndef CONSOLE_LOGGER_H_INCLUDED
-#define CONSOLE_LOGGER_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_CONSOLE_LOGGER_H_INCLUDED
+#define ARENA_ALLOCATOR_CONSOLE_LOGGER_H_INCLUDED
 
 #include "ArenaAllocator/Logger.h"
 #include <cstdarg>
@@ -31,4 +31,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // CONSOLE_LOGGER_H_INCLUDED
+#endif // ARENA_ALLOCATOR_CONSOLE_LOGGER_H_INCLUDED

@@ -5,8 +5,8 @@
 //
 
 
-#ifndef LOGGER_H_INCLUDED
-#define LOGGER_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_LOGGER_H_INCLUDED
+#define ARENA_ALLOCATOR_LOGGER_H_INCLUDED
 
 namespace ArenaAllocator {
 
@@ -21,4 +21,4 @@ public:
 
 } // namespace ArenaAllocator
 
-#endif // LOGGER_H_INCLUDED
+#endif // ARENA_ALLOCATOR_LOGGER_H_INCLUDED

@@ -5,10 +5,10 @@
 //
 
 
-#ifndef CONFIGURATION_H_INCLUDED
-#define CONFIGURATION_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
+#define ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
 
-#include "ArenaAllocator/NativeCXXAllocator.h"
+#include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include <cstdint>
 #include <map>
 
@@ -18,7 +18,7 @@ class Configuration
 {
 public:
 	using MapType =
-		std::map<std::size_t, std::size_t, std::less<std::size_t>, NativeCXXAllocator<std::pair<const std::size_t, std::size_t>>>;
+		std::map<std::size_t, std::size_t, std::less<std::size_t>, PassThroughCXXAllocator<std::pair<const std::size_t, std::size_t>>>;
 
 	virtual ~Configuration() noexcept = default;
 	virtual MapType const& getArenas() const noexcept = 0;
@@ -26,4 +26,4 @@ public:
 
 } // namespace ArenaAllocator
 
-#endif // CONFIGURATION_H_INCLUDED
+#endif // ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED

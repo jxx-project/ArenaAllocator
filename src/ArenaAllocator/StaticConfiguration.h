@@ -5,8 +5,8 @@
 //
 
 
-#ifndef STATIC_CONFIGURATION_H_INCLUDED
-#define STATIC_CONFIGURATION_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_STATIC_CONFIGURATION_H_INCLUDED
+#define ARENA_ALLOCATOR_STATIC_CONFIGURATION_H_INCLUDED
 
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Configuration.h"
@@ -31,4 +31,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // STATIC_CONFIGURATION_H_INCLUDED
+#endif // ARENA_ALLOCATOR_STATIC_CONFIGURATION_H_INCLUDED

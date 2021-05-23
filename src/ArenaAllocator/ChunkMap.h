@@ -5,8 +5,8 @@
 //
 
 
-#ifndef CHUNK_MAP_H_INCLUDED
-#define CHUNK_MAP_H_INCLUDED
+#ifndef ARENA_ALLOCATOR_CHUNK_MAP_H_INCLUDED
+#define ARENA_ALLOCATOR_CHUNK_MAP_H_INCLUDED
 
 #include "ArenaAllocator/Chunk.h"
 #include "ArenaAllocator/Logger.h"
@@ -29,7 +29,7 @@ private:
 		Pool::ListType::const_iterator,
 		std::hash<void*>,
 		std::equal_to<void*>,
-		NativeCXXAllocator<std::pair<const void*, Pool::ListType::const_iterator>>>;
+		PassThroughCXXAllocator<std::pair<const void*, Pool::ListType::const_iterator>>>;
 
 	Logger const& logger;
 	MapType chunks;
@@ -37,4 +37,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // CHUNK_MAP_H_INCLUDED
+#endif // ARENA_ALLOCATOR_CHUNK_MAP_H_INCLUDED
