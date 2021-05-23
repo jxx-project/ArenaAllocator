@@ -32,6 +32,8 @@ public:
 	Arena(Range const& range, std::size_t nChunks, Logger const& logger) noexcept;
 	Arena(Arena const& other) = delete;
 	Arena& operator=(Arena const& other) = delete;
+	~Arena() noexcept;
+
 	void* allocate(std::size_t size) noexcept;
 	void deallocate(ListType::const_iterator it) noexcept;
 	std::size_t nChunks() const noexcept;
@@ -49,9 +51,12 @@ public:
 
 private:
 	using StorageType = std::vector<WordType, NativeCXXAllocator<WordType>>;
+	const Range range;
 	StorageType storage;
 	ListType free;
 	ListType allocated;
+	std::size_t hwm;
+	Logger const& logger;
 };
 
 } // namespace CustomAllocators
