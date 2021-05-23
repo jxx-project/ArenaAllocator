@@ -10,8 +10,8 @@
 
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/Optional.h"
+#include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/Pool.h"
 #include <cstdint>
 #include <map>

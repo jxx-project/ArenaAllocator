@@ -59,7 +59,8 @@ void* PassThroughAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size
 {
 	Timer timer;
 	void* result = __libc_reallocarray(ptr, nmemb, size);
-	logger.log("PassThroughAllocator::reallocarray(%p, %ld, %ld) -> %p [%ld ns]\n", ptr, nmemb, size, result, timer.getNanoseconds());
+	logger.log(
+		"PassThroughAllocator::reallocarray(%p, %ld, %ld) -> %p [%ld ns]\n", ptr, nmemb, size, result, timer.getNanoseconds());
 	return result;
 }
 

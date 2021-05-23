@@ -17,8 +17,8 @@ namespace ArenaAllocator {
 class Configuration
 {
 public:
-	using MapType =
-		std::map<std::size_t, std::size_t, std::less<std::size_t>, PassThroughCXXAllocator<std::pair<const std::size_t, std::size_t>>>;
+	using MapType = std::
+		map<std::size_t, std::size_t, std::less<std::size_t>, PassThroughCXXAllocator<std::pair<const std::size_t, std::size_t>>>;
 
 	virtual ~Configuration() noexcept = default;
 	virtual MapType const& getArenas() const noexcept = 0;
