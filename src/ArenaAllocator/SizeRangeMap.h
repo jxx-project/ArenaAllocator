@@ -25,39 +25,16 @@ public:
 	using iterator = typename DelegateType::iterator;
 	using const_iterator = typename DelegateType::const_iterator;
 
-	iterator begin() noexcept
-	{
-		return delegate.begin();
-	}
+	SizeRangeMap() noexcept;
+	SizeRangeMap(SizeRangeMap const&) = delete;
+	SizeRangeMap& operator=(SizeRangeMap const&) = delete;
+	~SizeRangeMap() noexcept;
 
-	const_iterator begin() const noexcept
-	{
-		return delegate.begin();
-	}
-
-	iterator end() noexcept
-	{
-		return delegate.end();
-	}
-
-	const_iterator end() const noexcept
-	{
-		return delegate.end();
-	}
-
-	SizeRangeMap() noexcept : delegate{rangeBelow}
-	{
-	}
-
-	T* at(std::size_t size) noexcept
-	{
-		T* result(nullptr);
-		typename DelegateType::iterator it{delegate.find(SizeRange{size, size})};
-		if (it != delegate.end()) {
-			result = &it->second;
-		}
-		return result;
-	}
+	iterator begin() noexcept;
+	const_iterator begin() const noexcept;
+	iterator end() noexcept;
+	const_iterator end() const noexcept;
+	T* at(std::size_t size) noexcept;
 
 	template<typename... Args>
 	void emplace(SizeRange const& range, Args&&... args) noexcept
@@ -68,11 +45,6 @@ public:
 	}
 
 private:
-	static bool rangeBelow(SizeRange const& lhs, SizeRange const& rhs) noexcept
-	{
-		return lhs.last < rhs.first;
-	}
-
 	DelegateType delegate;
 };
 
