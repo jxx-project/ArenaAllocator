@@ -10,9 +10,9 @@
 
 namespace ArenaAllocator {
 
-Pool::Pool(Range const& range, std::size_t nChunks, Logger const& logger) noexcept : range{range}, logger{logger}, hwm{0}
+Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept : range{range}, logger{logger}, hwm{0}
 {
-	logger.log("Pool::Pool(Range{%ld, %ld}, %ld)\n", range.first, range.last, nChunks);
+	logger.log("Pool::Pool(SizeRange{%ld, %ld}, %ld)\n", range.first, range.last, nChunks);
 	const std::size_t wordsPerChunk{(range.last + sizeof(WordType) - 1U) / sizeof(WordType)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
@@ -22,7 +22,7 @@ Pool::Pool(Range const& range, std::size_t nChunks, Logger const& logger) noexce
 
 Pool::~Pool() noexcept
 {
-	logger.log("Pool::~Pool() Range{%ld, %ld} [hwm %ld]\n", range.first, range.last, hwm);
+	logger.log("Pool::~Pool() SizeRange{%ld, %ld} [hwm %ld]\n", range.first, range.last, hwm);
 }
 
 

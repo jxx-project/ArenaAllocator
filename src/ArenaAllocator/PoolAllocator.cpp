@@ -25,9 +25,9 @@ void* PoolAllocator::malloc(std::size_t size) noexcept
 {
 	Timer timer;
 	void* result = nullptr;
-	Optional<Pool*> pool{pools.find(size)};
-	if (pool.hasValue()) {
-		result = pool.value()->allocate(size);
+	Pool* pool{pools.at(size)};
+	if (pool) {
+		result = pool->allocate(size);
 	}
 	if (!result) {
 		errno = ENOMEM;
@@ -65,16 +65,15 @@ void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
 	void* result = nullptr;
 	Optional<Pool::ListType::const_iterator> currentChunk{chunks.find(ptr)};
 	if (currentChunk.hasValue()) {
-		Optional<Pool*> newArena{pools.find(size)};
-		if (newArena.hasValue()) {
-			Pool* currentArenaPtr{currentChunk.value()->pool};
-			Pool* newArenaPtr{newArena.value()};
-			if (newArenaPtr == currentArenaPtr) {
+		Pool* newPool{pools.at(size)};
+		if (newPool) {
+			Pool* currentPool{currentChunk.value()->pool};
+			if (newPool == currentPool) {
 				result = ptr;
 			} else {
-				result = newArenaPtr->allocate(size);
+				result = newPool->allocate(size);
 				std::memcpy(result, currentChunk.value()->data, std::min(currentChunk.value()->allocated, size));
-				currentArenaPtr->deallocate(currentChunk.value());
+				currentPool->deallocate(currentChunk.value());
 			}
 		}
 	}

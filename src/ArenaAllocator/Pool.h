@@ -11,6 +11,7 @@
 #include "ArenaAllocator/Chunk.h"
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
+#include "ArenaAllocator/SizeRange.h"
 #include <cstdint>
 #include <list>
 #include <vector>
@@ -20,16 +21,10 @@ namespace ArenaAllocator {
 class Pool
 {
 public:
-	struct Range
-	{
-		std::size_t first;
-		std::size_t last;
-	};
-
 	using WordType = long;
 	using ListType = std::list<Chunk, PassThroughCXXAllocator<Chunk>>;
 
-	Pool(Range const& range, std::size_t nChunks, Logger const& logger) noexcept;
+	Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept;
 	Pool(Pool const& other) = delete;
 	Pool& operator=(Pool const& other) = delete;
 	~Pool() noexcept;
@@ -51,7 +46,7 @@ public:
 
 private:
 	using StorageType = std::vector<WordType, PassThroughCXXAllocator<WordType>>;
-	const Range range;
+	const SizeRange range;
 	StorageType storage;
 	ListType free;
 	ListType allocated;
