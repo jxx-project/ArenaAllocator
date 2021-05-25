@@ -65,5 +65,6 @@ T* SizeRangeMap<T>::at(std::size_t size) noexcept
 }
 
 template class SizeRangeMap<Pool>;
+template class SizeRangeMap<std::size_t>;
 
 } // namespace ArenaAllocator

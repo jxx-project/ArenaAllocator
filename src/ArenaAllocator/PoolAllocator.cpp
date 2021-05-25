@@ -39,9 +39,9 @@ void* PoolAllocator::malloc(std::size_t size) noexcept
 void PoolAllocator::free(void* ptr) noexcept
 {
 	Timer timer;
-	Optional<Pool::ListType::const_iterator> chunk{chunks.find(ptr)};
-	if (chunk.hasValue()) {
-		chunk.value()->pool->deallocate(chunk.value());
+	Pool::ListType::const_iterator const* chunk{chunks.at(ptr)};
+	if (chunk) {
+		(*chunk)->pool->deallocate(*chunk);
 	}
 	logger.log("PoolAllocator::free(%p) [%ld ns]\n", ptr, timer.getNanoseconds());
 }
@@ -63,17 +63,17 @@ void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
 {
 	Timer timer;
 	void* result = nullptr;
-	Optional<Pool::ListType::const_iterator> currentChunk{chunks.find(ptr)};
-	if (currentChunk.hasValue()) {
+	Pool::ListType::const_iterator const* currentChunk{chunks.at(ptr)};
+	if (currentChunk) {
 		Pool* newPool{pools.at(size)};
 		if (newPool) {
-			Pool* currentPool{currentChunk.value()->pool};
+			Pool* currentPool{(*currentChunk)->pool};
 			if (newPool == currentPool) {
 				result = ptr;
 			} else {
 				result = newPool->allocate(size);
-				std::memcpy(result, currentChunk.value()->data, std::min(currentChunk.value()->allocated, size));
-				currentPool->deallocate(currentChunk.value());
+				std::memcpy(result, (*currentChunk)->data, std::min((*currentChunk)->allocatedSize, size));
+				currentPool->deallocate(*currentChunk);
 			}
 		}
 	}

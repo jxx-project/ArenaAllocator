@@ -20,7 +20,7 @@ public:
 	ConsoleLogger(Logger const&) = delete;
 	ConsoleLogger& operator=(ConsoleLogger const&) = delete;
 	virtual ~ConsoleLogger() noexcept;
-	virtual void log(const char* fmt, ...) const noexcept override;
+	virtual void log(char const* fmt, ...) const noexcept override;
 	virtual bool isActive() const noexcept override;
 	virtual void setActive(bool active) noexcept override;
 

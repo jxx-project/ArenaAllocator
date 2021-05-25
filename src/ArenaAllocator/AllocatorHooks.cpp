@@ -34,7 +34,7 @@ private:
 
 	ConsoleLogger logger;
 	PassThroughAllocator passThroughAllocator{logger};
-	Allocator* activeAllocator{&passThroughAllocator};
+	Allocator* activeAllocator{&poolAllocator};
 	StaticConfiguration configuration{activeAllocator, logger};
 	PoolAllocator poolAllocator{configuration, logger};
 };

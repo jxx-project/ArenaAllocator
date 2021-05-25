@@ -33,7 +33,7 @@ void* Pool::allocate(std::size_t size) noexcept
 		result = nullptr;
 	} else {
 		allocated.splice(allocated.begin(), free, free.begin());
-		allocated.front().allocated = size;
+		allocated.front().allocatedSize = size;
 		hwm = std::max(hwm, allocated.size());
 		result = allocated.front().data;
 	}
@@ -42,9 +42,9 @@ void* Pool::allocate(std::size_t size) noexcept
 
 void Pool::deallocate(ListType::const_iterator it) noexcept
 {
-	if (it->allocated) {
+	if (it->allocatedSize) {
 		free.splice(free.begin(), allocated, it);
-		free.front().allocated = 0;
+		free.front().allocatedSize = 0;
 	}
 }
 

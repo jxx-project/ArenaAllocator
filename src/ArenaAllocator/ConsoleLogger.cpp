@@ -18,7 +18,7 @@ ConsoleLogger::~ConsoleLogger() noexcept
 {
 }
 
-void ConsoleLogger::log(const char* fmt, ...) const noexcept
+void ConsoleLogger::log(char const* fmt, ...) const noexcept
 {
 	if (active) {
 		std::va_list argp;
@@ -37,7 +37,7 @@ void ConsoleLogger::setActive(bool active) noexcept
 	this->active = active;
 }
 
-void ConsoleLogger::write(const char* fmt, std::va_list argp) const noexcept
+void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
 {
 	std::vfprintf(stderr, fmt, argp);
 }

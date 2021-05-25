@@ -10,7 +10,6 @@
 
 #include "ArenaAllocator/Chunk.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/Optional.h"
 #include "ArenaAllocator/PoolMap.h"
 #include <list>
 #include <unordered_map>
@@ -21,18 +20,18 @@ class ChunkMap
 {
 public:
 	ChunkMap(PoolMap const& pools, Logger const& logger) noexcept;
-	Optional<Pool::ListType::const_iterator> find(void* ptr) const noexcept;
+	Pool::ListType::const_iterator const* at(void* ptr) const noexcept;
 
 private:
-	using MapType = std::unordered_map<
+	using DelegateType = std::unordered_map<
 		void*,
 		Pool::ListType::const_iterator,
 		std::hash<void*>,
 		std::equal_to<void*>,
-		PassThroughCXXAllocator<std::pair<const void*, Pool::ListType::const_iterator>>>;
+		PassThroughCXXAllocator<std::pair<void const*, Pool::ListType::const_iterator>>>;
 
 	Logger const& logger;
-	MapType chunks;
+	DelegateType delegate;
 };
 
 } // namespace ArenaAllocator

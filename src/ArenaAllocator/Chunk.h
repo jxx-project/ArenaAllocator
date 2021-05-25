@@ -18,7 +18,7 @@ struct Chunk
 {
 	void* data;
 	Pool* pool;
-	std::size_t allocated;
+	std::size_t allocatedSize;
 };
 
 } // namespace ArenaAllocator
