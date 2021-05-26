@@ -28,6 +28,7 @@ Pool::~Pool() noexcept
 
 void* Pool::allocate(std::size_t size) noexcept
 {
+	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
 	if (free.empty()) {
 		result = nullptr;
@@ -42,6 +43,7 @@ void* Pool::allocate(std::size_t size) noexcept
 
 void Pool::deallocate(ListType::const_iterator it) noexcept
 {
+	std::lock_guard<std::mutex> guard(mutex);
 	if (it->allocatedSize) {
 		free.splice(free.begin(), allocated, it);
 		free.front().allocatedSize = 0;

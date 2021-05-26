@@ -15,6 +15,7 @@ namespace ArenaAllocator {
 PoolAllocator::PoolAllocator(Configuration const& configuration, Logger const& logger) noexcept :
 	logger{logger}, pools{configuration, logger}, chunks{pools, logger}
 {
+	logger.log("PoolAllocator::PoolAllocator() ctor");
 }
 
 PoolAllocator::~PoolAllocator() noexcept

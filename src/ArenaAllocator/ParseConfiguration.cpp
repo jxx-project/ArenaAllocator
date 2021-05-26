@@ -1,0 +1,174 @@
+#include "ArenaAllocator/ParseConfiguration.h"
+#include <cstdio>
+#include <cstring>
+
+namespace ArenaAllocator {
+
+ParseConfiguration::ParseConfiguration(
+	char const* str,
+	Optional<Configuration::StringType>& className,
+	Optional<Configuration::PoolMapType>& pools) noexcept :
+	current{str}, className{className}, pools{pools}
+{
+	if (!parseDelimiter("{") == '{') {
+		raiseError("Expected '{' at configuration string begin");
+	}
+	char delimiter{parseDelimiter("}")};
+	while (delimiter != '}') {
+		char const* configItem{parseIdentifier()};
+		if (strEqual(configItem, "pools")) {
+			if (!parseDelimiter(":")) {
+				raiseError("Expected ':' after item identifier");
+			}
+			parsePoolMap();
+		} else if (strEqual(configItem, "class")) {
+			if (!parseDelimiter(":")) {
+				raiseError("Expected ':' after item identifier");
+			}
+			char const* classNameBegin{parseIdentifier()};
+			if (className.hasValue()) {
+				raiseError("Duplicate allocator class item");
+			}
+			className.emplace(classNameBegin, current);
+		} else {
+			raiseError("Unexpected configuration item");
+		}
+		if (!(delimiter = parseDelimiter(",}"))) {
+			raiseError("Expected ',' configuration item delimiter.");
+		}
+	}
+	while (isSpace(*current)) {
+		++current;
+	}
+	if (*current) {
+		raiseError("Unexpected character after '}' at configuration string end");
+	}
+}
+
+void ParseConfiguration::parsePoolMap() noexcept
+{
+	if (pools.hasValue()) {
+		raiseError("Duplicate pools item");
+	}
+	pools.emplace();
+	if (!parseDelimiter("{") == '{') {
+		raiseError("Expected '{' at pool configuration begin");
+	}
+	char delimiter{parseDelimiter("}")};
+	while (delimiter != '}') {
+		parsePool();
+		if (!(delimiter = parseDelimiter(",}"))) {
+			raiseError("Expected ',' pool map element delimiter");
+		}
+	}
+}
+
+void ParseConfiguration::parsePool() noexcept
+{
+	const SizeRange range{parseSizeRange()};
+	if (!parseDelimiter(":") == ':') {
+		raiseError("Expected ':' at pool configuration begin");
+	}
+	std::size_t nChunks{parseSize()};
+	if (!pools.value().emplace(range, nChunks)) {
+		raiseError("Expected disjunct pool size ranges");
+	}
+}
+
+SizeRange ParseConfiguration::parseSizeRange() noexcept
+{
+	SizeRange result;
+	while (isSpace(*current)) {
+		++current;
+	}
+	if (!parseDelimiter("[")) {
+		raiseError("Expexted '[' at size range begin");
+	}
+	result.first = parseSize();
+	if (!parseDelimiter(",")) {
+		raiseError("Expexted ',' separating size range first and last");
+	}
+	result.last = parseSize();
+	if (!parseDelimiter("]")) {
+		raiseError("Expexted ']' at size range end");
+	}
+	if (result.first > result.last) {
+		raiseError("Size range first grater than last");
+	}
+	return result;
+}
+
+// Generic primitives
+
+char ParseConfiguration::parseDelimiter(char const* delimiters) noexcept
+{
+	while (isSpace(*current)) {
+		++current;
+	}
+	char result{0};
+	for (char const* p{delimiters}; *p; ++p) {
+		if (*current == *p) {
+			result = *current++;
+			break;
+		}
+	}
+	return result;
+}
+
+char const* ParseConfiguration::parseIdentifier() noexcept
+{
+	while (isSpace(*current)) {
+		++current;
+	}
+	char const* result{current};
+	while (isAlpha(*current)) {
+		++current;
+	}
+	return result;
+}
+
+std::size_t ParseConfiguration::parseSize() noexcept
+{
+	char* end;
+	std::size_t result = std::strtoul(current, &end, 10);
+	if (current == end) {
+		raiseError("Invalid size value");
+	}
+	current = end;
+	return result;
+}
+
+bool ParseConfiguration::strEqual(char const* strConfig, char const* reference) const noexcept
+{
+	bool result{true};
+	while (strConfig != current && *reference) {
+		if (*strConfig != *reference) {
+			result = false;
+			break;
+		}
+		++strConfig;
+		++reference;
+	}
+	if (strConfig != current || *reference) {
+		result = false;
+	}
+	return result;
+}
+
+bool ParseConfiguration::isSpace(const char c) noexcept
+{
+	return c == ' ' || c == '\t' || c == '\n';
+}
+
+bool ParseConfiguration::isAlpha(const char c) noexcept
+{
+	return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z';
+}
+
+void ParseConfiguration::raiseError(char const* message) noexcept
+{
+	std::fprintf(stderr, "ParseConfiguration: %s\n", message);
+	std::abort();
+}
+
+} // namespace ArenaAllocator

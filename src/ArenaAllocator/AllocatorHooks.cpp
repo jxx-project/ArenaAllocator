@@ -5,23 +5,43 @@
 //
 
 
+#include "ArenaAllocator/AllocatorFactory.h"
 #include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/EnvironmentConfiguration.h"
 #include "ArenaAllocator/PassThroughAllocator.h"
 #include "ArenaAllocator/PoolAllocator.h"
-#include "ArenaAllocator/StaticConfiguration.h"
 
 namespace ArenaAllocator {
 
-class AllocatorHooks
+class AllocatorHooks : public AllocatorFactory
 {
 public:
 	AllocatorHooks(AllocatorHooks const&) = delete;
 	AllocatorHooks& operator=(AllocatorHooks const&) = delete;
+
 	static AllocatorHooks& getInstance() noexcept
 	{
 		static AllocatorHooks instance;
 		return instance;
 	}
+
+	virtual Allocator* getAllocator(Configuration::StringType const& className) noexcept override
+	{
+		if (className == "PassThroughAllocator") {
+			if (!passThroughAllocator.hasValue()) {
+				passThroughAllocator.emplace(logger);
+			}
+			return &passThroughAllocator.value();
+		} else if (className == "PoolAllocator") {
+			if (!poolAllocator.hasValue()) {
+				poolAllocator.emplace(configuration, logger);
+			}
+			return &poolAllocator.value();
+		} else {
+			return nullptr;
+		}
+	}
+
 	Allocator& getActiveAllocator() noexcept
 	{
 		return *activeAllocator;
@@ -33,10 +53,10 @@ private:
 	}
 
 	ConsoleLogger logger;
-	PassThroughAllocator passThroughAllocator{logger};
-	Allocator* activeAllocator{&poolAllocator};
-	StaticConfiguration configuration{activeAllocator, logger};
-	PoolAllocator poolAllocator{configuration, logger};
+	Allocator* activeAllocator;
+	EnvironmentConfiguration configuration{*this, activeAllocator, logger};
+	Optional<PassThroughAllocator> passThroughAllocator;
+	Optional<PoolAllocator> poolAllocator;
 };
 
 extern "C" void* malloc(std::size_t size)

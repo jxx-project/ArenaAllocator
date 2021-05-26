@@ -18,6 +18,7 @@ namespace ArenaAllocator {
 
 PassThroughAllocator::PassThroughAllocator(Logger const& logger) noexcept : logger{logger}
 {
+	logger.log("PassThroughAllocator::PassThroughAllocator() ctor");
 }
 
 PassThroughAllocator::~PassThroughAllocator() noexcept

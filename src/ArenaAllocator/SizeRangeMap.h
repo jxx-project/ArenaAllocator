@@ -37,11 +37,11 @@ public:
 	T* at(std::size_t size) noexcept;
 
 	template<typename... Args>
-	void emplace(SizeRange const& range, Args&&... args) noexcept
+	bool emplace(SizeRange const& range, Args&&... args) noexcept
 	{
-		std::pair<typename DelegateType::iterator, bool> emplaceResult{delegate.emplace(
-			std::piecewise_construct, std::forward_as_tuple(range), std::forward_as_tuple(std::forward<Args>(args)...))};
-		assert(emplaceResult.second);
+		return delegate
+			.emplace(std::piecewise_construct, std::forward_as_tuple(range), std::forward_as_tuple(std::forward<Args>(args)...))
+			.second;
 	}
 
 private:

@@ -9,6 +9,7 @@
 #define ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
 
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
+#include "ArenaAllocator/SizeRangeMap.h"
 #include <cstdint>
 #include <map>
 
@@ -17,11 +18,12 @@ namespace ArenaAllocator {
 class Configuration
 {
 public:
-	using MapType = std::
-		map<std::size_t, std::size_t, std::less<std::size_t>, PassThroughCXXAllocator<std::pair<const std::size_t, std::size_t>>>;
+	using PoolMapType = SizeRangeMap<std::size_t>;
+	using StringType = std::basic_string<char, std::char_traits<char>, PassThroughCXXAllocator<char>>;
 
 	virtual ~Configuration() noexcept = default;
-	virtual MapType const& getArenas() const noexcept = 0;
+	virtual StringType const& getClass() const noexcept = 0;
+	virtual PoolMapType const& getPools() const noexcept = 0;
 };
 
 } // namespace ArenaAllocator

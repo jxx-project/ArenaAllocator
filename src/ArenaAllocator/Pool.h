@@ -14,6 +14,7 @@
 #include "ArenaAllocator/SizeRange.h"
 #include <cstdint>
 #include <list>
+#include <mutex>
 #include <vector>
 
 namespace ArenaAllocator {
@@ -47,6 +48,7 @@ public:
 private:
 	using StorageType = std::vector<WordType, PassThroughCXXAllocator<WordType>>;
 	const SizeRange range;
+	std::mutex mutex;
 	StorageType storage;
 	ListType free;
 	ListType allocated;

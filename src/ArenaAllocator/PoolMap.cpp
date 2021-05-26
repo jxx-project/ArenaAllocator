@@ -11,29 +11,16 @@ namespace ArenaAllocator {
 
 PoolMap::PoolMap(Configuration const& configuration, Logger const& logger) noexcept : logger{logger}
 {
-	SizeRange range{0, 0};
-	std::size_t nChunks{0};
-	std::size_t chunkSize{0};
-	for (Configuration::MapType::value_type const& pool : configuration.getArenas()) {
-		if (pool.first > range.last) {
-			if (nChunks) {
-				insert(range, nChunks);
-				nChunks = 0;
-				range.first = range.last + 1;
-			}
-			range.last = ((pool.first + sizeof(Pool::WordType) - 1U) / sizeof(Pool::WordType)) * sizeof(Pool::WordType);
-		}
-		nChunks += pool.second;
-		chunkSize = pool.first;
-	}
-	if (nChunks) {
-		insert(range, nChunks);
+	for (Configuration::PoolMapType::value_type const& pool : configuration.getPools()) {
+		insert(pool.first, pool.second);
 	}
 }
 
 void PoolMap::insert(SizeRange const& range, std::size_t nChunks) noexcept
 {
-	pools.emplace(range, range, nChunks, logger);
+	if (!pools.emplace(range, range, nChunks, logger)) {
+		logger.log("PoolMap::insert(Range{%ul, %ul}, %ul) discarded due to range overlap", range.first, range.last, nChunks);
+	}
 }
 
 Pool* PoolMap::at(std::size_t chunkSize) noexcept

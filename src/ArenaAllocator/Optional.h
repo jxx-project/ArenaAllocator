@@ -37,7 +37,7 @@ public:
 	}
 
 	template<typename... Args>
-	void emplace(Args... args) noexcept
+	void emplace(Args&&... args) noexcept
 	{
 		new (&val) T{std::forward<Args>(args)...};
 		hasVal = true;
@@ -49,6 +49,11 @@ public:
 	}
 
 	T const& value() const noexcept
+	{
+		return val;
+	}
+
+	T& value() noexcept
 	{
 		return val;
 	}
