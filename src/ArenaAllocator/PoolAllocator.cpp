@@ -55,15 +55,15 @@ void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 	void* result = nullptr;
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
-		result = allocate(size);
+		result = allocate(nmemb * size);
 		if (result) {
-			std::memset(result, 0, size);
+			std::memset(result, 0, nmemb * size);
 		}
 		logger.log("PoolAllocator::calloc(%ld, %ld) -> %p [%ld ns]\n", nmemb, size, result, timer.getNanoseconds());
 	} else {
-		result = allocate(size);
+		result = allocate(nmemb * size);
 		if (result) {
-			std::memset(result, 0, size);
+			std::memset(result, 0, nmemb * size);
 		}
 	}
 	if (!result) {
