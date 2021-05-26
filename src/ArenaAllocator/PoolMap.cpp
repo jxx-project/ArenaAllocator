@@ -19,7 +19,7 @@ PoolMap::PoolMap(Configuration const& configuration, Logger const& logger) noexc
 void PoolMap::insert(SizeRange const& range, std::size_t nChunks) noexcept
 {
 	if (!pools.emplace(range, range, nChunks, logger)) {
-		logger.log("PoolMap::insert(Range{%ul, %ul}, %ul) discarded due to range overlap", range.first, range.last, nChunks);
+		logger.error("PoolMap::insert(Range{%ul, %ul}, %ul) discarded due to range overlap", range.first, range.last, nChunks);
 	}
 }
 

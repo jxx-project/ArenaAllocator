@@ -22,7 +22,8 @@ EnvironmentConfiguration::EnvironmentConfiguration(
 		fprintf(stderr, "EnvironmentConfiguration: Failed to read environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
 		std::abort();
 	}
-	ParseConfiguration(env, className, pools);
+	ParseConfiguration(env, className, pools, logLevel);
+	logger.setLevel(getLogLevel());
 	if (!(activeAllocator = allocatorFactory.getAllocator(getClass()))) {
 		fprintf(stderr, "EnvironmentConfiguration: Unexpected allocator class\n");
 		std::abort();
@@ -51,6 +52,15 @@ Configuration::PoolMapType const& EnvironmentConfiguration::getPools() const noe
 		std::abort();
 	}
 	return pools.value();
+}
+
+LogLevel const& EnvironmentConfiguration::getLogLevel() const noexcept
+{
+	if (!logLevel.hasValue()) {
+		fprintf(stderr, "EnvironmentConfiguration: Missing log level item in environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
+		std::abort();
+	}
+	return logLevel.value();
 }
 
 } // namespace ArenaAllocator

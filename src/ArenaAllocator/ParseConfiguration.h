@@ -9,6 +9,7 @@
 #define ARENA_ALLOCATOR_PARSE_CONFIGURATION_H_INCLUDED
 
 #include "ArenaAllocator/Configuration.h"
+#include "ArenaAllocator/LogLevel.h"
 #include "ArenaAllocator/Optional.h"
 #include "ArenaAllocator/SizeRange.h"
 
@@ -20,9 +21,11 @@ public:
 	ParseConfiguration(
 		char const* str,
 		Optional<Configuration::StringType>& className,
-		Optional<Configuration::PoolMapType>& pools) noexcept;
+		Optional<Configuration::PoolMapType>& pools,
+		Optional<LogLevel>& logLevel) noexcept;
 
 private:
+	LogLevel parseLogLevel() noexcept;
 	SizeRange parseSizeRange() noexcept;
 	void parsePool() noexcept;
 	void parsePoolMap() noexcept;
@@ -39,6 +42,7 @@ private:
 	char const* current;
 	Optional<Configuration::StringType>& className;
 	Optional<Configuration::PoolMapType>& pools;
+	Optional<LogLevel>& logLevel;
 };
 
 } // namespace ArenaAllocator

@@ -20,6 +20,7 @@ class PoolMap
 {
 public:
 	PoolMap(Configuration const& configuration, Logger const& logger) noexcept;
+
 	Pool* at(std::size_t chunkSize) noexcept;
 	std::size_t nChunks() const noexcept;
 

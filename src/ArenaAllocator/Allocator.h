@@ -16,6 +16,7 @@ class Allocator
 {
 public:
 	virtual ~Allocator() noexcept = default;
+
 	virtual void* malloc(std::size_t size) noexcept = 0;
 	virtual void free(void* ptr) noexcept = 0;
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept = 0;

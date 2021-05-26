@@ -25,6 +25,7 @@ public:
 
 	PassThroughCXXAllocator() noexcept = default;
 	PassThroughCXXAllocator(const PassThroughCXXAllocator&) noexcept = default;
+
 	template<typename U>
 	PassThroughCXXAllocator(const PassThroughCXXAllocator<U>& other) noexcept
 	{

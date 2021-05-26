@@ -7,8 +7,9 @@ namespace ArenaAllocator {
 ParseConfiguration::ParseConfiguration(
 	char const* str,
 	Optional<Configuration::StringType>& className,
-	Optional<Configuration::PoolMapType>& pools) noexcept :
-	current{str}, className{className}, pools{pools}
+	Optional<Configuration::PoolMapType>& pools,
+	Optional<LogLevel>& logLevel) noexcept :
+	current{str}, className{className}, pools{pools}, logLevel{logLevel}
 {
 	if (!parseDelimiter("{") == '{') {
 		raiseError("Expected '{' at configuration string begin");
@@ -25,11 +26,19 @@ ParseConfiguration::ParseConfiguration(
 			if (!parseDelimiter(":")) {
 				raiseError("Expected ':' after item identifier");
 			}
-			char const* classNameBegin{parseIdentifier()};
 			if (className.hasValue()) {
 				raiseError("Duplicate allocator class item");
 			}
-			className.emplace(classNameBegin, current);
+			char const* classNameStr{parseIdentifier()};
+			className.emplace(classNameStr, current);
+		} else if (strEqual(configItem, "logLevel")) {
+			if (!parseDelimiter(":")) {
+				raiseError("Expected ':' after item identifier");
+			}
+			if (logLevel.hasValue()) {
+				raiseError("Duplicate allocator class item");
+			}
+			logLevel.emplace(parseLogLevel());
 		} else {
 			raiseError("Unexpected configuration item");
 		}
@@ -43,6 +52,47 @@ ParseConfiguration::ParseConfiguration(
 	if (*current) {
 		raiseError("Unexpected character after '}' at configuration string end");
 	}
+}
+
+LogLevel ParseConfiguration::parseLogLevel() noexcept
+{
+	LogLevel result;
+	char const* logLevelStr{parseIdentifier()};
+	if (strEqual(logLevelStr, "NONE")) {
+		result = LogLevel::NONE;
+	} else if (strEqual(logLevelStr, "ERROR")) {
+		result = LogLevel::ERROR;
+	} else if (strEqual(logLevelStr, "INFO")) {
+		result = LogLevel::INFO;
+	} else if (strEqual(logLevelStr, "DEBUG")) {
+		result = LogLevel::DEBUG;
+	} else {
+		raiseError("Invalid log level");
+	}
+	return result;
+}
+
+SizeRange ParseConfiguration::parseSizeRange() noexcept
+{
+	SizeRange result;
+	while (isSpace(*current)) {
+		++current;
+	}
+	if (!parseDelimiter("[")) {
+		raiseError("Expexted '[' at size range begin");
+	}
+	result.first = parseSize();
+	if (!parseDelimiter(",")) {
+		raiseError("Expexted ',' separating size range first and last");
+	}
+	result.last = parseSize();
+	if (!parseDelimiter("]")) {
+		raiseError("Expexted ']' at size range end");
+	}
+	if (result.first > result.last) {
+		raiseError("Size range first grater than last");
+	}
+	return result;
 }
 
 void ParseConfiguration::parsePoolMap() noexcept
@@ -73,29 +123,6 @@ void ParseConfiguration::parsePool() noexcept
 	if (!pools.value().emplace(range, nChunks)) {
 		raiseError("Expected disjunct pool size ranges");
 	}
-}
-
-SizeRange ParseConfiguration::parseSizeRange() noexcept
-{
-	SizeRange result;
-	while (isSpace(*current)) {
-		++current;
-	}
-	if (!parseDelimiter("[")) {
-		raiseError("Expexted '[' at size range begin");
-	}
-	result.first = parseSize();
-	if (!parseDelimiter(",")) {
-		raiseError("Expexted ',' separating size range first and last");
-	}
-	result.last = parseSize();
-	if (!parseDelimiter("]")) {
-		raiseError("Expexted ']' at size range end");
-	}
-	if (result.first > result.last) {
-		raiseError("Size range first grater than last");
-	}
-	return result;
 }
 
 // Generic primitives

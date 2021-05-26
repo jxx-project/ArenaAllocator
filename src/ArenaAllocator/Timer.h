@@ -16,6 +16,7 @@ class Timer
 {
 public:
 	Timer() noexcept;
+
 	long getNanoseconds() const noexcept;
 
 private:

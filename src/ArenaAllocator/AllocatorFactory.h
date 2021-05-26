@@ -17,6 +17,7 @@ class AllocatorFactory
 {
 public:
 	virtual ~AllocatorFactory() noexcept = default;
+
 	virtual Allocator* getAllocator(Configuration::StringType const& className) noexcept = 0;
 };
 

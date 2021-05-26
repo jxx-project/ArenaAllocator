@@ -20,13 +20,17 @@ public:
 	ConsoleLogger(Logger const&) = delete;
 	ConsoleLogger& operator=(ConsoleLogger const&) = delete;
 	virtual ~ConsoleLogger() noexcept;
+
 	virtual void log(char const* fmt, ...) const noexcept override;
-	virtual bool isActive() const noexcept override;
-	virtual void setActive(bool active) noexcept override;
+	virtual void error(char const* fmt, ...) const noexcept override;
+	virtual void info(char const* fmt, ...) const noexcept override;
+	virtual void debug(char const* fmt, ...) const noexcept override;
+	virtual bool isLevel(LogLevel level) const noexcept override;
+	virtual void setLevel(LogLevel level) noexcept override;
 
 private:
 	void write(const char* fmt, std::va_list argp) const noexcept;
-	bool active;
+	LogLevel logLevel;
 };
 
 } // namespace ArenaAllocator

@@ -21,6 +21,7 @@ public:
 	PassThroughAllocator(PassThroughAllocator const&) = delete;
 	PassThroughAllocator& operator=(PassThroughAllocator const&) = delete;
 	virtual ~PassThroughAllocator() noexcept;
+
 	virtual void* malloc(std::size_t size) noexcept override;
 	virtual void free(void* ptr) noexcept override;
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;

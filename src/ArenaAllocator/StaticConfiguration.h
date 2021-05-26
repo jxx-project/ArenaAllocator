@@ -21,6 +21,7 @@ public:
 	StaticConfiguration(StaticConfiguration const&) = delete;
 	StaticConfiguration& operator=(StaticConfiguration const&) = delete;
 	~StaticConfiguration() noexcept;
+
 	virtual Configuration::PoolMapType const& getPools() const noexcept override;
 
 private:

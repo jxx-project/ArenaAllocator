@@ -8,6 +8,7 @@
 #ifndef ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
 #define ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
 
+#include "ArenaAllocator/LogLevel.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/SizeRangeMap.h"
 #include <cstdint>
@@ -22,8 +23,10 @@ public:
 	using StringType = std::basic_string<char, std::char_traits<char>, PassThroughCXXAllocator<char>>;
 
 	virtual ~Configuration() noexcept = default;
+
 	virtual StringType const& getClass() const noexcept = 0;
 	virtual PoolMapType const& getPools() const noexcept = 0;
+	virtual LogLevel const& getLogLevel() const noexcept = 0;
 };
 
 } // namespace ArenaAllocator

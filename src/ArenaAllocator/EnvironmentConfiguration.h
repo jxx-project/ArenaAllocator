@@ -26,12 +26,14 @@ public:
 
 	virtual Configuration::StringType const& getClass() const noexcept override;
 	virtual Configuration::PoolMapType const& getPools() const noexcept override;
+	virtual LogLevel const& getLogLevel() const noexcept override;
 
 private:
 	Allocator*& activeAllocator;
 	Logger& logger;
 	Optional<Configuration::StringType> className;
 	Optional<Configuration::PoolMapType> pools;
+	Optional<LogLevel> logLevel;
 };
 
 } // namespace ArenaAllocator

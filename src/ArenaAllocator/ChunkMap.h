@@ -20,6 +20,7 @@ class ChunkMap
 {
 public:
 	ChunkMap(PoolMap const& pools, Logger const& logger) noexcept;
+
 	Pool::ListType::const_iterator const* at(void* ptr) const noexcept;
 
 private:

@@ -24,6 +24,7 @@ public:
 	PoolAllocator(PoolAllocator const&) = delete;
 	void operator=(PoolAllocator const&) = delete;
 	virtual ~PoolAllocator() noexcept;
+
 	virtual void* malloc(std::size_t size) noexcept override;
 	virtual void free(void* ptr) noexcept override;
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
@@ -31,6 +32,10 @@ public:
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
 
 private:
+	void* allocate(std::size_t size) noexcept;
+	void deallocate(void* ptr) noexcept;
+	void* reallocate(void* ptr, std::size_t size) noexcept;
+
 	Logger const& logger;
 	PoolMap pools;
 	const ChunkMap chunks;

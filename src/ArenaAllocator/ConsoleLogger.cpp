@@ -10,7 +10,7 @@
 
 namespace ArenaAllocator {
 
-ConsoleLogger::ConsoleLogger() noexcept : active{true}
+ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
 {
 }
 
@@ -20,21 +20,50 @@ ConsoleLogger::~ConsoleLogger() noexcept
 
 void ConsoleLogger::log(char const* fmt, ...) const noexcept
 {
-	if (active) {
+	std::va_list argp;
+	va_start(argp, fmt);
+	write(fmt, argp);
+	va_end(argp);
+}
+
+void ConsoleLogger::error(char const* fmt, ...) const noexcept
+{
+	if (isLevel(LogLevel::ERROR)) {
 		std::va_list argp;
 		va_start(argp, fmt);
 		write(fmt, argp);
 		va_end(argp);
 	}
 }
-bool ConsoleLogger::isActive() const noexcept
+
+void ConsoleLogger::info(char const* fmt, ...) const noexcept
 {
-	return active;
+	if (isLevel(LogLevel::INFO)) {
+		std::va_list argp;
+		va_start(argp, fmt);
+		write(fmt, argp);
+		va_end(argp);
+	}
 }
 
-void ConsoleLogger::setActive(bool active) noexcept
+void ConsoleLogger::debug(char const* fmt, ...) const noexcept
 {
-	this->active = active;
+	if (isLevel(LogLevel::DEBUG)) {
+		std::va_list argp;
+		va_start(argp, fmt);
+		write(fmt, argp);
+		va_end(argp);
+	}
+}
+
+bool ConsoleLogger::isLevel(LogLevel level) const noexcept
+{
+	return logLevel >= level;
+}
+
+void ConsoleLogger::setLevel(LogLevel level) noexcept
+{
+	logLevel = level;
 }
 
 void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
