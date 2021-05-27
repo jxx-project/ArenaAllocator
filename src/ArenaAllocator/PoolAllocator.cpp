@@ -160,26 +160,30 @@ PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t nmemb, std::si
 PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t size) noexcept
 {
 	AllocateResult result{nullptr, 0, false};
-	Pool::ListType::const_iterator const* currentChunk{chunks.at(ptr)};
-	if (currentChunk) {
-		Pool* newPool{pools.at(size)};
-		if (newPool) {
-			Pool* currentPool{(*currentChunk)->pool};
-			if (newPool == currentPool) {
-				result.ptr = ptr;
-			} else {
-				if (result.ptr = newPool->allocate(size)) {
-					std::memcpy(result.ptr, (*currentChunk)->data, std::min((*currentChunk)->allocatedSize, size));
-					currentPool->deallocate(*currentChunk);
+	if (ptr) {
+		Pool::ListType::const_iterator const* currentChunk{chunks.at(ptr)};
+		if (currentChunk) {
+			Pool* newPool{pools.at(size)};
+			if (newPool) {
+				Pool* currentPool{(*currentChunk)->pool};
+				if (newPool == currentPool) {
+					result.ptr = ptr;
 				} else {
-					result.propagateErrno = ENOMEM;
+					if (result.ptr = newPool->allocate(size)) {
+						std::memcpy(result.ptr, (*currentChunk)->data, std::min((*currentChunk)->allocatedSize, size));
+						currentPool->deallocate(*currentChunk);
+					} else {
+						result.propagateErrno = ENOMEM;
+					}
 				}
 			}
+		} else if (delegate) {
+			result.ptr = delegate->realloc(ptr, size);
+			result.propagateErrno = errno;
+			result.fromDelegate = true;
 		}
-	} else if (delegate) {
-		result.ptr = delegate->realloc(ptr, size);
-		result.propagateErrno = errno;
-		result.fromDelegate = true;
+	} else {
+		result = allocate(size);
 	}
 	return result;
 }
@@ -187,27 +191,31 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t s
 PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	AllocateResult result{nullptr, 0, false};
-	Pool::ListType::const_iterator const* currentChunk{chunks.at(ptr)};
-	if (currentChunk) {
-		std::size_t totalSize{nmemb * size};
-		Pool* newPool{pools.at(totalSize)};
-		if (newPool) {
-			Pool* currentPool{(*currentChunk)->pool};
-			if (newPool == currentPool) {
-				result.ptr = ptr;
-			} else {
-				if (result.ptr = newPool->allocate(totalSize)) {
-					std::memcpy(result.ptr, (*currentChunk)->data, std::min((*currentChunk)->allocatedSize, totalSize));
-					currentPool->deallocate(*currentChunk);
+	if (ptr) {
+		Pool::ListType::const_iterator const* currentChunk{chunks.at(ptr)};
+		if (currentChunk) {
+			std::size_t totalSize{nmemb * size};
+			Pool* newPool{pools.at(totalSize)};
+			if (newPool) {
+				Pool* currentPool{(*currentChunk)->pool};
+				if (newPool == currentPool) {
+					result.ptr = ptr;
 				} else {
-					result.propagateErrno = ENOMEM;
+					if (result.ptr = newPool->allocate(totalSize)) {
+						std::memcpy(result.ptr, (*currentChunk)->data, std::min((*currentChunk)->allocatedSize, totalSize));
+						currentPool->deallocate(*currentChunk);
+					} else {
+						result.propagateErrno = ENOMEM;
+					}
 				}
 			}
+		} else if (delegate) {
+			result.ptr = delegate->reallocarray(ptr, nmemb, size);
+			result.propagateErrno = errno;
+			result.fromDelegate = true;
 		}
-	} else if (delegate) {
-		result.ptr = delegate->reallocarray(ptr, nmemb, size);
-		result.propagateErrno = errno;
-		result.fromDelegate = true;
+	} else {
+		result = allocate(nmemb, size);
 	}
 	return result;
 }
