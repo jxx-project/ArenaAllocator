@@ -33,8 +33,11 @@ public:
 			}
 			return &passThroughAllocator.value();
 		} else if (className == "PoolAllocator") {
+			if (!passThroughAllocator.hasValue()) {
+				passThroughAllocator.emplace(logger);
+			}
 			if (!poolAllocator.hasValue()) {
-				poolAllocator.emplace(configuration, logger);
+				poolAllocator.emplace(configuration, &passThroughAllocator.value(), logger);
 			}
 			return &poolAllocator.value();
 		} else {

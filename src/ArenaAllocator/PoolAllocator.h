@@ -20,7 +20,7 @@ namespace ArenaAllocator {
 class PoolAllocator : public Allocator
 {
 public:
-	PoolAllocator(Configuration const& configuration, Logger const& logger) noexcept;
+	PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& logger) noexcept;
 	PoolAllocator(PoolAllocator const&) = delete;
 	void operator=(PoolAllocator const&) = delete;
 	virtual ~PoolAllocator() noexcept;
@@ -32,10 +32,26 @@ public:
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
 
 private:
-	void* allocate(std::size_t size) noexcept;
-	void deallocate(void* ptr) noexcept;
-	void* reallocate(void* ptr, std::size_t size) noexcept;
+	struct AllocateResult
+	{
+		void* ptr;
+		int propagateErrno;
+		bool fromDelegate;
+	};
 
+	struct DeallocateResult
+	{
+		int propagateErrno;
+		bool fromDelegate;
+	};
+
+	AllocateResult allocate(std::size_t size) noexcept;
+	DeallocateResult deallocate(void* ptr) noexcept;
+	AllocateResult allocate(std::size_t nmemb, std::size_t size) noexcept;
+	AllocateResult reallocate(void* ptr, std::size_t size) noexcept;
+	AllocateResult reallocate(void* ptr, std::size_t nmemb, std::size_t size) noexcept;
+
+	Allocator* delegate;
 	Logger const& logger;
 	PoolMap pools;
 	const ChunkMap chunks;

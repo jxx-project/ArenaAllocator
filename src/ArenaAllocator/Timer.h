@@ -15,12 +15,14 @@ namespace ArenaAllocator {
 class Timer
 {
 public:
+	using ClockType = std::chrono::high_resolution_clock;
+
 	Timer() noexcept;
 
 	long getNanoseconds() const noexcept;
 
 private:
-	std::chrono::time_point<std::chrono::high_resolution_clock> startTime;
+	std::chrono::time_point<ClockType> startTime;
 };
 
 } // namespace ArenaAllocator
