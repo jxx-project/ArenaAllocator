@@ -45,9 +45,9 @@ private:
 		bool fromDelegate;
 	};
 
-	AllocateResult allocate(std::size_t size) noexcept;
+	AllocateResult allocate(std::size_t size, bool useDelegateRealloc = false) noexcept;
 	DeallocateResult deallocate(void* ptr) noexcept;
-	AllocateResult allocate(std::size_t nmemb, std::size_t size) noexcept;
+	AllocateResult allocate(std::size_t nmemb, std::size_t size, bool useDelegateReallocArray = false) noexcept;
 	AllocateResult reallocate(void* ptr, std::size_t size) noexcept;
 	AllocateResult reallocate(void* ptr, std::size_t nmemb, std::size_t size) noexcept;
 

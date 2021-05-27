@@ -9,6 +9,7 @@
 #include "ArenaAllocator/Timer.h"
 #include <cerrno>
 #include <cstring>
+#include <limits>
 
 namespace ArenaAllocator {
 
@@ -109,7 +110,7 @@ void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size
 	return result.ptr;
 }
 
-PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t size) noexcept
+PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t size, bool useDelegateRealloc) noexcept
 {
 	AllocateResult result{nullptr, 0, false};
 	Pool* pool{pools.at(size)};
@@ -118,7 +119,11 @@ PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t size) noexcept
 			result.propagateErrno = ENOMEM;
 		}
 	} else if (delegate) {
-		result.ptr = delegate->malloc(size);
+		if (useDelegateRealloc) {
+			result.ptr = delegate->realloc(nullptr, size);
+		} else {
+			result.ptr = delegate->malloc(size);
+		}
 		result.propagateErrno = errno;
 		result.fromDelegate = true;
 	}
@@ -138,21 +143,31 @@ PoolAllocator::DeallocateResult PoolAllocator::deallocate(void* ptr) noexcept
 	return result;
 }
 
-PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t nmemb, std::size_t size) noexcept
+PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t nmemb, std::size_t size, bool useDelegateReallocArray) noexcept
 {
 	AllocateResult result{nullptr, 0, false};
-	std::size_t totalSize{nmemb * size};
-	Pool* pool{pools.at(totalSize)};
-	if (pool) {
-		if (result.ptr = pool->allocate(totalSize)) {
-			std::memset(result.ptr, 0, totalSize);
-		} else {
-			result.propagateErrno = ENOMEM;
+	if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
+		std::size_t totalSize{nmemb * size};
+		Pool* pool{pools.at(totalSize)};
+		if (pool) {
+			if (result.ptr = pool->allocate(totalSize)) {
+				std::memset(result.ptr, 0, totalSize);
+			} else {
+				result.propagateErrno = ENOMEM;
+			}
+		} else if (delegate) {
+			if (useDelegateReallocArray) {
+				result.ptr = delegate->reallocarray(nullptr, nmemb, size);
+			} else {
+				result.ptr = delegate->calloc(nmemb, size);
+			}
+			result.propagateErrno = errno;
+			result.fromDelegate = true;
 		}
-	} else if (delegate) {
-		result.ptr = delegate->calloc(nmemb, size);
-		result.propagateErrno = errno;
-		result.fromDelegate = true;
+	} else {
+		// nmemb * size would overflow
+		result.ptr = nullptr;
+		result.propagateErrno = ENOMEM;
 	}
 	return result;
 }
@@ -183,7 +198,7 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t s
 			result.fromDelegate = true;
 		}
 	} else {
-		result = allocate(size);
+		result = allocate(size, true);
 	}
 	return result;
 }
@@ -194,20 +209,26 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t n
 	if (ptr) {
 		Pool::ListType::const_iterator const* currentChunk{chunks.at(ptr)};
 		if (currentChunk) {
-			std::size_t totalSize{nmemb * size};
-			Pool* newPool{pools.at(totalSize)};
-			if (newPool) {
-				Pool* currentPool{(*currentChunk)->pool};
-				if (newPool == currentPool) {
-					result.ptr = ptr;
-				} else {
-					if (result.ptr = newPool->allocate(totalSize)) {
-						std::memcpy(result.ptr, (*currentChunk)->data, std::min((*currentChunk)->allocatedSize, totalSize));
-						currentPool->deallocate(*currentChunk);
+			if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
+				std::size_t totalSize{nmemb * size};
+				Pool* newPool{pools.at(totalSize)};
+				if (newPool) {
+					Pool* currentPool{(*currentChunk)->pool};
+					if (newPool == currentPool) {
+						result.ptr = ptr;
 					} else {
-						result.propagateErrno = ENOMEM;
+						if (result.ptr = newPool->allocate(totalSize)) {
+							std::memcpy(result.ptr, (*currentChunk)->data, std::min((*currentChunk)->allocatedSize, totalSize));
+							currentPool->deallocate(*currentChunk);
+						} else {
+							result.propagateErrno = ENOMEM;
+						}
 					}
 				}
+			} else {
+				// nmemb * size would overflow
+				result.ptr = nullptr;
+				result.propagateErrno = ENOMEM;
 			}
 		} else if (delegate) {
 			result.ptr = delegate->reallocarray(ptr, nmemb, size);
@@ -215,7 +236,7 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t n
 			result.fromDelegate = true;
 		}
 	} else {
-		result = allocate(nmemb, size);
+		result = allocate(nmemb, size, true);
 	}
 	return result;
 }
