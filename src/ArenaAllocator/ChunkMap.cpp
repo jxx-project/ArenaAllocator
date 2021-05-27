@@ -9,17 +9,17 @@
 
 namespace ArenaAllocator {
 
-ChunkMap::ChunkMap(PoolMap const& pools, Logger const& logger) noexcept : logger{logger}
+ChunkMap::ChunkMap(PoolMap<Pool> const& pools, Logger const& logger) noexcept : logger{logger}
 {
-	delegate.reserve(pools.nChunks());
-	pools.forEachChunk([this](Pool::ListType::const_iterator it) { delegate.insert(DelegateType::value_type(it->data, it)); });
+	aggregate.reserve(pools.nChunks());
+	pools.forEachChunk([this](Pool::ListType::const_iterator it) { aggregate.insert(AggregateType::value_type(it->data, it)); });
 }
 
 Pool::ListType::const_iterator const* ChunkMap::at(void* ptr) const noexcept
 {
 	Pool::ListType::const_iterator const* result{nullptr};
-	DelegateType::const_iterator it{delegate.find(ptr)};
-	if (it != delegate.end()) {
+	AggregateType::const_iterator it{aggregate.find(ptr)};
+	if (it != aggregate.end()) {
 		result = &it->second;
 	}
 	return result;

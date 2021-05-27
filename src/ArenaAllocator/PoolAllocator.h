@@ -12,6 +12,7 @@
 #include "ArenaAllocator/ChunkMap.h"
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
+#include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/PoolMap.h"
 #include <cstdint>
 
@@ -53,7 +54,7 @@ private:
 
 	Allocator* delegate;
 	Logger const& logger;
-	PoolMap pools;
+	PoolMap<Pool> pools;
 	const ChunkMap chunks;
 };
 

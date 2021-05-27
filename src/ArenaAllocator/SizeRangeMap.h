@@ -19,11 +19,11 @@ template<typename T>
 class SizeRangeMap
 {
 public:
-	using DelegateType = std::
+	using AggregateType = std::
 		map<SizeRange, T, bool (*)(SizeRange const&, SizeRange const&), PassThroughCXXAllocator<std::pair<const SizeRange, T>>>;
-	using value_type = typename DelegateType::value_type;
-	using iterator = typename DelegateType::iterator;
-	using const_iterator = typename DelegateType::const_iterator;
+	using value_type = typename AggregateType::value_type;
+	using iterator = typename AggregateType::iterator;
+	using const_iterator = typename AggregateType::const_iterator;
 
 	SizeRangeMap() noexcept;
 	SizeRangeMap(SizeRangeMap const&) = delete;
@@ -39,13 +39,13 @@ public:
 	template<typename... Args>
 	bool emplace(SizeRange const& range, Args&&... args) noexcept
 	{
-		return delegate
+		return aggregate
 			.emplace(std::piecewise_construct, std::forward_as_tuple(range), std::forward_as_tuple(std::forward<Args>(args)...))
 			.second;
 	}
 
 private:
-	DelegateType delegate;
+	AggregateType aggregate;
 };
 
 } // namespace ArenaAllocator

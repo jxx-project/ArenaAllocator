@@ -20,7 +20,7 @@ bool rangeBelow(SizeRange const& lhs, SizeRange const& rhs) noexcept
 } // namespace
 
 template<typename T>
-SizeRangeMap<T>::SizeRangeMap() noexcept : delegate{rangeBelow}
+SizeRangeMap<T>::SizeRangeMap() noexcept : aggregate{rangeBelow}
 {
 }
 
@@ -32,33 +32,33 @@ SizeRangeMap<T>::~SizeRangeMap() noexcept
 template<typename T>
 typename SizeRangeMap<T>::iterator SizeRangeMap<T>::begin() noexcept
 {
-	return delegate.begin();
+	return aggregate.begin();
 }
 
 template<typename T>
 typename SizeRangeMap<T>::const_iterator SizeRangeMap<T>::begin() const noexcept
 {
-	return delegate.begin();
+	return aggregate.begin();
 }
 
 template<typename T>
 typename SizeRangeMap<T>::iterator SizeRangeMap<T>::end() noexcept
 {
-	return delegate.end();
+	return aggregate.end();
 }
 
 template<typename T>
 typename SizeRangeMap<T>::const_iterator SizeRangeMap<T>::end() const noexcept
 {
-	return delegate.end();
+	return aggregate.end();
 }
 
 template<typename T>
 T* SizeRangeMap<T>::at(std::size_t size) noexcept
 {
 	T* result(nullptr);
-	typename DelegateType::iterator it{delegate.find(SizeRange{size, size})};
-	if (it != delegate.end()) {
+	typename AggregateType::iterator it{aggregate.find(SizeRange{size, size})};
+	if (it != aggregate.end()) {
 		result = &it->second;
 	}
 	return result;

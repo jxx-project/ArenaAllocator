@@ -7,6 +7,7 @@ CUSTOM_ALLOCATORS_OBJECTS = \
         PassThroughAllocator.o \
         PoolAllocator.o \
         PoolMap.o \
+        PoolStatistics.o \
         Pool.o \
         SizeRangeMap.o \
         StaticConfiguration.o \

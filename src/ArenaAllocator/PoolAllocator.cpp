@@ -31,7 +31,7 @@ void* PoolAllocator::malloc(std::size_t size) noexcept
 		Timer timer;
 		result = allocate(size);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::malloc(%ld) -> %p [%ld ns]\n", size, result.ptr, timer.getNanoseconds());
+			logger.log("PoolAllocator::malloc(%lu) -> %p [%lu ns]\n", size, result.ptr, timer.getNanoseconds());
 		}
 	} else {
 		result = allocate(size);
@@ -47,7 +47,7 @@ void PoolAllocator::free(void* ptr) noexcept
 		Timer timer;
 		result = deallocate(ptr);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::free(%p) [%ld ns]\n", ptr, timer.getNanoseconds());
+			logger.log("PoolAllocator::free(%p) [%lu ns]\n", ptr, timer.getNanoseconds());
 		}
 	} else {
 		result = deallocate(ptr);
@@ -65,7 +65,7 @@ void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 			std::memset(result.ptr, 0, nmemb * size);
 		}
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::calloc(%ld, %ld) -> %p [%ld ns]\n", nmemb, size, result.ptr, timer.getNanoseconds());
+			logger.log("PoolAllocator::calloc(%lu, %lu) -> %p [%lu ns]\n", nmemb, size, result.ptr, timer.getNanoseconds());
 		}
 	} else {
 		result = allocate(nmemb, size);
@@ -84,7 +84,7 @@ void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
 		Timer timer;
 		result = reallocate(ptr, size);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::realloc(%p, %ld) -> %p [%ld ns]\n", ptr, size, result.ptr, timer.getNanoseconds());
+			logger.log("PoolAllocator::realloc(%p, %lu) -> %p [%lu ns]\n", ptr, size, result.ptr, timer.getNanoseconds());
 		}
 	} else {
 		result = reallocate(ptr, size);
@@ -101,7 +101,7 @@ void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size
 		result = reallocate(ptr, nmemb, size);
 		if (!result.fromDelegate) {
 			logger.log(
-				"PoolAllocator::reallocarray(%p, %ld, %ld) -> %p [%ld ns]\n", ptr, nmemb, size, result.ptr, timer.getNanoseconds());
+				"PoolAllocator::reallocarray(%p, %lu, %lu) -> %p [%lu ns]\n", ptr, nmemb, size, result.ptr, timer.getNanoseconds());
 		}
 	} else {
 		result = reallocate(ptr, nmemb, size);

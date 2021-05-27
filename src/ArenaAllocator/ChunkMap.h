@@ -10,6 +10,7 @@
 
 #include "ArenaAllocator/Chunk.h"
 #include "ArenaAllocator/Logger.h"
+#include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/PoolMap.h"
 #include <list>
 #include <unordered_map>
@@ -19,12 +20,12 @@ namespace ArenaAllocator {
 class ChunkMap
 {
 public:
-	ChunkMap(PoolMap const& pools, Logger const& logger) noexcept;
+	ChunkMap(PoolMap<Pool> const& pools, Logger const& logger) noexcept;
 
 	Pool::ListType::const_iterator const* at(void* ptr) const noexcept;
 
 private:
-	using DelegateType = std::unordered_map<
+	using AggregateType = std::unordered_map<
 		void*,
 		Pool::ListType::const_iterator,
 		std::hash<void*>,
@@ -32,7 +33,7 @@ private:
 		PassThroughCXXAllocator<std::pair<void const*, Pool::ListType::const_iterator>>>;
 
 	Logger const& logger;
-	DelegateType delegate;
+	AggregateType aggregate;
 };
 
 } // namespace ArenaAllocator

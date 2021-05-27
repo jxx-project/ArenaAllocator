@@ -52,8 +52,8 @@ private:
 	StorageType storage;
 	ListType free;
 	ListType allocated;
-	std::size_t hwm;
 	Logger const& logger;
+	std::size_t hwm;
 };
 
 } // namespace ArenaAllocator

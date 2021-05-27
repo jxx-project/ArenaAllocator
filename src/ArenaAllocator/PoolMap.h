@@ -11,33 +11,33 @@
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
-#include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/SizeRangeMap.h"
 
 namespace ArenaAllocator {
 
+template<typename T>
 class PoolMap
 {
 public:
 	PoolMap(Configuration const& configuration, Logger const& logger) noexcept;
 
-	Pool* at(std::size_t chunkSize) noexcept;
+	T* at(std::size_t chunkSize) noexcept;
 	std::size_t nChunks() const noexcept;
 
 	template<typename F>
 	void forEachChunk(F func) const noexcept
 	{
-		for (DelegateType::value_type const& mapEntry : pools) {
-			mapEntry.second.forEachChunk(func);
+		for (typename AggregateType::value_type const& element : aggregate) {
+			element.second.forEachChunk(func);
 		}
 	}
 
 private:
-	using DelegateType = SizeRangeMap<Pool>;
+	using AggregateType = SizeRangeMap<T>;
 
 	void insert(SizeRange const& range, std::size_t nChunks) noexcept;
 
-	DelegateType pools;
+	AggregateType aggregate;
 	Logger const& logger;
 };
 

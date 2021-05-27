@@ -6,35 +6,44 @@
 
 
 #include "ArenaAllocator/PoolMap.h"
+#include "ArenaAllocator/Pool.h"
+#include "ArenaAllocator/PoolStatistics.h"
 
 namespace ArenaAllocator {
 
-PoolMap::PoolMap(Configuration const& configuration, Logger const& logger) noexcept : logger{logger}
+template<typename T>
+PoolMap<T>::PoolMap(Configuration const& configuration, Logger const& logger) noexcept : logger{logger}
 {
-	for (Configuration::PoolMapType::value_type const& pool : configuration.getPools()) {
-		insert(pool.first, pool.second);
+	for (Configuration::PoolMapType::value_type const& poolConfiguration : configuration.getPools()) {
+		insert(poolConfiguration.first, poolConfiguration.second);
 	}
 }
 
-void PoolMap::insert(SizeRange const& range, std::size_t nChunks) noexcept
+template<typename T>
+void PoolMap<T>::insert(SizeRange const& range, std::size_t nChunks) noexcept
 {
-	if (!pools.emplace(range, range, nChunks, logger)) {
-		logger.error("PoolMap::insert(Range{%ul, %ul}, %ul) discarded due to range overlap", range.first, range.last, nChunks);
+	if (!aggregate.emplace(range, range, nChunks, logger)) {
+		logger.error("PoolMap::insert(Range{%lu, %lu}, %lu) discarded due to range overlap", range.first, range.last, nChunks);
 	}
 }
 
-Pool* PoolMap::at(std::size_t chunkSize) noexcept
+template<typename T>
+T* PoolMap<T>::at(std::size_t chunkSize) noexcept
 {
-	return pools.at(chunkSize);
+	return aggregate.at(chunkSize);
 }
 
-std::size_t PoolMap::nChunks() const noexcept
+template<typename T>
+std::size_t PoolMap<T>::nChunks() const noexcept
 {
 	std::size_t result{0};
-	for (DelegateType::value_type const& pool : pools) {
+	for (typename AggregateType::value_type const& pool : aggregate) {
 		result += pool.second.nChunks();
 	}
 	return result;
 }
+
+template class PoolMap<Pool>;
+template class PoolMap<PoolStatistics>;
 
 } // namespace ArenaAllocator
