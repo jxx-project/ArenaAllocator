@@ -49,6 +49,7 @@ public:
 private:
 	using StorageType = std::vector<WordType, PassThroughCXXAllocator<WordType>>;
 	const SizeRange range;
+	const std::size_t chunkSize;
 	std::mutex mutex;
 	StorageType storage;
 	ListType free;

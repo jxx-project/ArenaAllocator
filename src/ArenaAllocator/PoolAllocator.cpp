@@ -73,17 +73,11 @@ void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
 		result = allocate(nmemb, size);
-		if (result.ptr) {
-			std::memset(result.ptr, 0, nmemb * size);
-		}
 		if (!result.fromDelegate) {
 			logger.log("PoolAllocator::calloc(%lu, %lu) -> %p [%lu ns]\n", nmemb, size, result.ptr, timer.getNanoseconds());
 		}
 	} else {
 		result = allocate(nmemb, size);
-		if (result.ptr) {
-			std::memset(result.ptr, 0, nmemb * size);
-		}
 	}
 	errno = result.propagateErrno;
 	return result.ptr;
@@ -170,9 +164,7 @@ PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t nmemb, std::si
 		if (totalSize) {
 			Pool* pool{pools.at(totalSize)};
 			if (pool) {
-				if (result.ptr = pool->allocate(totalSize)) {
-					std::memset(result.ptr, 0, totalSize);
-				} else {
+				if (!(result.ptr = pool->allocate(totalSize))) {
 					result.propagateErrno = ENOMEM;
 				}
 			} else if (delegate) {
