@@ -13,7 +13,7 @@ CUSTOM_ALLOCATORS_OBJECTS = \
         StaticConfiguration.o \
         Timer.o \
 
-CXXFLAGS = -O3
+CXXFLAGS = -std=c++17 -O3
 CPPFLAGS = -Isrc
 
 all: libArenaAllocator.so benchmark

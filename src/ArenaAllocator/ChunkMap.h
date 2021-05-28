@@ -20,17 +20,17 @@ namespace ArenaAllocator {
 class ChunkMap
 {
 public:
-	ChunkMap(PoolMap<Pool> const& pools, Logger const& logger) noexcept;
+	ChunkMap(PoolMap<Pool>& pools, Logger const& logger) noexcept;
 
-	Pool::ListType::const_iterator const* at(void* ptr) const noexcept;
+	Pool::ListType::iterator const* at(void* ptr) const noexcept;
 
 private:
 	using AggregateType = std::unordered_map<
 		void*,
-		Pool::ListType::const_iterator,
+		Pool::ListType::iterator,
 		std::hash<void*>,
 		std::equal_to<void*>,
-		PassThroughCXXAllocator<std::pair<void const*, Pool::ListType::const_iterator>>>;
+		PassThroughCXXAllocator<std::pair<void* const, Pool::ListType::iterator>>>;
 
 	Logger const& logger;
 	AggregateType aggregate;

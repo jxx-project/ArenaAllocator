@@ -51,7 +51,9 @@ private:
 	AllocateResult allocate(std::size_t nmemb, std::size_t size, bool useDelegateReallocArray = false) noexcept;
 	AllocateResult reallocate(void* ptr, std::size_t size) noexcept;
 	AllocateResult reallocate(void* ptr, std::size_t nmemb, std::size_t size) noexcept;
+	AllocateResult reallocate(Pool::ListType::iterator const& currentChunk, std::size_t size) noexcept;
 
+	void* const ptrToEmpty;
 	Allocator* delegate;
 	Logger const& logger;
 	PoolMap<Pool> pools;

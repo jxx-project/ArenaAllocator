@@ -22,7 +22,7 @@ Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) no
 
 Pool::~Pool() noexcept
 {
-	logger.info("Pool::~Pool() SizeRange{%lu, %lu} [hwm %lu]\n", range.first, range.last, hwm);
+	logger.info("Pool::~Pool() {range: [%lu, %lu], hwm: %lu}\n", range.first, range.last, hwm);
 }
 
 
@@ -41,13 +41,27 @@ void* Pool::allocate(std::size_t size) noexcept
 	return result;
 }
 
+void* Pool::reallocate(ListType::iterator it, std::size_t size) noexcept
+{
+	std::lock_guard<std::mutex> guard(mutex);
+	if (!it->allocatedSize) {
+		logger.error("Pool::reallocate(%p, %lu): Not allocated!\n", it->data, size);
+		std::abort();
+	}
+	// TODO: range checks
+	it->allocatedSize = size;
+	return it->data;
+}
+
 void Pool::deallocate(ListType::const_iterator it) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	if (it->allocatedSize) {
-		free.splice(free.begin(), allocated, it);
-		free.front().allocatedSize = 0;
+	if (!it->allocatedSize) {
+		logger.error("Pool::deallocate(%p): Not allocated!\n", it->data);
+		std::abort();
 	}
+	free.splice(free.begin(), allocated, it);
+	free.front().allocatedSize = 0;
 }
 
 std::size_t Pool::nChunks() const noexcept

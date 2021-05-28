@@ -31,16 +31,17 @@ public:
 	~Pool() noexcept;
 
 	void* allocate(std::size_t size) noexcept;
+	void* reallocate(ListType::iterator it, std::size_t size) noexcept;
 	void deallocate(ListType::const_iterator it) noexcept;
 	std::size_t nChunks() const noexcept;
 
 	template<typename F>
-	void forEachChunk(F func) const noexcept
+	void forEachChunk(F func) noexcept
 	{
-		for (ListType::const_iterator it = free.begin(); it != free.end(); ++it) {
+		for (ListType::iterator it = free.begin(); it != free.end(); ++it) {
 			func(it);
 		}
-		for (ListType::const_iterator it = allocated.begin(); it != allocated.end(); ++it) {
+		for (ListType::iterator it = allocated.begin(); it != allocated.end(); ++it) {
 			func(it);
 		}
 	}

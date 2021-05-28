@@ -11,6 +11,7 @@
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
+#include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/SizeRangeMap.h"
 
 namespace ArenaAllocator {
@@ -22,12 +23,21 @@ public:
 	PoolMap(Configuration const& configuration, Logger const& logger) noexcept;
 
 	T* at(std::size_t chunkSize) noexcept;
-	std::size_t nChunks() const noexcept;
 
-	template<typename F>
-	void forEachChunk(F func) const noexcept
+	template<typename U = T, typename = typename std::enable_if<std::is_same<U, Pool>::value>::type>
+	std::size_t nChunks() const noexcept
 	{
+		std::size_t result{0};
 		for (typename AggregateType::value_type const& element : aggregate) {
+			result += element.second.nChunks();
+		}
+		return result;
+	}
+
+	template<typename F, typename U = T, typename = typename std::enable_if<std::is_same<U, Pool>::value>::type>
+	void forEachChunk(F func) noexcept
+	{
+		for (typename AggregateType::value_type& element : aggregate) {
 			element.second.forEachChunk(func);
 		}
 	}
