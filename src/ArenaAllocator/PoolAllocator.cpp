@@ -28,7 +28,7 @@ void* getPtrToEmpty()
 PoolAllocator::PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& logger) noexcept :
 	ptrToEmpty{getPtrToEmpty()}, delegate{delegate}, logger{logger}, pools{configuration, logger}, chunks{pools, logger}
 {
-	logger.debug("PoolAllocator::PoolAllocator(Configuration const&, Logger const&) {ptrToEmpty: %p}\n", ptrToEmpty);
+	logger.debug("PoolAllocator::PoolAllocator(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}\n", ptrToEmpty);
 }
 
 PoolAllocator::~PoolAllocator() noexcept

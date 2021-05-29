@@ -57,7 +57,7 @@ template<typename T>
 T* SizeRangeMap<T>::at(std::size_t size) noexcept
 {
 	T* result(nullptr);
-	typename AggregateType::iterator it{aggregate.find(SizeRange{size, size})};
+	iterator it{aggregate.find(SizeRange{size, size})};
 	if (it != aggregate.end()) {
 		result = &it->second;
 	}

@@ -10,6 +10,7 @@
 
 #include "ArenaAllocator/Chunk.h"
 #include "ArenaAllocator/Logger.h"
+#include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/PoolMap.h"
 #include <list>
