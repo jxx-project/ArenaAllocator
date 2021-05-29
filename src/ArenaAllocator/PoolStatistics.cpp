@@ -37,7 +37,6 @@ PoolStatistics::~PoolStatistics() noexcept
 		hwm);
 }
 
-
 void PoolStatistics::allocate(std::size_t size) noexcept
 {
 	++allocations;
@@ -52,6 +51,11 @@ void PoolStatistics::allocate(std::size_t size) noexcept
 			range.last,
 			nChunkLimit);
 	}
+}
+
+void PoolStatistics::reallocate(std::size_t size) noexcept
+{
+	maxSize = std::max(size, maxSize);
 }
 
 void PoolStatistics::deallocate() noexcept

@@ -1,4 +1,5 @@
 CUSTOM_ALLOCATORS_OBJECTS = \
+        AllocationMap.o \
         AllocatorHooks.o \
         ChunkMap.o \
         ConsoleLogger.o \
@@ -7,6 +8,7 @@ CUSTOM_ALLOCATORS_OBJECTS = \
         PassThroughAllocator.o \
         PoolAllocator.o \
         PoolMap.o \
+        PoolStatisticsAllocator.o \
         PoolStatistics.o \
         Pool.o \
         SizeRangeMap.o \

@@ -29,6 +29,7 @@ public:
 	~PoolStatistics() noexcept;
 
 	void allocate(std::size_t size) noexcept;
+	void reallocate(std::size_t size) noexcept;
 	void deallocate() noexcept;
 	std::size_t nChunks() const noexcept;
 
