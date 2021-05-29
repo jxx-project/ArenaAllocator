@@ -28,15 +28,15 @@ public:
 	virtual Allocator* getAllocator(Configuration::StringType const& className) noexcept override
 	{
 		if (className == "PassThroughAllocator") {
-			if (!passThroughAllocator.hasValue()) {
+			if (!passThroughAllocator.has_value()) {
 				passThroughAllocator.emplace(logger);
 			}
 			return &passThroughAllocator.value();
 		} else if (className == "PoolAllocator") {
-			if (!passThroughAllocator.hasValue()) {
+			if (!passThroughAllocator.has_value()) {
 				passThroughAllocator.emplace(logger);
 			}
-			if (!poolAllocator.hasValue()) {
+			if (!poolAllocator.has_value()) {
 				poolAllocator.emplace(configuration, &passThroughAllocator.value(), logger);
 			}
 			return &poolAllocator.value();
@@ -58,8 +58,8 @@ private:
 	ConsoleLogger logger;
 	Allocator* activeAllocator;
 	EnvironmentConfiguration configuration{*this, activeAllocator, logger};
-	Optional<PassThroughAllocator> passThroughAllocator;
-	Optional<PoolAllocator> poolAllocator;
+	std::optional<PassThroughAllocator> passThroughAllocator;
+	std::optional<PoolAllocator> poolAllocator;
 };
 
 extern "C" void* malloc(std::size_t size)

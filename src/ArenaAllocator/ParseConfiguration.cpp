@@ -6,9 +6,9 @@ namespace ArenaAllocator {
 
 ParseConfiguration::ParseConfiguration(
 	char const* str,
-	Optional<Configuration::StringType>& className,
-	Optional<Configuration::PoolMapType>& pools,
-	Optional<LogLevel>& logLevel) noexcept :
+	std::optional<Configuration::StringType>& className,
+	std::optional<Configuration::PoolMapType>& pools,
+	std::optional<LogLevel>& logLevel) noexcept :
 	current{str}, className{className}, pools{pools}, logLevel{logLevel}
 {
 	if (!parseDelimiter("{") == '{') {
@@ -26,7 +26,7 @@ ParseConfiguration::ParseConfiguration(
 			if (!parseDelimiter(":")) {
 				raiseError("Expected ':' after item identifier");
 			}
-			if (className.hasValue()) {
+			if (className.has_value()) {
 				raiseError("Duplicate allocator class item");
 			}
 			char const* classNameStr{parseIdentifier()};
@@ -35,7 +35,7 @@ ParseConfiguration::ParseConfiguration(
 			if (!parseDelimiter(":")) {
 				raiseError("Expected ':' after item identifier");
 			}
-			if (logLevel.hasValue()) {
+			if (logLevel.has_value()) {
 				raiseError("Duplicate allocator class item");
 			}
 			logLevel.emplace(parseLogLevel());
@@ -97,7 +97,7 @@ SizeRange ParseConfiguration::parseSizeRange() noexcept
 
 void ParseConfiguration::parsePoolMap() noexcept
 {
-	if (pools.hasValue()) {
+	if (pools.has_value()) {
 		raiseError("Duplicate pools item");
 	}
 	pools.emplace();

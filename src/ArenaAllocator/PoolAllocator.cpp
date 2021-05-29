@@ -235,13 +235,13 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(Pool::ListType::iterator
 {
 	AllocateResult result{nullptr, 0, false};
 	if (size) {
-		Pool* newPool{pools.at(size)};
-		if (newPool) {
+		Pool* destinationPool{pools.at(size)};
+		if (destinationPool) {
 			Pool* currentPool{currentChunk->pool};
-			if (newPool == currentPool) {
+			if (destinationPool == currentPool) {
 				result.ptr = currentPool->reallocate(currentChunk, size);
 			} else {
-				if (result.ptr = newPool->allocate(size)) {
+				if (result.ptr = destinationPool->allocate(size)) {
 					std::memcpy(result.ptr, currentChunk->data, std::min(currentChunk->allocatedSize, size));
 					currentPool->deallocate(currentChunk);
 				} else {

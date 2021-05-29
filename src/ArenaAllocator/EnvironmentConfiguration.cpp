@@ -36,7 +36,7 @@ EnvironmentConfiguration::~EnvironmentConfiguration() noexcept
 
 Configuration::StringType const& EnvironmentConfiguration::getClass() const noexcept
 {
-	if (!className.hasValue()) {
+	if (!className.has_value()) {
 		fprintf(
 			stderr,
 			"EnvironmentConfiguration: Missing allocator class item in environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
@@ -47,7 +47,7 @@ Configuration::StringType const& EnvironmentConfiguration::getClass() const noex
 
 Configuration::PoolMapType const& EnvironmentConfiguration::getPools() const noexcept
 {
-	if (!pools.hasValue()) {
+	if (!pools.has_value()) {
 		fprintf(stderr, "EnvironmentConfiguration: Missing pools item in environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
 		std::abort();
 	}
@@ -56,7 +56,7 @@ Configuration::PoolMapType const& EnvironmentConfiguration::getPools() const noe
 
 LogLevel const& EnvironmentConfiguration::getLogLevel() const noexcept
 {
-	if (!logLevel.hasValue()) {
+	if (!logLevel.has_value()) {
 		fprintf(stderr, "EnvironmentConfiguration: Missing log level item in environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
 		std::abort();
 	}

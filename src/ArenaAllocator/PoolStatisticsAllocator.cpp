@@ -133,26 +133,27 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 	if (ptr) {
 		std::optional<AllocationMap::const_iterator> it{allocations.find(ptr)};
 		if (it.has_value()) {
+			PoolStatistics* currentPool{it.value()->second.pool};
 			if (size) {
 				PoolStatistics* destinationPool{pools.at(size)};
 				if (!destinationPool) {
 					destinationPool = &delegatePool;
-					if (it.value()->second.pool != &delegatePool) {
+					if (currentPool != &delegatePool) {
 						logger.error(
-							"PoolStatisticsAllocator::registerReallocate(%p, %lu, %p) moved allocation out of arena pools\n",
+							"PoolStatisticsAllocator::registerReallocate(%p, %lu, %p) allocation moved out of arena pools\n",
 							ptr,
 							size,
 							result);
 					}
 				}
-				if (destinationPool == it.value()->second.pool) {
-					it.value()->second.pool->reallocate(size);
+				if (destinationPool == currentPool) {
+					currentPool->reallocate(size);
 				} else {
 					destinationPool->allocate(size);
-					it.value()->second.pool->deallocate();
+					currentPool->deallocate();
 				}
 			} else {
-				it.value()->second.pool->deallocate();
+				currentPool->deallocate();
 			}
 		} else {
 			logger.error(

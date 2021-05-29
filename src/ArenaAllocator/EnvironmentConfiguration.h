@@ -12,7 +12,7 @@
 #include "ArenaAllocator/AllocatorFactory.h"
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/Optional.h"
+#include <optional>
 
 namespace ArenaAllocator {
 
@@ -31,9 +31,9 @@ public:
 private:
 	Allocator*& activeAllocator;
 	Logger& logger;
-	Optional<Configuration::StringType> className;
-	Optional<Configuration::PoolMapType> pools;
-	Optional<LogLevel> logLevel;
+	std::optional<Configuration::StringType> className;
+	std::optional<Configuration::PoolMapType> pools;
+	std::optional<LogLevel> logLevel;
 };
 
 } // namespace ArenaAllocator
