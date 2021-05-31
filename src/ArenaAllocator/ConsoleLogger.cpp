@@ -13,10 +13,12 @@ namespace ArenaAllocator {
 
 ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
 {
+	debug("ConsoleLogger::ConsoleLogger()\n");
 }
 
 ConsoleLogger::~ConsoleLogger() noexcept
 {
+	debug("ConsoleLogger::~ConsoleLogger()\n");
 }
 
 void ConsoleLogger::log(char const* fmt, ...) const noexcept

@@ -125,8 +125,8 @@ void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
 
 void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, void* result) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
 	if (ptr) {
+		std::lock_guard<std::mutex> guard(mutex);
 		std::optional<AllocationMap::const_iterator> it{allocations.find(ptr)};
 		if (it.has_value()) {
 			PoolStatistics* currentPool{it.value()->second.pool};
