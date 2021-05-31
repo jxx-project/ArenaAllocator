@@ -23,7 +23,7 @@ template<typename T>
 void PoolMap<T>::insert(SizeRange const& range, std::size_t nChunks) noexcept
 {
 	if (!aggregate.emplace(range, range, nChunks, logger)) {
-		logger.error("PoolMap::insert(Range{%lu, %lu}, %lu) discarded due to range overlap", range.first, range.last, nChunks);
+		logger.error("PoolMap::insert([%lu, %lu], %lu) discarded due to range overlap", range.first, range.last, nChunks);
 	}
 }
 

@@ -23,13 +23,23 @@ std::optional<AllocationMap::AggregateType::const_iterator> AllocationMap::find(
 	return result;
 }
 
-bool AllocationMap::emplace(void* ptr, Allocation const& allocation) noexcept
+void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) noexcept
 {
-	return aggregate.emplace(ptr, allocation).second;
+	if (aggregate.emplace(ptr, allocation).second) {
+		allocation.pool->registerAllocate(allocation.size);
+	} else {
+		logger.error(
+			"AllocationMap(%p, {[%lu, %lu], %lu}) failed: pointer already registered\n",
+			ptr,
+			allocation.pool->getRange().first,
+			allocation.pool->getRange().last,
+			allocation.size);
+	}
 }
 
-void AllocationMap::erase(AggregateType::const_iterator it) noexcept
+void AllocationMap::unregisterAllocation(AggregateType::const_iterator it) noexcept
 {
+	it->second.pool->registerDeallocate();
 	aggregate.erase(it);
 }
 

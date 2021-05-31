@@ -7,6 +7,7 @@
 
 #include "ArenaAllocator/SizeRangeMap.h"
 #include "ArenaAllocator/Pool.h"
+#include "ArenaAllocator/PoolStatistics.h"
 
 namespace ArenaAllocator {
 
@@ -64,7 +65,8 @@ T* SizeRangeMap<T>::at(std::size_t size) noexcept
 	return result;
 }
 
-template class SizeRangeMap<Pool>;
 template class SizeRangeMap<std::size_t>;
+template class SizeRangeMap<Pool>;
+template class SizeRangeMap<PoolStatistics>;
 
 } // namespace ArenaAllocator

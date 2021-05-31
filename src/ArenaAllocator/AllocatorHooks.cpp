@@ -10,6 +10,7 @@
 #include "ArenaAllocator/EnvironmentConfiguration.h"
 #include "ArenaAllocator/PassThroughAllocator.h"
 #include "ArenaAllocator/PoolAllocator.h"
+#include "ArenaAllocator/PoolStatisticsAllocator.h"
 
 namespace ArenaAllocator {
 
@@ -40,6 +41,14 @@ public:
 				poolAllocator.emplace(configuration, &passThroughAllocator.value(), logger);
 			}
 			return &poolAllocator.value();
+		} else if (className == "PoolStatisticsAllocator") {
+			if (!passThroughAllocator.has_value()) {
+				passThroughAllocator.emplace(logger);
+			}
+			if (!poolStatisticsAllocator.has_value()) {
+				poolStatisticsAllocator.emplace(configuration, passThroughAllocator.value(), logger);
+			}
+			return &poolStatisticsAllocator.value();
 		} else {
 			return nullptr;
 		}
@@ -60,6 +69,7 @@ private:
 	EnvironmentConfiguration configuration{*this, activeAllocator, logger};
 	std::optional<PassThroughAllocator> passThroughAllocator;
 	std::optional<PoolAllocator> poolAllocator;
+	std::optional<PoolStatisticsAllocator> poolStatisticsAllocator;
 };
 
 extern "C" void* malloc(std::size_t size)

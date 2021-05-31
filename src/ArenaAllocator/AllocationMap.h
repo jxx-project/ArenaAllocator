@@ -32,8 +32,8 @@ public:
 	AllocationMap(Logger const& logger) noexcept;
 
 	std::optional<const_iterator> find(void* ptr) const noexcept;
-	bool emplace(void* ptr, Allocation const& allocation) noexcept;
-	void erase(AggregateType::const_iterator it) noexcept;
+	void registerAllocation(void* ptr, Allocation const& allocation) noexcept;
+	void unregisterAllocation(AggregateType::const_iterator it) noexcept;
 
 private:
 	Logger const& logger;

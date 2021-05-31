@@ -109,11 +109,7 @@ void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result) n
 	if (!pool) {
 		pool = &delegatePool;
 	}
-	pool->allocate(size);
-	if (!allocations.emplace(result, {pool, size})) {
-		logger.error(
-			"PoolStatisticsAllocator::registerAllocate(%lu, %p) failed: result pointer already registered\n", size, result);
-	}
+	allocations.registerAllocation(result, {pool, size});
 }
 
 void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
@@ -121,7 +117,7 @@ void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
 	std::lock_guard<std::mutex> guard(mutex);
 	std::optional<AllocationMap::const_iterator> it{allocations.find(ptr)};
 	if (it.has_value()) {
-		it.value()->second.pool->deallocate();
+		allocations.unregisterAllocation(it.value());
 	} else {
 		logger.error("PoolStatisticsAllocator::registerDeallocate(%p) failed: allocation not found\n", ptr);
 	}
@@ -147,18 +143,20 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 					}
 				}
 				if (destinationPool == currentPool) {
-					currentPool->reallocate(size);
+					currentPool->registerReallocate(size);
 				} else {
-					destinationPool->allocate(size);
-					currentPool->deallocate();
+					allocations.registerAllocation(result, {destinationPool, size});
+					allocations.unregisterAllocation(it.value());
 				}
 			} else {
-				currentPool->deallocate();
+				allocations.unregisterAllocation(it.value());
 			}
 		} else {
 			logger.error(
 				"PoolStatisticsAllocator::registerReallocate(%p, %lu, %p) failed: allocation not found\n", ptr, size, result);
 		}
+	} else {
+		registerAllocate(size, result);
 	}
 }
 
