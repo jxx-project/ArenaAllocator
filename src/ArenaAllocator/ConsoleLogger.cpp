@@ -8,6 +8,7 @@
 #include "ArenaAllocator/ConsoleLogger.h"
 #include <cerrno>
 #include <cstdio>
+#include <unistd.h>
 
 namespace ArenaAllocator {
 
@@ -72,6 +73,7 @@ void ConsoleLogger::setLevel(LogLevel level) noexcept
 void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
 {
 	int propagateErrno{errno};
+	std::fprintf(stderr, "[pid: %u] ", getpid());
 	std::vfprintf(stderr, fmt, argp);
 	errno = propagateErrno;
 }

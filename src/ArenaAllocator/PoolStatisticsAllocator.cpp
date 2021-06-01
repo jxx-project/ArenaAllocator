@@ -145,8 +145,8 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 				if (destinationPool == currentPool) {
 					currentPool->registerReallocate(size);
 				} else {
-					allocations.registerAllocation(result, {destinationPool, size});
 					allocations.unregisterAllocation(it.value());
+					allocations.registerAllocation(result, {destinationPool, size});
 				}
 			} else {
 				allocations.unregisterAllocation(it.value());
