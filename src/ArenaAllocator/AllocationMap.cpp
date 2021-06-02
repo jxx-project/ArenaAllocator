@@ -15,6 +15,7 @@ AllocationMap::AllocationMap(Logger const& logger) noexcept : logger{logger}
 
 std::optional<AllocationMap::AggregateType::const_iterator> AllocationMap::find(void* ptr) const noexcept
 {
+	// std::lock_guard<std::mutex> guard(mutex);
 	std::optional<AggregateType::const_iterator> result;
 	AggregateType::const_iterator it{aggregate.find(ptr)};
 	if (it != aggregate.end()) {
@@ -25,11 +26,18 @@ std::optional<AllocationMap::AggregateType::const_iterator> AllocationMap::find(
 
 void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) noexcept
 {
+	// std::lock_guard<std::mutex> guard(mutex);
 	if (aggregate.emplace(ptr, allocation).second) {
+		logger.debug(
+			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu})\n",
+			ptr,
+			allocation.pool->getRange().first,
+			allocation.pool->getRange().last,
+			allocation.size);
 		allocation.pool->registerAllocate(allocation.size);
 	} else {
 		logger.error(
-			"AllocationMap(%p, {[%lu, %lu], %lu}) failed: pointer already registered\n",
+			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu}) failed: pointer already registered\n",
 			ptr,
 			allocation.pool->getRange().first,
 			allocation.pool->getRange().last,
@@ -39,6 +47,13 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 
 void AllocationMap::unregisterAllocation(AggregateType::const_iterator it) noexcept
 {
+	// std::lock_guard<std::mutex> guard(mutex);
+	logger.debug(
+		"AllocationMap::unregisterAllocation(%p, {[%lu, %lu], %lu})\n",
+		it->first,
+		it->second.pool->getRange().first,
+		it->second.pool->getRange().last,
+		it->second.size);
 	it->second.pool->registerDeallocate();
 	aggregate.erase(it);
 }

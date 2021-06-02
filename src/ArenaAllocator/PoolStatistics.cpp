@@ -39,6 +39,7 @@ PoolStatistics::~PoolStatistics() noexcept
 
 void PoolStatistics::registerAllocate(std::size_t size) noexcept
 {
+	// std::lock_guard<std::mutex> guard(mutex);
 	++allocations;
 	minSize = std::min(size, minSize);
 	maxSize = std::max(size, maxSize);
@@ -55,11 +56,13 @@ void PoolStatistics::registerAllocate(std::size_t size) noexcept
 
 void PoolStatistics::registerReallocate(std::size_t size) noexcept
 {
+	// std::lock_guard<std::mutex> guard(mutex);
 	maxSize = std::max(size, maxSize);
 }
 
 void PoolStatistics::registerDeallocate() noexcept
 {
+	// std::lock_guard<std::mutex> guard(mutex);
 	--allocations;
 }
 

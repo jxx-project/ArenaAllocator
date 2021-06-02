@@ -37,11 +37,11 @@ private:
 		virtual Allocator* getAllocator(Configuration::StringType const& className) noexcept override;
 
 	private:
+		Configuration const& configuration;
+		Logger const& logger;
 		std::optional<PassThroughAllocator> passThroughAllocator;
 		std::optional<PoolAllocator> poolAllocator;
 		std::optional<PoolStatisticsAllocator> poolStatisticsAllocator;
-		Configuration const& configuration;
-		Logger const& logger;
 	};
 
 	AllocatorHooks() noexcept;
@@ -128,4 +128,28 @@ extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 	return AllocatorHooks::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
 }
 
+extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
+{
+	return AllocatorHooks::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
+}
+
+extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
+{
+	return AllocatorHooks::getInstance().getAllocator().aligned_alloc(alignment, size);
+}
+
+extern "C" void* valloc(std::size_t size)
+{
+	return AllocatorHooks::getInstance().getAllocator().valloc(size);
+}
+
+extern "C" void* memalign(std::size_t alignment, std::size_t size)
+{
+	return AllocatorHooks::getInstance().getAllocator().memalign(alignment, size);
+}
+
+extern "C" void* pvalloc(std::size_t size)
+{
+	return AllocatorHooks::getInstance().getAllocator().pvalloc(size);
+}
 } // namespace ArenaAllocator

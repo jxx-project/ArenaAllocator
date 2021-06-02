@@ -31,6 +31,11 @@ public:
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
 	virtual void* realloc(void* ptr, std::size_t size) noexcept override;
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
+	virtual int posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* aligned_alloc(std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* valloc(std::size_t size) noexcept override;
+	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* pvalloc(std::size_t size) noexcept override;
 
 private:
 	struct AllocateResult
@@ -46,9 +51,14 @@ private:
 		bool fromDelegate;
 	};
 
-	AllocateResult allocate(std::size_t size, bool useDelegateRealloc = false) noexcept;
+	template<typename DelegateF, typename AlignmentPredicate>
+	AllocateResult allocate(std::size_t size, DelegateF delegateF, AlignmentPredicate alignmentPredicate) noexcept;
+
 	DeallocateResult deallocate(void* ptr) noexcept;
-	AllocateResult allocate(std::size_t nmemb, std::size_t size, bool useDelegateReallocArray = false) noexcept;
+
+	template<typename DelegateF>
+	AllocateResult allocate(std::size_t nmemb, std::size_t size, DelegateF delegateF) noexcept;
+
 	AllocateResult reallocate(void* ptr, std::size_t size) noexcept;
 	AllocateResult reallocate(void* ptr, std::size_t nmemb, std::size_t size) noexcept;
 	AllocateResult reallocate(Pool::ListType::iterator const& currentChunk, std::size_t size) noexcept;

@@ -27,6 +27,11 @@ public:
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
 	virtual void* realloc(void* ptr, std::size_t size) noexcept override;
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
+	virtual int posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* aligned_alloc(std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* valloc(std::size_t size) noexcept override;
+	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* pvalloc(std::size_t size) noexcept override;
 
 private:
 	Logger const& logger;

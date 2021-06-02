@@ -6,10 +6,12 @@
 
 
 #include "ArenaAllocator/PoolStatisticsAllocator.h"
+#include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/Timer.h"
 #include <cerrno>
 #include <cstring>
 #include <limits>
+#include <unistd.h>
 
 namespace ArenaAllocator {
 
@@ -102,10 +104,91 @@ void* PoolStatisticsAllocator::reallocarray(void* ptr, std::size_t nmemb, std::s
 	return result;
 }
 
+int PoolStatisticsAllocator::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
+{
+	int result;
+	if (size) {
+		result = delegate.posix_memalign(memptr, alignment, size);
+		if (result) {
+			registerAllocate(size, *memptr, alignment);
+		}
+	} else {
+		*memptr = ptrToEmpty;
+		result = 0;
+	}
+	return result;
+}
+
+void* PoolStatisticsAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
+{
+	void* result;
+	if (size) {
+		result = delegate.aligned_alloc(alignment, size);
+		if (result) {
+			registerAllocate(size, result, alignment);
+		}
+	} else {
+		result = ptrToEmpty;
+	}
+	return result;
+}
+
+void* PoolStatisticsAllocator::valloc(std::size_t size) noexcept
+{
+	void* result;
+	if (size) {
+		result = delegate.valloc(size);
+		if (result) {
+			registerAllocate(size, result, sysconf(_SC_PAGESIZE));
+		}
+	} else {
+		result = ptrToEmpty;
+	}
+	return result;
+}
+
+void* PoolStatisticsAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
+{
+	void* result;
+	if (size) {
+		result = delegate.pvalloc(size);
+		if (result) {
+			registerAllocate(size, result, alignment);
+		}
+	} else {
+		result = ptrToEmpty;
+	}
+	return result;
+}
+
+void* PoolStatisticsAllocator::pvalloc(std::size_t size) noexcept
+{
+	void* result;
+	if (size) {
+		result = delegate.pvalloc(size);
+		if (result) {
+			registerAllocate(size, result, sysconf(_SC_PAGESIZE));
+		}
+	} else {
+		result = ptrToEmpty;
+	}
+	return result;
+}
+
 void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	logger.debug("PoolStatisticsAllocator::registerAllocate(%lu, %p)\n", size, result);
 	PoolStatistics* pool{pools.at(size)};
+	if (!pool) {
+		pool = &delegatePool;
+	}
+	allocations.registerAllocation(result, {pool, size});
+}
+
+void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept
+{
+	logger.debug("PoolStatisticsAllocator::registerAllocate(%lu, %p)\n", size, result);
+	PoolStatistics* pool{alignment <= sizeof(Pool::WordType) ? pools.at(size) : &delegatePool};
 	if (!pool) {
 		pool = &delegatePool;
 	}
@@ -114,7 +197,7 @@ void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result) n
 
 void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	logger.debug("PoolStatisticsAllocator::registerDeallocate(%p)\n", ptr);
 	std::optional<AllocationMap::const_iterator> it{allocations.find(ptr)};
 	if (it.has_value()) {
 		allocations.unregisterAllocation(it.value());
@@ -125,8 +208,8 @@ void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
 
 void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, void* result) noexcept
 {
+	logger.debug("PoolStatisticsAllocator::registerReallocate(%p, %lu, %p)\n", ptr, size, result);
 	if (ptr) {
-		std::lock_guard<std::mutex> guard(mutex);
 		std::optional<AllocationMap::const_iterator> it{allocations.find(ptr)};
 		if (it.has_value()) {
 			PoolStatistics* currentPool{it.value()->second.pool};
@@ -154,6 +237,7 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 		} else {
 			logger.error(
 				"PoolStatisticsAllocator::registerReallocate(%p, %lu, %p) failed: allocation not found\n", ptr, size, result);
+			registerAllocate(size, result);
 		}
 	} else {
 		registerAllocate(size, result);

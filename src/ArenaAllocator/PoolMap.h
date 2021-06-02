@@ -35,10 +35,10 @@ public:
 	}
 
 	template<typename F, typename U = T, typename = typename std::enable_if<std::is_same<U, Pool>::value>::type>
-	void forEachChunk(F func) noexcept
+	void forEachChunk(F f) noexcept
 	{
 		for (typename AggregateType::value_type& element : aggregate) {
-			element.second.forEachChunk(func);
+			element.second.forEachChunk(f);
 		}
 	}
 

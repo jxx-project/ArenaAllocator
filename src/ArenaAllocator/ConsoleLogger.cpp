@@ -9,6 +9,7 @@
 #include <cerrno>
 #include <cstdio>
 #include <unistd.h>
+#include <algorithm>
 
 namespace ArenaAllocator {
 
@@ -25,18 +26,18 @@ ConsoleLogger::~ConsoleLogger() noexcept
 void ConsoleLogger::log(char const* fmt, ...) const noexcept
 {
 	std::va_list argp;
-	va_start(argp, fmt);
+	::va_start(argp, fmt);
 	write(fmt, argp);
-	va_end(argp);
+	::va_end(argp);
 }
 
 void ConsoleLogger::error(char const* fmt, ...) const noexcept
 {
 	if (isLevel(LogLevel::ERROR)) {
 		std::va_list argp;
-		va_start(argp, fmt);
+		::va_start(argp, fmt);
 		write(fmt, argp);
-		va_end(argp);
+		::va_end(argp);
 	}
 }
 
@@ -44,9 +45,9 @@ void ConsoleLogger::info(char const* fmt, ...) const noexcept
 {
 	if (isLevel(LogLevel::INFO)) {
 		std::va_list argp;
-		va_start(argp, fmt);
+		::va_start(argp, fmt);
 		write(fmt, argp);
-		va_end(argp);
+		::va_end(argp);
 	}
 }
 
@@ -54,9 +55,9 @@ void ConsoleLogger::debug(char const* fmt, ...) const noexcept
 {
 	if (isLevel(LogLevel::DEBUG)) {
 		std::va_list argp;
-		va_start(argp, fmt);
+		::va_start(argp, fmt);
 		write(fmt, argp);
-		va_end(argp);
+		::va_end(argp);
 	}
 }
 
@@ -73,8 +74,12 @@ void ConsoleLogger::setLevel(LogLevel level) noexcept
 void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
 {
 	int propagateErrno{errno};
-	std::fprintf(stderr, "[pid: %u] ", getpid());
-	std::vfprintf(stderr, fmt, argp);
+	char buffer[1024];
+	::ssize_t prefixLenOrError{std::snprintf(buffer, sizeof(buffer), "[pid: %u] ", getpid())};
+	std::size_t prefixLen{prefixLenOrError >= 0 ? static_cast<std::size_t>(prefixLenOrError) : 0};
+	::ssize_t messageLenOrError{std::vsnprintf(buffer + prefixLen, sizeof(buffer) - prefixLen, fmt, argp)};
+	std::size_t messageLen{messageLenOrError >= 0 ? static_cast<std::size_t>(messageLenOrError) : 0};
+	::write(STDERR_FILENO, buffer, std::min(prefixLen + messageLen, sizeof(buffer)));
 	errno = propagateErrno;
 }
 

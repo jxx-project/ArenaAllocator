@@ -22,6 +22,11 @@ public:
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept = 0;
 	virtual void* realloc(void* ptr, std::size_t size) noexcept = 0;
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept = 0;
+	virtual int posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept = 0;
+	virtual void* aligned_alloc(std::size_t alignment, std::size_t size) noexcept = 0;
+	virtual void* valloc(std::size_t size) noexcept = 0;
+	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept = 0;
+	virtual void* pvalloc(std::size_t size) noexcept = 0;
 };
 
 } // namespace ArenaAllocator

@@ -15,7 +15,6 @@
 #include "ArenaAllocator/PoolMap.h"
 #include "ArenaAllocator/PoolStatistics.h"
 #include <cstdint>
-#include <mutex>
 
 namespace ArenaAllocator {
 
@@ -32,24 +31,16 @@ public:
 	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
 	virtual void* realloc(void* ptr, std::size_t size) noexcept override;
 	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
+	virtual int posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* aligned_alloc(std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* valloc(std::size_t size) noexcept override;
+	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept override;
+	virtual void* pvalloc(std::size_t size) noexcept override;
 
 private:
-	// struct AllocateResult
-	// {
-	// 	void* ptr;
-	// 	int propagateErrno;
-	// 	bool fromDelegate;
-	// };
-
-	// struct DeallocateResult
-	// {
-	// 	int propagateErrno;
-	// 	bool fromDelegate;
-	// };
-
 	void registerAllocate(std::size_t size, void* result) noexcept;
+	void registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept;
 	void registerDeallocate(void* ptr) noexcept;
-	void registerAllocate(std::size_t nmemb, std::size_t size, void* result) noexcept;
 	void registerReallocate(void* ptr, std::size_t size, void* result) noexcept;
 	void registerReallocate(void* ptr, std::size_t nmemb, std::size_t size, void* result) noexcept;
 
@@ -59,7 +50,6 @@ private:
 	PoolMap<PoolStatistics> pools;
 	PoolStatistics delegatePool;
 	AllocationMap allocations;
-	std::mutex mutex;
 };
 
 } // namespace ArenaAllocator

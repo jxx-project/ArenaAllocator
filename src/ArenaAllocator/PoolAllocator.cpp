@@ -10,6 +10,7 @@
 #include <cerrno>
 #include <cstring>
 #include <limits>
+#include <unistd.h>
 
 namespace ArenaAllocator {
 
@@ -36,17 +37,30 @@ PoolAllocator::~PoolAllocator() noexcept
 	logger.debug("PoolAllocator::~PoolAllocator()\n");
 }
 
+namespace {
+
+constexpr auto alignAlways{[]() { return true; }};
+
+const auto alignPageSize{[]() { return sysconf(_SC_PAGESIZE) <= sizeof(Pool::WordType); }};
+
+} // namespace
+
 void* PoolAllocator::malloc(std::size_t size) noexcept
 {
 	AllocateResult result;
+	auto delegateMallocFunc{[this](std::size_t size) {
+		AllocateResult result{delegate->malloc(size), 0, true};
+		result.propagateErrno = errno;
+		return result;
+	}};
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
-		result = allocate(size);
+		result = allocate(size, delegateMallocFunc, alignAlways);
 		if (!result.fromDelegate) {
 			logger.log("PoolAllocator::malloc(%lu) -> %p [%lu ns]\n", size, result.ptr, timer.getNanoseconds());
 		}
 	} else {
-		result = allocate(size);
+		result = allocate(size, delegateMallocFunc, alignAlways);
 	}
 	errno = result.propagateErrno;
 	return result.ptr;
@@ -70,14 +84,19 @@ void PoolAllocator::free(void* ptr) noexcept
 void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	AllocateResult result;
+	auto delegateCallocFunc{[this](std::size_t nmemb, std::size_t size) {
+		AllocateResult result{delegate->calloc(nmemb, size), 0, true};
+		result.propagateErrno = errno;
+		return result;
+	}};
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
-		result = allocate(nmemb, size);
+		result = allocate(nmemb, size, delegateCallocFunc);
 		if (!result.fromDelegate) {
 			logger.log("PoolAllocator::calloc(%lu, %lu) -> %p [%lu ns]\n", nmemb, size, result.ptr, timer.getNanoseconds());
 		}
 	} else {
-		result = allocate(nmemb, size);
+		result = allocate(nmemb, size, delegateCallocFunc);
 	}
 	errno = result.propagateErrno;
 	return result.ptr;
@@ -116,28 +135,139 @@ void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size
 	return result.ptr;
 }
 
-PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t size, bool useDelegateRealloc) noexcept
+int PoolAllocator::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
+{
+	AllocateResult result;
+	auto delegateMemAlignFunc{[this, alignment](std::size_t size) {
+		AllocateResult result{nullptr, 0, true};
+		result.propagateErrno = delegate->posix_memalign(&result.ptr, alignment, size);
+		return result;
+	}};
+	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(Pool::WordType); }};
+	if (logger.isLevel(LogLevel::INFO)) {
+		Timer timer;
+		result = allocate(size, delegateMemAlignFunc, alignWordTypeSize);
+		if (!result.fromDelegate) {
+			logger.log(
+				"PoolAllocator::posix_memalign(&%p, %lu, %lu) -> %p [%lu ns]\n",
+				*memptr,
+				alignment,
+				size,
+				result.ptr,
+				timer.getNanoseconds());
+		}
+	} else {
+		result = allocate(size, delegateMemAlignFunc, alignWordTypeSize);
+	}
+	*memptr = result.ptr;
+	return result.propagateErrno;
+}
+
+void* PoolAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
+{
+	AllocateResult result;
+	auto delegateAlignedAllocFunc{[this, alignment](std::size_t size) {
+		AllocateResult result{delegate->aligned_alloc(alignment, size), 0, true};
+		result.propagateErrno = errno;
+		return result;
+	}};
+	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(Pool::WordType); }};
+	if (logger.isLevel(LogLevel::INFO)) {
+		Timer timer;
+		result = allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
+		if (!result.fromDelegate) {
+			logger.log(
+				"PoolAllocator::aligned_alloc(%lu, %lu) -> %p [%lu ns]\n", alignment, size, result.ptr, timer.getNanoseconds());
+		}
+	} else {
+		result = allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
+	}
+	errno = result.propagateErrno;
+	return result.ptr;
+}
+
+void* PoolAllocator::valloc(std::size_t size) noexcept
+{
+	AllocateResult result;
+	auto delegateVallocFunc{[this](std::size_t size) {
+		AllocateResult result{delegate->valloc(size), 0, true};
+		result.propagateErrno = errno;
+		return result;
+	}};
+	if (logger.isLevel(LogLevel::INFO)) {
+		Timer timer;
+		result = allocate(size, delegateVallocFunc, alignPageSize);
+		if (!result.fromDelegate) {
+			logger.log("PoolAllocator::valloc(%lu) -> %p [%lu ns]\n", size, result.ptr, timer.getNanoseconds());
+		}
+	} else {
+		result = allocate(size, delegateVallocFunc, alignPageSize);
+	}
+	errno = result.propagateErrno;
+	return result.ptr;
+}
+
+void* PoolAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
+{
+	AllocateResult result;
+	auto delegateMemalignFunc{[this, alignment](std::size_t size) {
+		AllocateResult result{delegate->memalign(alignment, size), 0, true};
+		result.propagateErrno = errno;
+		return result;
+	}};
+	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(Pool::WordType); }};
+	if (logger.isLevel(LogLevel::INFO)) {
+		Timer timer;
+		result = allocate(size, delegateMemalignFunc, alignWordTypeSize);
+		if (!result.fromDelegate) {
+			logger.log("PoolAllocator::memalign(%lu, %lu) -> %p [%lu ns]\n", alignment, size, result.ptr, timer.getNanoseconds());
+		}
+	} else {
+		result = allocate(size, delegateMemalignFunc, alignWordTypeSize);
+	}
+	errno = result.propagateErrno;
+	return result.ptr;
+}
+
+void* PoolAllocator::pvalloc(std::size_t size) noexcept
+{
+	AllocateResult result;
+	auto delegatePvallocFunc{[this](std::size_t size) {
+		AllocateResult result{delegate->pvalloc(size), 0, true};
+		result.propagateErrno = errno;
+		return result;
+	}};
+	if (logger.isLevel(LogLevel::INFO)) {
+		Timer timer;
+		result = allocate(size, delegatePvallocFunc, alignPageSize);
+		if (!result.fromDelegate) {
+			logger.log("PoolAllocator::pvalloc(%lu) -> %p [%lu ns]\n", size, result.ptr, timer.getNanoseconds());
+		}
+	} else {
+		result = allocate(size, delegatePvallocFunc, alignPageSize);
+	}
+	errno = result.propagateErrno;
+	return result.ptr;
+}
+
+template<typename DelegateF, typename AlignmentPredicate>
+PoolAllocator::AllocateResult
+PoolAllocator::allocate(std::size_t size, DelegateF delegateF, AlignmentPredicate alignmentPredicate) noexcept
 {
 	AllocateResult result{nullptr, 0, false};
 	if (size) {
-		Pool* pool{pools.at(size)};
+		Pool* pool{alignmentPredicate() ? pools.at(size) : nullptr};
 		if (pool) {
 			if (!(result.ptr = pool->allocate(size))) {
 				result.propagateErrno = ENOMEM;
 			}
-		} else if (delegate) {
-			if (useDelegateRealloc) {
-				result.ptr = delegate->realloc(nullptr, size);
-			} else {
-				result.ptr = delegate->malloc(size);
-			}
-			result.propagateErrno = errno;
-			result.fromDelegate = true;
+		} else {
+			result = delegateF(size);
 		}
 	} else {
 		result.ptr = ptrToEmpty;
 	}
-	logger.debug("PoolAllocator::allocate(%lu, %d) -> %p\n", size, useDelegateRealloc, result.ptr);
+	logger.debug("PoolAllocator::allocate(%lu) -> %p\n", size, result.ptr);
 	return result;
 }
 
@@ -156,7 +286,8 @@ PoolAllocator::DeallocateResult PoolAllocator::deallocate(void* ptr) noexcept
 	return result;
 }
 
-PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t nmemb, std::size_t size, bool useDelegateReallocArray) noexcept
+template<typename DelegateF>
+PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t nmemb, std::size_t size, DelegateF delegateF) noexcept
 {
 	AllocateResult result{nullptr, 0, false};
 	if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
@@ -167,14 +298,8 @@ PoolAllocator::AllocateResult PoolAllocator::allocate(std::size_t nmemb, std::si
 				if (!(result.ptr = pool->allocate(totalSize))) {
 					result.propagateErrno = ENOMEM;
 				}
-			} else if (delegate) {
-				if (useDelegateReallocArray) {
-					result.ptr = delegate->reallocarray(nullptr, nmemb, size);
-				} else {
-					result.ptr = delegate->calloc(nmemb, size);
-				}
-				result.propagateErrno = errno;
-				result.fromDelegate = true;
+			} else {
+				result = delegateF(nmemb, size);
 			}
 		} else {
 			result.ptr = ptrToEmpty;
@@ -200,7 +325,14 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t s
 			result.fromDelegate = true;
 		}
 	} else {
-		result = allocate(size, true);
+		result = allocate(
+			size,
+			[this](std::size_t size) {
+				AllocateResult result{delegate->realloc(nullptr, size), 0, true};
+				result.propagateErrno = errno;
+				return result;
+			},
+			alignAlways);
 	}
 	return result;
 }
@@ -226,7 +358,11 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t n
 			result.fromDelegate = true;
 		}
 	} else {
-		result = allocate(nmemb, size, true);
+		result = allocate(nmemb, size, [this](std::size_t nmemb, std::size_t size) {
+			AllocateResult result{delegate->reallocarray(nullptr, nmemb, size), 0, true};
+			result.propagateErrno = errno;
+			return result;
+		});
 	}
 	return result;
 }

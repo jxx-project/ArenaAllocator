@@ -11,6 +11,7 @@
 #include "ArenaAllocator/Allocation.h"
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
+#include <mutex>
 #include <optional>
 #include <unordered_map>
 
@@ -36,6 +37,7 @@ public:
 	void unregisterAllocation(AggregateType::const_iterator it) noexcept;
 
 private:
+	mutable std::mutex mutex;
 	Logger const& logger;
 	AggregateType aggregate;
 };

@@ -36,13 +36,13 @@ public:
 	std::size_t nChunks() const noexcept;
 
 	template<typename F>
-	void forEachChunk(F func) noexcept
+	void forEachChunk(F f) noexcept
 	{
 		for (ListType::iterator it = free.begin(); it != free.end(); ++it) {
-			func(it);
+			f(it);
 		}
 		for (ListType::iterator it = allocated.begin(); it != allocated.end(); ++it) {
-			func(it);
+			f(it);
 		}
 	}
 
