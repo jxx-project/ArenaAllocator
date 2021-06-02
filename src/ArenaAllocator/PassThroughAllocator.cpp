@@ -82,16 +82,37 @@ void* PassThroughAllocator::realloc(void* ptr, std::size_t size) noexcept
 	return result;
 }
 
+namespace {
+
+// glibc as of version 2.31 implements __libc_reallocarray in terms of realloc, which results in a recursion
+// into the custom allocator: Deflect into __libc_realloc directly.
+void* reallocarrayUsingLibcRealloc(void* ptr, std::size_t nmemb, std::size_t size) noexcept
+{
+	void* result;
+	if (nmemb && size) {
+		if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
+			result = __libc_realloc(ptr, nmemb * size);
+		};
+	} else {
+		// nmemb * size would overflow
+		result = nullptr;
+		errno = ENOMEM;
+	}
+	return result;
+}
+
+} // namespace
+
 void* PassThroughAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	void* result;
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
-		result = __libc_reallocarray(ptr, nmemb, size);
+		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
 		logger.log(
 			"PassThroughAllocator::reallocarray(%p, %lu, %lu) -> %p [%lu ns]\n", ptr, nmemb, size, result, timer.getNanoseconds());
 	} else {
-		result = __libc_reallocarray(ptr, nmemb, size);
+		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
 	}
 	return result;
 }
