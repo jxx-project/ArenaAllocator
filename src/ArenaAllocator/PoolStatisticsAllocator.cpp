@@ -139,7 +139,7 @@ void* PoolStatisticsAllocator::valloc(std::size_t size) noexcept
 	if (size) {
 		result = delegate.valloc(size);
 		if (result) {
-			registerAllocate(size, result, sysconf(_SC_PAGESIZE));
+			registerAllocate(size, result, ::sysconf(_SC_PAGESIZE));
 		}
 	} else {
 		result = ptrToEmpty;
@@ -167,7 +167,7 @@ void* PoolStatisticsAllocator::pvalloc(std::size_t size) noexcept
 	if (size) {
 		result = delegate.pvalloc(size);
 		if (result) {
-			registerAllocate(size, result, sysconf(_SC_PAGESIZE));
+			registerAllocate(size, result, ::sysconf(_SC_PAGESIZE));
 		}
 	} else {
 		result = ptrToEmpty;
@@ -178,6 +178,7 @@ void* PoolStatisticsAllocator::pvalloc(std::size_t size) noexcept
 void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result) noexcept
 {
 	logger.debug("PoolStatisticsAllocator::registerAllocate(%lu, %p)\n", size, result);
+	std::lock_guard<std::mutex> guard(mutex);
 	PoolStatistics* pool{pools.at(size)};
 	if (!pool) {
 		pool = &delegatePool;
@@ -188,6 +189,7 @@ void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result) n
 void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept
 {
 	logger.debug("PoolStatisticsAllocator::registerAllocate(%lu, %p)\n", size, result);
+	std::lock_guard<std::mutex> guard(mutex);
 	PoolStatistics* pool{alignment <= sizeof(Pool::WordType) ? pools.at(size) : &delegatePool};
 	if (!pool) {
 		pool = &delegatePool;
@@ -198,6 +200,7 @@ void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result, s
 void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
 {
 	logger.debug("PoolStatisticsAllocator::registerDeallocate(%p)\n", ptr);
+	std::lock_guard<std::mutex> guard(mutex);
 	std::optional<AllocationMap::const_iterator> it{allocations.find(ptr)};
 	if (it.has_value()) {
 		allocations.unregisterAllocation(it.value());
@@ -210,6 +213,7 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 {
 	logger.debug("PoolStatisticsAllocator::registerReallocate(%p, %lu, %p)\n", ptr, size, result);
 	if (ptr) {
+		std::lock_guard<std::mutex> guard(mutex);
 		std::optional<AllocationMap::const_iterator> it{allocations.find(ptr)};
 		if (it.has_value()) {
 			PoolStatistics* currentPool{it.value()->second.pool};

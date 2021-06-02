@@ -7,6 +7,7 @@
 
 #include "ArenaAllocator/PoolAllocator.h"
 #include "ArenaAllocator/Timer.h"
+#include <algorithm>
 #include <cerrno>
 #include <cstring>
 #include <limits>
@@ -41,7 +42,7 @@ namespace {
 
 constexpr auto alignAlways{[]() { return true; }};
 
-const auto alignPageSize{[]() { return sysconf(_SC_PAGESIZE) <= sizeof(Pool::WordType); }};
+const auto alignPageSize{[]() { return ::sysconf(_SC_PAGESIZE) <= sizeof(Pool::WordType); }};
 
 } // namespace
 
@@ -251,8 +252,10 @@ void* PoolAllocator::pvalloc(std::size_t size) noexcept
 }
 
 template<typename DelegateF, typename AlignmentPredicate>
-PoolAllocator::AllocateResult
-PoolAllocator::allocate(std::size_t size, DelegateF delegateF, AlignmentPredicate alignmentPredicate) noexcept
+PoolAllocator::AllocateResult PoolAllocator::allocate(
+	std::size_t size,
+	DelegateF delegateF,
+	AlignmentPredicate alignmentPredicate) noexcept
 {
 	AllocateResult result{nullptr, 0, false};
 	if (size) {

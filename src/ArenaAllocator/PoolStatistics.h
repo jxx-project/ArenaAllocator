@@ -15,7 +15,6 @@
 #include "ArenaAllocator/SizeRange.h"
 #include <cstdint>
 #include <list>
-#include <mutex>
 #include <vector>
 
 namespace ArenaAllocator {
@@ -36,7 +35,6 @@ public:
 private:
 	const SizeRange range;
 	const std::size_t nChunkLimit;
-	std::mutex mutex;
 	std::size_t allocations;
 	std::size_t minSize;
 	std::size_t maxSize;

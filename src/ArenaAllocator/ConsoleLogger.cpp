@@ -6,10 +6,10 @@
 
 
 #include "ArenaAllocator/ConsoleLogger.h"
+#include <algorithm>
 #include <cerrno>
 #include <cstdio>
 #include <unistd.h>
-#include <algorithm>
 
 namespace ArenaAllocator {
 
@@ -75,7 +75,7 @@ void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
 {
 	int propagateErrno{errno};
 	char buffer[1024];
-	::ssize_t prefixLenOrError{std::snprintf(buffer, sizeof(buffer), "[pid: %u] ", getpid())};
+	::ssize_t prefixLenOrError{std::snprintf(buffer, sizeof(buffer), "[pid: %u] ", ::getpid())};
 	std::size_t prefixLen{prefixLenOrError >= 0 ? static_cast<std::size_t>(prefixLenOrError) : 0};
 	::ssize_t messageLenOrError{std::vsnprintf(buffer + prefixLen, sizeof(buffer) - prefixLen, fmt, argp)};
 	std::size_t messageLen{messageLenOrError >= 0 ? static_cast<std::size_t>(messageLenOrError) : 0};

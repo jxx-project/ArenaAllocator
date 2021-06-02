@@ -15,6 +15,7 @@
 #include "ArenaAllocator/PoolMap.h"
 #include "ArenaAllocator/PoolStatistics.h"
 #include <cstdint>
+#include <mutex>
 
 namespace ArenaAllocator {
 
@@ -44,6 +45,7 @@ private:
 	void registerReallocate(void* ptr, std::size_t size, void* result) noexcept;
 	void registerReallocate(void* ptr, std::size_t nmemb, std::size_t size, void* result) noexcept;
 
+	std::mutex mutex;
 	void* const ptrToEmpty;
 	Allocator& delegate;
 	Logger const& logger;
