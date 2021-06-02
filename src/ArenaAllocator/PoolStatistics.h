@@ -31,6 +31,7 @@ public:
 	void registerReallocate(std::size_t size) noexcept;
 	void registerDeallocate() noexcept;
 	SizeRange const& getRange() const noexcept;
+	void dump() const noexcept;
 
 private:
 	const SizeRange range;

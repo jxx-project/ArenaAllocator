@@ -42,6 +42,8 @@ public:
 		}
 	}
 
+	void dump() const noexcept;
+
 private:
 	using AggregateType = SizeRangeMap<T>;
 

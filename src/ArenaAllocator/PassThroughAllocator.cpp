@@ -168,4 +168,9 @@ void* PassThroughAllocator::pvalloc(std::size_t size) noexcept
 	return result;
 }
 
+void PassThroughAllocator::dump() const noexcept
+{
+	// Nothing to do.
+}
+
 } // namespace ArenaAllocator

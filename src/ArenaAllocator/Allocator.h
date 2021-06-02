@@ -27,6 +27,7 @@ public:
 	virtual void* valloc(std::size_t size) noexcept = 0;
 	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept = 0;
 	virtual void* pvalloc(std::size_t size) noexcept = 0;
+	virtual void dump() const noexcept = 0;
 };
 
 } // namespace ArenaAllocator

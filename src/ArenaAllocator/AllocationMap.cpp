@@ -55,4 +55,16 @@ void AllocationMap::unregisterAllocation(AggregateType::const_iterator it) noexc
 	aggregate.erase(it);
 }
 
+void AllocationMap::dump() const noexcept
+{
+	for (typename AggregateType::value_type const& element : aggregate) {
+		logger.log(
+			"%p: {pool: [%lu, %lu], size: %lu}\n",
+			element.first,
+			element.second.pool->getRange().first,
+			element.second.pool->getRange().last,
+			element.second.size);
+	}
+}
+
 } // namespace ArenaAllocator

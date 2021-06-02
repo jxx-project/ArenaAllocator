@@ -24,7 +24,6 @@ Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) no
 
 Pool::~Pool() noexcept
 {
-	logger.info("Pool::~Pool() {range: [%lu, %lu], hwm: %lu}\n", range.first, range.last, hwm);
 }
 
 
@@ -68,7 +67,14 @@ void Pool::deallocate(ListType::const_iterator it) noexcept
 
 std::size_t Pool::nChunks() const noexcept
 {
+	std::lock_guard<std::mutex> guard(mutex);
 	return free.size() + allocated.size();
+}
+
+void Pool::dump() const noexcept
+{
+	std::lock_guard<std::mutex> guard(mutex);
+	logger.log("[%lu, %lu]: {free: %lu, allocated: %lu, hwm: %lu}\n", range.first, range.last, free.size(), allocated.size(), hwm);
 }
 
 } // namespace ArenaAllocator

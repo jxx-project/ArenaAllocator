@@ -25,16 +25,6 @@ PoolStatistics::PoolStatistics(SizeRange const& range, std::size_t nChunks, Logg
 
 PoolStatistics::~PoolStatistics() noexcept
 {
-	logger.info(
-		"PoolStatistics::~PoolStatistics() {range: [%lu, %lu], nChunkLimit: %lu, allocations: %lu, minSize: %lu, maxSize: %lu, "
-		"hwm: %lu}\n",
-		range.first,
-		range.last,
-		nChunkLimit,
-		allocations,
-		allocations ? minSize : 0,
-		maxSize,
-		hwm);
 }
 
 void PoolStatistics::registerAllocate(std::size_t size) noexcept
@@ -66,6 +56,19 @@ void PoolStatistics::registerDeallocate() noexcept
 SizeRange const& PoolStatistics::getRange() const noexcept
 {
 	return range;
+}
+
+void PoolStatistics::dump() const noexcept
+{
+	logger.log(
+		"[%lu, %lu]: {nChunkLimit: %lu, allocations: %lu, minSize: %lu, maxSize: %lu, hwm: %lu}\n",
+		range.first,
+		range.last,
+		nChunkLimit,
+		allocations,
+		allocations ? minSize : 0,
+		maxSize,
+		hwm);
 }
 
 } // namespace ArenaAllocator

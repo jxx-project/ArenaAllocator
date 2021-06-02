@@ -34,6 +34,7 @@ public:
 	std::optional<const_iterator> find(void* ptr) const noexcept;
 	void registerAllocation(void* ptr, Allocation const& allocation) noexcept;
 	void unregisterAllocation(AggregateType::const_iterator it) noexcept;
+	void dump() const noexcept;
 
 private:
 	Logger const& logger;

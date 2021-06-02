@@ -32,6 +32,7 @@ public:
 	virtual void* valloc(std::size_t size) noexcept override;
 	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept override;
 	virtual void* pvalloc(std::size_t size) noexcept override;
+	virtual void dump() const noexcept override;
 
 private:
 	Logger const& logger;

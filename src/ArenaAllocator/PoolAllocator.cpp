@@ -36,6 +36,9 @@ PoolAllocator::PoolAllocator(Configuration const& configuration, Allocator* dele
 PoolAllocator::~PoolAllocator() noexcept
 {
 	logger.debug("PoolAllocator::~PoolAllocator()\n");
+	if (logger.isLevel(LogLevel::DEBUG)) {
+		dump();
+	}
 }
 
 namespace {
@@ -394,6 +397,11 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(Pool::ListType::iterator
 		currentChunk->pool->deallocate(currentChunk);
 	}
 	return result;
+}
+
+void PoolAllocator::dump() const noexcept
+{
+	pools.dump();
 }
 
 } // namespace ArenaAllocator

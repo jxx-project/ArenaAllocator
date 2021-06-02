@@ -46,6 +46,9 @@ PoolStatisticsAllocator::PoolStatisticsAllocator(
 PoolStatisticsAllocator::~PoolStatisticsAllocator() noexcept
 {
 	logger.debug("PoolStatisticsAllocator::~PoolStatisticsAllocator()\n");
+	if (logger.isLevel(LogLevel::DEBUG)) {
+		dump();
+	}
 }
 
 void* PoolStatisticsAllocator::malloc(std::size_t size) noexcept
@@ -246,6 +249,13 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 	} else {
 		registerAllocate(size, result);
 	}
+}
+
+void PoolStatisticsAllocator::dump() const noexcept
+{
+	std::lock_guard<std::mutex> guard(mutex);
+	pools.dump();
+	allocations.dump();
 }
 
 } // namespace ArenaAllocator

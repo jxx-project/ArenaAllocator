@@ -33,6 +33,14 @@ T* PoolMap<T>::at(std::size_t chunkSize) noexcept
 	return aggregate.at(chunkSize);
 }
 
+template<typename T>
+void PoolMap<T>::dump() const noexcept
+{
+	for (typename AggregateType::value_type const& element : aggregate) {
+		element.second.dump();
+	}
+}
+
 template class PoolMap<Pool>;
 template class PoolMap<PoolStatistics>;
 

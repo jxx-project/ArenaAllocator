@@ -37,6 +37,7 @@ public:
 	virtual void* valloc(std::size_t size) noexcept override;
 	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept override;
 	virtual void* pvalloc(std::size_t size) noexcept override;
+	virtual void dump() const noexcept override;
 
 private:
 	void registerAllocate(std::size_t size, void* result) noexcept;
@@ -45,8 +46,8 @@ private:
 	void registerReallocate(void* ptr, std::size_t size, void* result) noexcept;
 	void registerReallocate(void* ptr, std::size_t nmemb, std::size_t size, void* result) noexcept;
 
-	std::mutex mutex;
 	void* const ptrToEmpty;
+	mutable std::mutex mutex;
 	Allocator& delegate;
 	Logger const& logger;
 	PoolMap<PoolStatistics> pools;
