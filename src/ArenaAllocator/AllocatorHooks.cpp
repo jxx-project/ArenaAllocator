@@ -12,6 +12,7 @@
 #include "ArenaAllocator/PoolAllocator.h"
 #include "ArenaAllocator/PoolStatisticsAllocator.h"
 #include <optional>
+#include <unistd.h>
 
 namespace ArenaAllocator {
 
@@ -46,6 +47,7 @@ private:
 
 	AllocatorHooks() noexcept;
 
+	::pid_t pid;
 	ConsoleLogger logger;
 	Allocator* allocator;
 	Factory factory;
@@ -59,6 +61,11 @@ AllocatorHooks::~AllocatorHooks() noexcept
 AllocatorHooks& AllocatorHooks::getInstance() noexcept
 {
 	static AllocatorHooks instance;
+	::pid_t pid{::getpid()};
+	if (pid != instance.pid) {
+		instance.pid = pid;
+		instance.allocator->dump();
+	}
 	return instance;
 }
 
@@ -98,7 +105,8 @@ Allocator* AllocatorHooks::Factory::getAllocator(Configuration::StringType const
 	return result;
 }
 
-AllocatorHooks::AllocatorHooks() noexcept : logger{}, factory{configuration, logger}, configuration{factory, allocator, logger}
+AllocatorHooks::AllocatorHooks() noexcept :
+	pid{::getpid()}, logger{}, factory{configuration, logger}, configuration{factory, allocator, logger}
 {
 	logger.debug("AllocatorHooks::AllocatorHooks()\n");
 }
@@ -128,15 +136,15 @@ extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 	return AllocatorHooks::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
 }
 
-extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
-{
-	return AllocatorHooks::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
-}
+// extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
+// {
+// 	return AllocatorHooks::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
+// }
 
-extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
-{
-	return AllocatorHooks::getInstance().getAllocator().aligned_alloc(alignment, size);
-}
+// extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
+// {
+// 	return AllocatorHooks::getInstance().getAllocator().aligned_alloc(alignment, size);
+// }
 
 extern "C" void* valloc(std::size_t size)
 {
