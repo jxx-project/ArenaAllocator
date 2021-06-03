@@ -35,17 +35,12 @@ void PoolStatistics::registerAllocate(std::size_t size) noexcept
 	hwm = std::max(allocations, hwm);
 	if (nChunkLimit && allocations > nChunkLimit && hwm == nChunkLimit + 1) {
 		logger.info(
-			"PoolStatistics::allocate(%lu) {range: [%lu, %lu], ...} exceeded nChunkLimit: %lu\n",
+			"PoolStatistics::registerAllocate(%lu) {range: [%lu, %lu], ...} exceeded nChunkLimit: %lu\n",
 			size,
 			range.first,
 			range.last,
 			nChunkLimit);
 	}
-}
-
-void PoolStatistics::registerReallocate(std::size_t size) noexcept
-{
-	maxSize = std::max(size, maxSize);
 }
 
 void PoolStatistics::registerDeallocate() noexcept

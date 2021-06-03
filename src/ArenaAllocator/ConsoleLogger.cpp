@@ -74,12 +74,19 @@ void ConsoleLogger::setLevel(LogLevel level) noexcept
 void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
 {
 	int propagateErrno{errno};
+
 	char buffer[1024];
-	::ssize_t prefixLenOrError{std::snprintf(buffer, sizeof(buffer), "[pid: %u] ", ::getpid())};
-	std::size_t prefixLen{prefixLenOrError >= 0 ? static_cast<std::size_t>(prefixLenOrError) : 0};
-	::ssize_t messageLenOrError{std::vsnprintf(buffer + prefixLen, sizeof(buffer) - prefixLen, fmt, argp)};
-	std::size_t messageLen{messageLenOrError >= 0 ? static_cast<std::size_t>(messageLenOrError) : 0};
-	::write(STDERR_FILENO, buffer, std::min(prefixLen + messageLen, sizeof(buffer)));
+	::ssize_t prefixLengthOrError{std::snprintf(buffer, sizeof(buffer), "[pid:%u] ", ::getpid())};
+	std::size_t prefixLength{static_cast<std::size_t>(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
+	::ssize_t messageLengthOrError{std::vsnprintf(buffer + prefixLength, sizeof(buffer) - prefixLength, fmt, argp)};
+	std::size_t totalLength{std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), sizeof(buffer))};
+
+	std::size_t totalBytesWritten{0};
+	::ssize_t bytesWritten;
+	while ((bytesWritten = ::write(STDERR_FILENO, buffer + totalBytesWritten, totalLength - totalBytesWritten)) > 0) {
+		totalBytesWritten += bytesWritten;
+	}
+
 	errno = propagateErrno;
 }
 

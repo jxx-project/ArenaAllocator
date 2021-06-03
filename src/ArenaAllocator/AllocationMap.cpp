@@ -35,7 +35,7 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 		allocation.pool->registerAllocate(allocation.size);
 	} else {
 		logger.error(
-			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu}) failed: pointer already registered\n",
+			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu}): pointer already registered\n",
 			ptr,
 			allocation.pool->getRange().first,
 			allocation.pool->getRange().last,
@@ -46,13 +46,19 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 void AllocationMap::unregisterAllocation(AggregateType::const_iterator it) noexcept
 {
 	logger.debug(
-		"AllocationMap::unregisterAllocation(%p, {[%lu, %lu], %lu})\n",
+		"AllocationMap::unregisterAllocation(({%p, {[%lu, %lu], %lu}})\n",
 		it->first,
 		it->second.pool->getRange().first,
 		it->second.pool->getRange().last,
 		it->second.size);
 	it->second.pool->registerDeallocate();
 	aggregate.erase(it);
+}
+
+void AllocationMap::updateAllocation(AggregateType::const_iterator it, void* ptr, Allocation const& allocation) noexcept
+{
+	unregisterAllocation(it);
+	registerAllocation(ptr, allocation);
 }
 
 void AllocationMap::dump() const noexcept

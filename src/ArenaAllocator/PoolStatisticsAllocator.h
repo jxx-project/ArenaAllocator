@@ -47,7 +47,7 @@ private:
 	void registerReallocate(void* ptr, std::size_t nmemb, std::size_t size, void* result) noexcept;
 
 	void* const ptrToEmpty;
-	mutable std::mutex mutex;
+	std::mutex mutex;
 	Allocator& delegate;
 	Logger const& logger;
 	PoolMap<PoolStatistics> pools;

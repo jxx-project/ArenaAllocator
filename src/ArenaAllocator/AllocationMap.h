@@ -11,6 +11,7 @@
 #include "ArenaAllocator/Allocation.h"
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
+#include <mutex>
 #include <optional>
 #include <unordered_map>
 
@@ -34,6 +35,7 @@ public:
 	std::optional<const_iterator> find(void* ptr) const noexcept;
 	void registerAllocation(void* ptr, Allocation const& allocation) noexcept;
 	void unregisterAllocation(AggregateType::const_iterator it) noexcept;
+	void updateAllocation(AggregateType::const_iterator it, void* ptr, Allocation const& allocation) noexcept;
 	void dump() const noexcept;
 
 private:
