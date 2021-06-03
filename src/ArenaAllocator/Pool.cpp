@@ -12,10 +12,13 @@
 namespace ArenaAllocator {
 
 Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept :
-	range{range}, chunkSize{((range.last + sizeof(WordType) - 1U) / sizeof(WordType)) * sizeof(WordType)}, logger{logger}, hwm{0}
+	range{range},
+	chunkSize{((range.last + sizeof(std::max_align_t) - 1U) / sizeof(std::max_align_t)) * sizeof(std::max_align_t)},
+	logger{logger},
+	hwm{0}
 {
 	logger.debug("Pool::Pool([%lu, %lu], %lu)\n", range.first, range.last, nChunks);
-	const std::size_t wordsPerChunk{chunkSize / sizeof(WordType)};
+	const std::size_t wordsPerChunk{chunkSize / sizeof(std::max_align_t)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
 		free.emplace_back(Chunk{storage.data() + offset, this, 0});

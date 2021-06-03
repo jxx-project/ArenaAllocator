@@ -13,7 +13,7 @@
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/SizeRange.h"
-#include <cstdint>
+#include <cstddef>
 #include <list>
 #include <vector>
 

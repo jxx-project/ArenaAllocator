@@ -8,7 +8,7 @@
 #ifndef ARENA_ALLOCATOR_PASS_THROUGH_CXX_ALLOCATOR_H_INCLUDED
 #define ARENA_ALLOCATOR_PASS_THROUGH_CXX_ALLOCATOR_H_INCLUDED
 
-#include <cstdint>
+#include <cstddef>
 
 extern "C" void* __libc_malloc(std::size_t size);
 extern "C" void __libc_free(void* ptr);

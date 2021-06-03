@@ -11,7 +11,7 @@
 #include "ArenaAllocator/LogLevel.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/SizeRangeMap.h"
-#include <cstdint>
+#include <cstddef>
 #include <map>
 
 namespace ArenaAllocator {

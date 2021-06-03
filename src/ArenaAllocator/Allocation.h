@@ -9,7 +9,7 @@
 #define ARENA_ALLOCATOR_ALLOCATION_H_INCLUDED
 
 #include "ArenaAllocator/PoolStatistics.h"
-#include <cstdint>
+#include <cstddef>
 
 namespace ArenaAllocator {
 

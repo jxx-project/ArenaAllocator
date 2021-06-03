@@ -10,7 +10,7 @@
 
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Logger.h"
-#include <cstdint>
+#include <cstddef>
 
 namespace ArenaAllocator {
 

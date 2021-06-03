@@ -14,7 +14,7 @@
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/PoolMap.h"
-#include <cstdint>
+#include <cstddef>
 
 namespace ArenaAllocator {
 

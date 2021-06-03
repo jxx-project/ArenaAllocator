@@ -8,7 +8,7 @@
 #ifndef ARENA_ALLOCATOR_CHUNK_H_INCLUDED
 #define ARENA_ALLOCATOR_CHUNK_H_INCLUDED
 
-#include <cstdint>
+#include <cstddef>
 
 namespace ArenaAllocator {
 

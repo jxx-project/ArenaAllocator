@@ -8,7 +8,7 @@
 #ifndef ARENA_ALLOCATOR_SIZE_RANGE_H_INCLUDED
 #define ARENA_ALLOCATOR_SIZE_RANGE_H_INCLUDED
 
-#include <cstdint>
+#include <cstddef>
 
 struct SizeRange
 {

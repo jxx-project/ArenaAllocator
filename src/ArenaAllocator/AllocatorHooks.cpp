@@ -136,15 +136,15 @@ extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 	return AllocatorHooks::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
 }
 
-// extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
-// {
-// 	return AllocatorHooks::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
-// }
+extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
+{
+	return AllocatorHooks::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
+}
 
-// extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
-// {
-// 	return AllocatorHooks::getInstance().getAllocator().aligned_alloc(alignment, size);
-// }
+extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
+{
+	return AllocatorHooks::getInstance().getAllocator().aligned_alloc(alignment, size);
+}
 
 extern "C" void* valloc(std::size_t size)
 {

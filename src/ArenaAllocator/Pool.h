@@ -12,7 +12,7 @@
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/SizeRange.h"
-#include <cstdint>
+#include <cstddef>
 #include <list>
 #include <mutex>
 #include <vector>
@@ -22,7 +22,6 @@ namespace ArenaAllocator {
 class Pool
 {
 public:
-	using WordType = long;
 	using ListType = std::list<Chunk, PassThroughCXXAllocator<Chunk>>;
 
 	Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept;
@@ -49,7 +48,7 @@ public:
 	void dump() const noexcept;
 
 private:
-	using StorageType = std::vector<WordType, PassThroughCXXAllocator<WordType>>;
+	using StorageType = std::vector<std::max_align_t, PassThroughCXXAllocator<std::max_align_t>>;
 	const SizeRange range;
 	const std::size_t chunkSize;
 	mutable std::mutex mutex;

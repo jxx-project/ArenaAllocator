@@ -7,6 +7,7 @@
 
 #include "ArenaAllocator/PassThroughAllocator.h"
 #include "ArenaAllocator/Timer.h"
+#include <cerrno>
 
 extern "C" void* __libc_malloc(std::size_t size);
 extern "C" void __libc_free(void* ptr);
@@ -117,12 +118,35 @@ void* PassThroughAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size
 	return result;
 }
 
+namespace {
+
+// glibc as of version 2.31 does not provide __libc_posix_memalign.
+int posixMemalignUsingLibcMemalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
+{
+	int result{0};
+	if ((alignment & (alignment - 1)) == 0 && alignment >= sizeof(void*)) {
+		int propagateErrno{errno};
+		void* memalignResult{__libc_memalign(alignment, size)};
+		if (memalignResult) {
+			*memptr = memalignResult;
+		} else {
+			result = ENOMEM;
+		}
+		errno = propagateErrno;
+	} else {
+		result = EINVAL;
+	}
+	return result;
+}
+
+} // namespace
+
 int PassThroughAllocator::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
 {
 	int result;
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
-		result = __libc_posix_memalign(memptr, alignment, size);
+		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
 		logger.log(
 			"PassThroughAllocator::posix_memalign(&%p, %lu %lu) -> %d [%lu ns]\n",
 			*memptr,
@@ -131,21 +155,31 @@ int PassThroughAllocator::posix_memalign(void** memptr, std::size_t alignment, s
 			result,
 			timer.getNanoseconds());
 	} else {
-		result = __libc_posix_memalign(memptr, alignment, size);
+		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
 	}
 	return result;
 }
+
+namespace {
+
+// glibc as of version 2.31 does not provide __libc_aligned_alloc.
+void* alignedAllocUsingLibcMemalign(std::size_t alignment, std::size_t size) noexcept
+{
+	return __libc_memalign(alignment, size);
+}
+
+} // namespace
 
 void* PassThroughAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
 	void* result;
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
-		result = __libc_aligned_alloc(alignment, size);
+		result = alignedAllocUsingLibcMemalign(alignment, size);
 		logger.log(
 			"PassThroughAllocator::aligned_alloc(%lu %lu) -> %p [%lu ns]\n", alignment, size, result, timer.getNanoseconds());
 	} else {
-		result = __libc_aligned_alloc(alignment, size);
+		result = alignedAllocUsingLibcMemalign(alignment, size);
 	}
 	return result;
 }

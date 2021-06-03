@@ -45,7 +45,7 @@ namespace {
 
 constexpr auto alignAlways{[]() { return true; }};
 
-const auto alignPageSize{[]() { return ::sysconf(_SC_PAGESIZE) <= sizeof(Pool::WordType); }};
+const auto alignPageSize{[]() { return ::sysconf(_SC_PAGESIZE) <= sizeof(std::max_align_t); }};
 
 } // namespace
 
@@ -147,7 +147,7 @@ int PoolAllocator::posix_memalign(void** memptr, std::size_t alignment, std::siz
 		result.propagateErrno = delegate->posix_memalign(&result.ptr, alignment, size);
 		return result;
 	}};
-	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(Pool::WordType); }};
+	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(std::max_align_t); }};
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
 		result = allocate(size, delegateMemAlignFunc, alignWordTypeSize);
@@ -175,7 +175,7 @@ void* PoolAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noex
 		result.propagateErrno = errno;
 		return result;
 	}};
-	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(Pool::WordType); }};
+	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(std::max_align_t); }};
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
 		result = allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
@@ -219,7 +219,7 @@ void* PoolAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
 		result.propagateErrno = errno;
 		return result;
 	}};
-	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(Pool::WordType); }};
+	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(std::max_align_t); }};
 	if (logger.isLevel(LogLevel::INFO)) {
 		Timer timer;
 		result = allocate(size, delegateMemalignFunc, alignWordTypeSize);

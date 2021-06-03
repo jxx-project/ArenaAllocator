@@ -193,7 +193,7 @@ void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result, s
 {
 	logger.debug("PoolStatisticsAllocator::registerAllocate(%lu, %p)\n", size, result);
 	std::lock_guard<std::mutex> guard(mutex);
-	PoolStatistics* pool{alignment <= sizeof(Pool::WordType) ? pools.at(size) : &delegatePool};
+	PoolStatistics* pool{alignment <= sizeof(std::max_align_t) ? pools.at(size) : &delegatePool};
 	if (!pool) {
 		pool = &delegatePool;
 	}
