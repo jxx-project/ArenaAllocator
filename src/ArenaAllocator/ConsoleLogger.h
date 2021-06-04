@@ -22,7 +22,7 @@ public:
 	virtual ~ConsoleLogger() noexcept;
 
 	virtual void operator()(char const* fmt, ...) const noexcept override;
-	virtual void operator()(std::chrono::nanoseconds duration, char const* fmt, ...) const noexcept override;
+	virtual void operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept override;
 	virtual void operator()(LogLevel level, char const* fmt, ...) const noexcept override;
 	virtual bool isLevel(LogLevel level) const noexcept override;
 	virtual void setLevel(LogLevel level) noexcept override;

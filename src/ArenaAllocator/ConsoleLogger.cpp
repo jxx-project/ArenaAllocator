@@ -31,7 +31,7 @@ void ConsoleLogger::operator()(char const* fmt, ...) const noexcept
 	::va_end(argp);
 }
 
-void ConsoleLogger::operator()(std::chrono::nanoseconds duration, char const* fmt, ...) const noexcept
+void ConsoleLogger::operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept
 {
 	std::va_list argp;
 	::va_start(argp, fmt);

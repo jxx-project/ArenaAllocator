@@ -4,6 +4,7 @@ CUSTOM_ALLOCATORS_OBJECTS = \
         ChunkMap.o \
         ConsoleLogger.o \
         EnvironmentConfiguration.o \
+        OperationType.o \
         ParseConfiguration.o \
         PassThroughAllocator.o \
         PoolAllocator.o \

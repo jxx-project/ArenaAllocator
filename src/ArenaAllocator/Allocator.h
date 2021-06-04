@@ -9,6 +9,7 @@
 #define ARENA_ALLOCATOR_ALLOCATOR_H_INCLUDED
 
 #include <cstddef>
+#include <map>
 
 namespace ArenaAllocator {
 
