@@ -28,9 +28,9 @@ Timer::Timer() noexcept : startTime{now()}
 {
 }
 
-long Timer::getNanoseconds() const noexcept
+std::chrono::nanoseconds Timer::getNanoseconds() const noexcept
 {
-	return std::chrono::duration_cast<std::chrono::nanoseconds>(now() - startTime).count();
+	return std::chrono::duration_cast<std::chrono::nanoseconds>(now() - startTime);
 }
 
 } // namespace ArenaAllocator

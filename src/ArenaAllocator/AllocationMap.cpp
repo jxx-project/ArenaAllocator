@@ -27,7 +27,7 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 {
 	if (aggregate.emplace(ptr, allocation).second) {
 		log(LogLevel::DEBUG,
-			"\tAllocationMap::registerAllocation(%p, {[%lu, %lu], %lu})\n",
+			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu})",
 			ptr,
 			allocation.pool->getRange().first,
 			allocation.pool->getRange().last,
@@ -35,7 +35,7 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 		allocation.pool->registerAllocate(allocation.size);
 	} else {
 		log(LogLevel::ERROR,
-			"\tAllocationMap::registerAllocation(%p, {[%lu, %lu], %lu}): pointer already registered\n",
+			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu}): pointer already registered",
 			ptr,
 			allocation.pool->getRange().first,
 			allocation.pool->getRange().last,
@@ -46,7 +46,7 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 void AllocationMap::unregisterAllocation(AggregateType::iterator it) noexcept
 {
 	log(LogLevel::DEBUG,
-		"\tAllocationMap::unregisterAllocation(%p, {[%lu, %lu], %lu})\n",
+		"AllocationMap::unregisterAllocation(%p, {[%lu, %lu], %lu})",
 		it->first,
 		it->second.pool->getRange().first,
 		it->second.pool->getRange().last,
@@ -59,7 +59,7 @@ void AllocationMap::updateAllocation(AggregateType::iterator it, void* ptr, Allo
 {
 	if (it->first == ptr) {
 		log(LogLevel::DEBUG,
-			"\tAllocationMap::updateAllocation(%p, {[%lu, %lu], %lu})\n",
+			"AllocationMap::updateAllocation(%p, {[%lu, %lu], %lu})",
 			ptr,
 			allocation.pool->getRange().first,
 			allocation.pool->getRange().last,
@@ -76,7 +76,7 @@ void AllocationMap::updateAllocation(AggregateType::iterator it, void* ptr, Allo
 void AllocationMap::dump() const noexcept
 {
 	for (typename AggregateType::value_type const& element : aggregate) {
-		log("\t%p: {pool: [%lu, %lu], size: %lu}\n",
+		log("%p: {pool: [%lu, %lu], size: %lu}",
 			element.first,
 			element.second.pool->getRange().first,
 			element.second.pool->getRange().last,

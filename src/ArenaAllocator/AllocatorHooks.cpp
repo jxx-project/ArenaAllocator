@@ -108,7 +108,7 @@ Allocator* AllocatorHooks::Factory::getAllocator(Configuration::StringType const
 AllocatorHooks::AllocatorHooks() noexcept :
 	pid{::getpid()}, log{}, factory{configuration, log}, configuration{factory, allocator, log}
 {
-	log(LogLevel::DEBUG, "\tAllocatorHooks::AllocatorHooks()\n");
+	log(LogLevel::DEBUG, "AllocatorHooks::AllocatorHooks()");
 }
 
 extern "C" void* malloc(std::size_t size)

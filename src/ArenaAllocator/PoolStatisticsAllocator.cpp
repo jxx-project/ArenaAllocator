@@ -39,13 +39,13 @@ PoolStatisticsAllocator::PoolStatisticsAllocator(
 	allocations{log}
 {
 	log(LogLevel::DEBUG,
-		"\tPoolStatisticsAllocator::PoolStatisticsAllocator(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}\n",
+		"PoolStatisticsAllocator::PoolStatisticsAllocator(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}",
 		ptrToEmpty);
 }
 
 PoolStatisticsAllocator::~PoolStatisticsAllocator() noexcept
 {
-	log(LogLevel::DEBUG, "\tPoolStatisticsAllocator::~PoolStatisticsAllocator()\n");
+	log(LogLevel::DEBUG, "PoolStatisticsAllocator::~PoolStatisticsAllocator()");
 	if (log.isLevel(LogLevel::INFO)) {
 		dump();
 	}
@@ -196,7 +196,7 @@ void* PoolStatisticsAllocator::pvalloc(std::size_t size) noexcept
 
 void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result) noexcept
 {
-	log(LogLevel::DEBUG, "\tPoolStatisticsAllocator::registerAllocate(%lu, %p)\n", size, result);
+	log(LogLevel::DEBUG, "PoolStatisticsAllocator::registerAllocate(%lu, %p)", size, result);
 	PoolStatistics* pool{pools.at(size)};
 	if (!pool) {
 		pool = &delegatePool;
@@ -206,7 +206,7 @@ void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result) n
 
 void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept
 {
-	log(LogLevel::DEBUG, "\tPoolStatisticsAllocator::registerAllocate(%lu, %p)\n", size, result);
+	log(LogLevel::DEBUG, "PoolStatisticsAllocator::registerAllocate(%lu, %p)", size, result);
 	PoolStatistics* pool{alignment <= sizeof(std::max_align_t) ? pools.at(size) : &delegatePool};
 	if (!pool) {
 		pool = &delegatePool;
@@ -216,13 +216,13 @@ void PoolStatisticsAllocator::registerAllocate(std::size_t size, void* result, s
 
 void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
 {
-	log(LogLevel::DEBUG, "\tPoolStatisticsAllocator::registerDeallocate(%p)\n", ptr);
+	log(LogLevel::DEBUG, "PoolStatisticsAllocator::registerDeallocate(%p)", ptr);
 	if (ptr) {
 		std::optional<AllocationMap::iterator> it{allocations.find(ptr)};
 		if (it.has_value()) {
 			allocations.unregisterAllocation(it.value());
 		} else {
-			log(LogLevel::ERROR, "\tPoolStatisticsAllocator::registerDeallocate(%p) allocation not found\n", ptr);
+			log(LogLevel::ERROR, "PoolStatisticsAllocator::registerDeallocate(%p) allocation not found", ptr);
 			if (log.isLevel(LogLevel::DEBUG)) {
 				allocations.dump();
 			}
@@ -232,7 +232,7 @@ void PoolStatisticsAllocator::registerDeallocate(void* ptr) noexcept
 
 void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, void* result) noexcept
 {
-	log(LogLevel::DEBUG, "\tPoolStatisticsAllocator::registerReallocate(%p, %lu, %p)\n", ptr, size, result);
+	log(LogLevel::DEBUG, "PoolStatisticsAllocator::registerReallocate(%p, %lu, %p)", ptr, size, result);
 	if (ptr) {
 		std::optional<AllocationMap::iterator> it{allocations.find(ptr)};
 		if (it.has_value()) {
@@ -242,7 +242,7 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 					destinationPool = &delegatePool;
 					if (it.value()->second.pool != &delegatePool) {
 						log(LogLevel::ERROR,
-							"\tPoolStatisticsAllocator::registerReallocate(%p, %lu, %p) allocation moved out of arena pools\n",
+							"PoolStatisticsAllocator::registerReallocate(%p, %lu, %p) allocation moved out of arena pools",
 							ptr,
 							size,
 							result);
@@ -254,7 +254,7 @@ void PoolStatisticsAllocator::registerReallocate(void* ptr, std::size_t size, vo
 			}
 		} else {
 			log(LogLevel::ERROR,
-				"\tPoolStatisticsAllocator::registerReallocate(%p, %lu, %p): allocation not found\n",
+				"PoolStatisticsAllocator::registerReallocate(%p, %lu, %p): allocation not found",
 				ptr,
 				size,
 				result);

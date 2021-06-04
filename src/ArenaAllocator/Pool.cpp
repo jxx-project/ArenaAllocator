@@ -17,7 +17,7 @@ Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& log) noexc
 	log{log},
 	hwm{0}
 {
-	log(LogLevel::DEBUG, "\tPool::Pool([%lu, %lu], %lu)\n", range.first, range.last, nChunks);
+	log(LogLevel::DEBUG, "Pool::Pool([%lu, %lu], %lu)", range.first, range.last, nChunks);
 	const std::size_t wordsPerChunk{chunkSize / sizeof(std::max_align_t)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
@@ -49,7 +49,7 @@ void* Pool::reallocate(ListType::iterator it, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	if (it->allocatedSize == 0) {
-		log(LogLevel::ERROR, "\tPool::reallocate(%p, %lu): Not allocated!\n", it->data, size);
+		log(LogLevel::ERROR, "Pool::reallocate(%p, %lu) not allocated", it->data, size);
 		std::abort();
 	}
 	it->allocatedSize = size;
@@ -60,7 +60,7 @@ void Pool::deallocate(ListType::const_iterator it) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	if (it->allocatedSize == 0) {
-		log(LogLevel::ERROR, "\tPool::deallocate(%p): Not allocated!\n", it->data);
+		log(LogLevel::ERROR, "Pool::deallocate(%p): not allocated", it->data);
 		std::abort();
 	}
 	free.splice(free.begin(), allocated, it);
@@ -77,7 +77,7 @@ std::size_t Pool::nChunks() const noexcept
 void Pool::dump() const noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	log("\t[%lu, %lu]: {free: %lu, allocated: %lu, hwm: %lu}\n", range.first, range.last, free.size(), allocated.size(), hwm);
+	log("[%lu, %lu]: {free: %lu, allocated: %lu, hwm: %lu}", range.first, range.last, free.size(), allocated.size(), hwm);
 }
 
 } // namespace ArenaAllocator

@@ -19,7 +19,7 @@ public:
 
 	Timer() noexcept;
 
-	long getNanoseconds() const noexcept;
+	std::chrono::nanoseconds getNanoseconds() const noexcept;
 
 private:
 	std::chrono::time_point<ClockType> startTime;
