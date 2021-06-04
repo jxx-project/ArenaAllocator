@@ -22,7 +22,7 @@ namespace ArenaAllocator {
 class PoolStatisticsAllocator : public Allocator
 {
 public:
-	PoolStatisticsAllocator(Configuration const& configuration, Allocator& delegate, Logger const& logger) noexcept;
+	PoolStatisticsAllocator(Configuration const& configuration, Allocator& delegate, Logger const& log) noexcept;
 	PoolStatisticsAllocator(PoolStatisticsAllocator const&) = delete;
 	void operator=(PoolStatisticsAllocator const&) = delete;
 	virtual ~PoolStatisticsAllocator() noexcept;
@@ -49,7 +49,7 @@ private:
 	void* const ptrToEmpty;
 	std::mutex mutex;
 	Allocator& delegate;
-	Logger const& logger;
+	Logger const& log;
 	PoolMap<PoolStatistics> pools;
 	PoolStatistics delegatePool;
 	AllocationMap allocations;

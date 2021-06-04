@@ -11,16 +11,16 @@
 
 namespace ArenaAllocator {
 
-PoolStatistics::PoolStatistics(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept :
+PoolStatistics::PoolStatistics(SizeRange const& range, std::size_t nChunks, Logger const& log) noexcept :
 	range{range},
 	nChunkLimit{nChunks},
 	allocations{0},
 	minSize{std::numeric_limits<std::size_t>::max()},
 	maxSize{0},
 	hwm{0},
-	logger{logger}
+	log{log}
 {
-	logger.debug("PoolStatistics::PoolStatistics([%lu, %lu], %lu)\n", range.first, range.last, nChunks);
+	log(LogLevel::DEBUG, "\tPoolStatistics::PoolStatistics([%lu, %lu], %lu)\n", range.first, range.last, nChunks);
 }
 
 PoolStatistics::~PoolStatistics() noexcept
@@ -34,8 +34,8 @@ void PoolStatistics::registerAllocate(std::size_t size) noexcept
 	maxSize = std::max(size, maxSize);
 	hwm = std::max(allocations, hwm);
 	if (nChunkLimit && allocations > nChunkLimit && hwm == nChunkLimit + 1) {
-		logger.info(
-			"PoolStatistics::registerAllocate(%lu) {range: [%lu, %lu], ...} exceeded nChunkLimit: %lu\n",
+		log(LogLevel::TRACE,
+			"\tPoolStatistics::registerAllocate(%lu) {range: [%lu, %lu], ...} exceeded nChunkLimit: %lu\n",
 			size,
 			range.first,
 			range.last,
@@ -55,13 +55,12 @@ SizeRange const& PoolStatistics::getRange() const noexcept
 
 void PoolStatistics::dump() const noexcept
 {
-	logger.log(
-		"[%lu, %lu]: {nChunkLimit: %lu, allocations: %lu, minSize: %lu, maxSize: %lu, hwm: %lu}\n",
+	log("\t[%lu, %lu]: {nChunkLimit: %lu, allocations: %lu, minSize: %lu, maxSize: %lu, hwm: %lu}\n",
 		range.first,
 		range.last,
 		nChunkLimit,
 		allocations,
-		allocations ? minSize : 0,
+		hwm ? minSize : 0,
 		maxSize,
 		hwm);
 }

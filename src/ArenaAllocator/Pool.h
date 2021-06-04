@@ -24,7 +24,7 @@ class Pool
 public:
 	using ListType = std::list<Chunk, PassThroughCXXAllocator<Chunk>>;
 
-	Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept;
+	Pool(SizeRange const& range, std::size_t nChunks, Logger const& log) noexcept;
 	Pool(Pool const& other) = delete;
 	Pool& operator=(Pool const& other) = delete;
 	~Pool() noexcept;
@@ -55,7 +55,7 @@ private:
 	StorageType storage;
 	ListType free;
 	ListType allocated;
-	Logger const& logger;
+	Logger const& log;
 	std::size_t hwm;
 };
 

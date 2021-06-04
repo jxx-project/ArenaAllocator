@@ -14,8 +14,8 @@ namespace ArenaAllocator {
 EnvironmentConfiguration::EnvironmentConfiguration(
 	AllocatorFactory& allocatorFactory,
 	Allocator*& activeAllocator,
-	Logger& logger) noexcept :
-	activeAllocator{activeAllocator}, logger{logger}
+	Logger& log) noexcept :
+	activeAllocator{activeAllocator}, log{log}
 {
 	char* env{std::getenv("ARENA_ALLOCATOR_CONFIGURATION")};
 	if (!env) {
@@ -23,7 +23,7 @@ EnvironmentConfiguration::EnvironmentConfiguration(
 		std::abort();
 	}
 	ParseConfiguration(env, className, pools, logLevel);
-	logger.setLevel(getLogLevel());
+	log.setLevel(getLogLevel());
 	if (!(activeAllocator = allocatorFactory.getAllocator(getClass()))) {
 		fprintf(stderr, "EnvironmentConfiguration: Unexpected allocator class\n");
 		std::abort();

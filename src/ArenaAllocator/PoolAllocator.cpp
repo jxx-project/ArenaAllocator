@@ -27,16 +27,18 @@ void* getPtrToEmpty()
 
 } // namespace
 
-PoolAllocator::PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& logger) noexcept :
-	ptrToEmpty{getPtrToEmpty()}, delegate{delegate}, logger{logger}, pools{configuration, logger}, chunks{pools, logger}
+PoolAllocator::PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept :
+	ptrToEmpty{getPtrToEmpty()}, delegate{delegate}, log{log}, pools{configuration, log}, chunks{pools, log}
 {
-	logger.debug("PoolAllocator::PoolAllocator(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}\n", ptrToEmpty);
+	log(LogLevel::DEBUG,
+		"\tPoolAllocator::PoolAllocator(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}\n",
+		ptrToEmpty);
 }
 
 PoolAllocator::~PoolAllocator() noexcept
 {
-	logger.debug("PoolAllocator::~PoolAllocator()\n");
-	if (logger.isLevel(LogLevel::DEBUG)) {
+	log(LogLevel::DEBUG, "\tPoolAllocator::~PoolAllocator()\n");
+	if (log.isLevel(LogLevel::INFO)) {
 		dump();
 	}
 }
@@ -57,11 +59,11 @@ void* PoolAllocator::malloc(std::size_t size) noexcept
 		result.propagateErrno = errno;
 		return result;
 	}};
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = allocate(size, delegateMallocFunc, alignAlways);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::malloc(%lu) -> %p [%lu ns]\n", size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::malloc(%lu) -> %p\n", timer.getNanoseconds(), size, result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateMallocFunc, alignAlways);
@@ -73,11 +75,11 @@ void* PoolAllocator::malloc(std::size_t size) noexcept
 void PoolAllocator::free(void* ptr) noexcept
 {
 	DeallocateResult result;
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = deallocate(ptr);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::free(%p) [%lu ns]\n", ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::free(%p)\n", timer.getNanoseconds(), ptr);
 		}
 	} else {
 		result = deallocate(ptr);
@@ -93,11 +95,11 @@ void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 		result.propagateErrno = errno;
 		return result;
 	}};
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = allocate(nmemb, size, delegateCallocFunc);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::calloc(%lu, %lu) -> %p [%lu ns]\n", nmemb, size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::calloc(%lu, %lu) -> %p\n", timer.getNanoseconds(), nmemb, size, result.ptr);
 		}
 	} else {
 		result = allocate(nmemb, size, delegateCallocFunc);
@@ -109,11 +111,11 @@ void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
 {
 	AllocateResult result;
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = reallocate(ptr, size);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::realloc(%p, %lu) -> %p [%lu ns]\n", ptr, size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::realloc(%p, %lu) -> %p\n", timer.getNanoseconds(), ptr, size, result.ptr);
 		}
 	} else {
 		result = reallocate(ptr, size);
@@ -125,12 +127,11 @@ void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
 void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	AllocateResult result;
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = reallocate(ptr, nmemb, size);
 		if (!result.fromDelegate) {
-			logger.log(
-				"PoolAllocator::reallocarray(%p, %lu, %lu) -> %p [%lu ns]\n", ptr, nmemb, size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::reallocarray(%p, %lu, %lu) -> %p\n", timer.getNanoseconds(), ptr, nmemb, size, result.ptr);
 		}
 	} else {
 		result = reallocate(ptr, nmemb, size);
@@ -148,17 +149,16 @@ int PoolAllocator::posix_memalign(void** memptr, std::size_t alignment, std::siz
 		return result;
 	}};
 	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(std::max_align_t); }};
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = allocate(size, delegateMemAlignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
-			logger.log(
-				"PoolAllocator::posix_memalign(&%p, %lu, %lu) -> %p [%lu ns]\n",
+			log("%luns\tPoolAllocator::posix_memalign(&%p, %lu, %lu) -> %p\n",
+				timer.getNanoseconds(),
 				*memptr,
 				alignment,
 				size,
-				result.ptr,
-				timer.getNanoseconds());
+				result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateMemAlignFunc, alignWordTypeSize);
@@ -176,12 +176,11 @@ void* PoolAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noex
 		return result;
 	}};
 	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(std::max_align_t); }};
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
-			logger.log(
-				"PoolAllocator::aligned_alloc(%lu, %lu) -> %p [%lu ns]\n", alignment, size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::aligned_alloc(%lu, %lu) -> %p\n", timer.getNanoseconds(), alignment, size, result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
@@ -198,11 +197,11 @@ void* PoolAllocator::valloc(std::size_t size) noexcept
 		result.propagateErrno = errno;
 		return result;
 	}};
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = allocate(size, delegateVallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::valloc(%lu) -> %p [%lu ns]\n", size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::valloc(%lu) -> %p\n", timer.getNanoseconds(), size, result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateVallocFunc, alignPageSize);
@@ -220,11 +219,11 @@ void* PoolAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
 		return result;
 	}};
 	auto alignWordTypeSize{[alignment]() { return alignment <= sizeof(std::max_align_t); }};
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = allocate(size, delegateMemalignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::memalign(%lu, %lu) -> %p [%lu ns]\n", alignment, size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::memalign(%lu, %lu) -> %p\n", timer.getNanoseconds(), alignment, size, result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateMemalignFunc, alignWordTypeSize);
@@ -241,11 +240,11 @@ void* PoolAllocator::pvalloc(std::size_t size) noexcept
 		result.propagateErrno = errno;
 		return result;
 	}};
-	if (logger.isLevel(LogLevel::INFO)) {
+	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = allocate(size, delegatePvallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
-			logger.log("PoolAllocator::pvalloc(%lu) -> %p [%lu ns]\n", size, result.ptr, timer.getNanoseconds());
+			log("%luns\tPoolAllocator::pvalloc(%lu) -> %p\n", timer.getNanoseconds(), size, result.ptr);
 		}
 	} else {
 		result = allocate(size, delegatePvallocFunc, alignPageSize);
@@ -273,7 +272,7 @@ PoolAllocator::AllocateResult PoolAllocator::allocate(
 	} else {
 		result.ptr = ptrToEmpty;
 	}
-	logger.debug("PoolAllocator::allocate(%lu) -> %p\n", size, result.ptr);
+	log(LogLevel::DEBUG, "\tPoolAllocator::allocate(%lu) -> %p\n", size, result.ptr);
 	return result;
 }
 
@@ -349,10 +348,8 @@ PoolAllocator::AllocateResult PoolAllocator::reallocate(void* ptr, std::size_t n
 	if (ptr && ptr != ptrToEmpty) {
 		Pool::ListType::iterator const* currentChunk{chunks.at(ptr)};
 		if (currentChunk) {
-			if (nmemb && size) {
-				if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
-					result = reallocate(*currentChunk, nmemb * size);
-				};
+			if (size && (nmemb <= std::numeric_limits<std::size_t>::max() / size) || nmemb == 0 || size == 0) {
+				result = reallocate(*currentChunk, nmemb * size);
 			} else {
 				// nmemb * size would overflow
 				result.ptr = nullptr;

@@ -21,7 +21,7 @@ namespace ArenaAllocator {
 class PoolAllocator : public Allocator
 {
 public:
-	PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& logger) noexcept;
+	PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept;
 	PoolAllocator(PoolAllocator const&) = delete;
 	void operator=(PoolAllocator const&) = delete;
 	virtual ~PoolAllocator() noexcept;
@@ -66,7 +66,7 @@ private:
 
 	void* const ptrToEmpty;
 	Allocator* delegate;
-	Logger const& logger;
+	Logger const& log;
 	PoolMap<Pool> pools;
 	const ChunkMap chunks;
 };

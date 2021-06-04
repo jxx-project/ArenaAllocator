@@ -21,7 +21,7 @@ namespace ArenaAllocator {
 class ChunkMap
 {
 public:
-	ChunkMap(PoolMap<Pool>& pools, Logger const& logger) noexcept;
+	ChunkMap(PoolMap<Pool>& pools, Logger const& log) noexcept;
 
 	Pool::ListType::iterator const* at(void* ptr) const noexcept;
 
@@ -33,7 +33,7 @@ private:
 		std::equal_to<void*>,
 		PassThroughCXXAllocator<std::pair<void* const, Pool::ListType::iterator>>>;
 
-	Logger const& logger;
+	Logger const& log;
 	AggregateType aggregate;
 };
 

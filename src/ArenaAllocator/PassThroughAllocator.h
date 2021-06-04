@@ -17,7 +17,7 @@ namespace ArenaAllocator {
 class PassThroughAllocator : public Allocator
 {
 public:
-	explicit PassThroughAllocator(Logger const& logger) noexcept;
+	explicit PassThroughAllocator(Logger const& log) noexcept;
 	PassThroughAllocator(PassThroughAllocator const&) = delete;
 	PassThroughAllocator& operator=(PassThroughAllocator const&) = delete;
 	virtual ~PassThroughAllocator() noexcept;
@@ -35,7 +35,7 @@ public:
 	virtual void dump() const noexcept override;
 
 private:
-	Logger const& logger;
+	Logger const& log;
 };
 
 } // namespace ArenaAllocator

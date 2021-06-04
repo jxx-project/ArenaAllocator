@@ -15,15 +15,15 @@ namespace ArenaAllocator {
 
 ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
 {
-	debug("ConsoleLogger::ConsoleLogger()\n");
+	ConsoleLogger::operator()(LogLevel::DEBUG, "\tConsoleLogger::ConsoleLogger()\n");
 }
 
 ConsoleLogger::~ConsoleLogger() noexcept
 {
-	debug("ConsoleLogger::~ConsoleLogger()\n");
+	ConsoleLogger::operator()(LogLevel::DEBUG, "\tConsoleLogger::~ConsoleLogger()\n");
 }
 
-void ConsoleLogger::log(char const* fmt, ...) const noexcept
+void ConsoleLogger::operator()(char const* fmt, ...) const noexcept
 {
 	std::va_list argp;
 	::va_start(argp, fmt);
@@ -31,29 +31,9 @@ void ConsoleLogger::log(char const* fmt, ...) const noexcept
 	::va_end(argp);
 }
 
-void ConsoleLogger::error(char const* fmt, ...) const noexcept
+void ConsoleLogger::operator()(LogLevel level, char const* fmt, ...) const noexcept
 {
-	if (isLevel(LogLevel::ERROR)) {
-		std::va_list argp;
-		::va_start(argp, fmt);
-		write(fmt, argp);
-		::va_end(argp);
-	}
-}
-
-void ConsoleLogger::info(char const* fmt, ...) const noexcept
-{
-	if (isLevel(LogLevel::INFO)) {
-		std::va_list argp;
-		::va_start(argp, fmt);
-		write(fmt, argp);
-		::va_end(argp);
-	}
-}
-
-void ConsoleLogger::debug(char const* fmt, ...) const noexcept
-{
-	if (isLevel(LogLevel::DEBUG)) {
+	if (isLevel(level)) {
 		std::va_list argp;
 		::va_start(argp, fmt);
 		write(fmt, argp);
@@ -76,7 +56,7 @@ void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
 	int propagateErrno{errno};
 
 	char buffer[1024];
-	::ssize_t prefixLengthOrError{std::snprintf(buffer, sizeof(buffer), "[pid:%u] ", ::getpid())};
+	::ssize_t prefixLengthOrError{std::snprintf(buffer, sizeof(buffer), "[pid:%u]\t", ::getpid())};
 	std::size_t prefixLength{static_cast<std::size_t>(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
 	::ssize_t messageLengthOrError{std::vsnprintf(buffer + prefixLength, sizeof(buffer) - prefixLength, fmt, argp)};
 	std::size_t totalLength{std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), sizeof(buffer))};

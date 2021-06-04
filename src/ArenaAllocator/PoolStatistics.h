@@ -22,7 +22,7 @@ namespace ArenaAllocator {
 class PoolStatistics
 {
 public:
-	PoolStatistics(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept;
+	PoolStatistics(SizeRange const& range, std::size_t nChunks, Logger const& log) noexcept;
 	PoolStatistics(PoolStatistics const& other) = delete;
 	PoolStatistics& operator=(PoolStatistics const& other) = delete;
 	~PoolStatistics() noexcept;
@@ -39,7 +39,7 @@ private:
 	std::size_t minSize;
 	std::size_t maxSize;
 	std::size_t hwm;
-	Logger const& logger;
+	Logger const& log;
 };
 
 } // namespace ArenaAllocator

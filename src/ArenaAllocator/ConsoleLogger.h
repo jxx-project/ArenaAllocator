@@ -21,10 +21,8 @@ public:
 	ConsoleLogger& operator=(ConsoleLogger const&) = delete;
 	virtual ~ConsoleLogger() noexcept;
 
-	virtual void log(char const* fmt, ...) const noexcept override;
-	virtual void error(char const* fmt, ...) const noexcept override;
-	virtual void info(char const* fmt, ...) const noexcept override;
-	virtual void debug(char const* fmt, ...) const noexcept override;
+	virtual void operator()(char const* fmt, ...) const noexcept override;
+	virtual void operator()(LogLevel level, char const* fmt, ...) const noexcept override;
 	virtual bool isLevel(LogLevel level) const noexcept override;
 	virtual void setLevel(LogLevel level) noexcept override;
 

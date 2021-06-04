@@ -20,7 +20,7 @@ template<typename T>
 class PoolMap
 {
 public:
-	PoolMap(Configuration const& configuration, Logger const& logger) noexcept;
+	PoolMap(Configuration const& configuration, Logger const& log) noexcept;
 
 	T* at(std::size_t chunkSize) noexcept;
 
@@ -50,7 +50,7 @@ private:
 	void insert(SizeRange const& range, std::size_t nChunks) noexcept;
 
 	AggregateType aggregate;
-	Logger const& logger;
+	Logger const& log;
 };
 
 } // namespace ArenaAllocator

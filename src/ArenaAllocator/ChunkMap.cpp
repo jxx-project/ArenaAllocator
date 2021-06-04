@@ -9,7 +9,7 @@
 
 namespace ArenaAllocator {
 
-ChunkMap::ChunkMap(PoolMap<Pool>& pools, Logger const& logger) noexcept : logger{logger}
+ChunkMap::ChunkMap(PoolMap<Pool>& pools, Logger const& log) noexcept : log{log}
 {
 	aggregate.reserve(pools.nChunks());
 	pools.forEachChunk([this](Pool::ListType::iterator it) { aggregate.insert(AggregateType::value_type(it->data, it)); });

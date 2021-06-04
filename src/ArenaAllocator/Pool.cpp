@@ -11,13 +11,13 @@
 
 namespace ArenaAllocator {
 
-Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& logger) noexcept :
+Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& log) noexcept :
 	range{range},
 	chunkSize{((range.last + sizeof(std::max_align_t) - 1U) / sizeof(std::max_align_t)) * sizeof(std::max_align_t)},
-	logger{logger},
+	log{log},
 	hwm{0}
 {
-	logger.debug("Pool::Pool([%lu, %lu], %lu)\n", range.first, range.last, nChunks);
+	log(LogLevel::DEBUG, "\tPool::Pool([%lu, %lu], %lu)\n", range.first, range.last, nChunks);
 	const std::size_t wordsPerChunk{chunkSize / sizeof(std::max_align_t)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
@@ -48,8 +48,8 @@ void* Pool::allocate(std::size_t size) noexcept
 void* Pool::reallocate(ListType::iterator it, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	if (!it->allocatedSize) {
-		logger.error("Pool::reallocate(%p, %lu): Not allocated!\n", it->data, size);
+	if (it->allocatedSize == 0) {
+		log(LogLevel::ERROR, "\tPool::reallocate(%p, %lu): Not allocated!\n", it->data, size);
 		std::abort();
 	}
 	it->allocatedSize = size;
@@ -59,8 +59,8 @@ void* Pool::reallocate(ListType::iterator it, std::size_t size) noexcept
 void Pool::deallocate(ListType::const_iterator it) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	if (!it->allocatedSize) {
-		logger.error("Pool::deallocate(%p): Not allocated!\n", it->data);
+	if (it->allocatedSize == 0) {
+		log(LogLevel::ERROR, "\tPool::deallocate(%p): Not allocated!\n", it->data);
 		std::abort();
 	}
 	free.splice(free.begin(), allocated, it);
@@ -77,7 +77,7 @@ std::size_t Pool::nChunks() const noexcept
 void Pool::dump() const noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	logger.log("[%lu, %lu]: {free: %lu, allocated: %lu, hwm: %lu}\n", range.first, range.last, free.size(), allocated.size(), hwm);
+	log("\t[%lu, %lu]: {free: %lu, allocated: %lu, hwm: %lu}\n", range.first, range.last, free.size(), allocated.size(), hwm);
 }
 
 } // namespace ArenaAllocator

@@ -17,7 +17,7 @@ namespace ArenaAllocator {
 class StaticConfiguration : public Configuration
 {
 public:
-	StaticConfiguration(Allocator*& activeAllocator, Logger& logger) noexcept;
+	StaticConfiguration(Allocator*& activeAllocator, Logger& log) noexcept;
 	StaticConfiguration(StaticConfiguration const&) = delete;
 	StaticConfiguration& operator=(StaticConfiguration const&) = delete;
 	~StaticConfiguration() noexcept;
@@ -26,7 +26,7 @@ public:
 
 private:
 	Allocator*& activeAllocator;
-	Logger& logger;
+	Logger& log;
 	Configuration::PoolMapType pools;
 };
 

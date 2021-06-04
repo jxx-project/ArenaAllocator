@@ -64,6 +64,8 @@ LogLevel ParseConfiguration::parseLogLevel() noexcept
 		result = LogLevel::ERROR;
 	} else if (strEqual(logLevelStr, "INFO")) {
 		result = LogLevel::INFO;
+	} else if (strEqual(logLevelStr, "TRACE")) {
+		result = LogLevel::TRACE;
 	} else if (strEqual(logLevelStr, "DEBUG")) {
 		result = LogLevel::DEBUG;
 	} else {

@@ -19,7 +19,7 @@ namespace ArenaAllocator {
 class EnvironmentConfiguration : public Configuration
 {
 public:
-	EnvironmentConfiguration(AllocatorFactory& allocatorFactory, Allocator*& activeAllocator, Logger& logger) noexcept;
+	EnvironmentConfiguration(AllocatorFactory& allocatorFactory, Allocator*& activeAllocator, Logger& log) noexcept;
 	EnvironmentConfiguration(EnvironmentConfiguration const&) = delete;
 	EnvironmentConfiguration& operator=(EnvironmentConfiguration const&) = delete;
 	~EnvironmentConfiguration() noexcept;
@@ -30,7 +30,7 @@ public:
 
 private:
 	Allocator*& activeAllocator;
-	Logger& logger;
+	Logger& log;
 	std::optional<Configuration::StringType> className;
 	std::optional<Configuration::PoolMapType> pools;
 	std::optional<LogLevel> logLevel;

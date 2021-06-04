@@ -12,7 +12,7 @@
 namespace ArenaAllocator {
 
 template<typename T>
-PoolMap<T>::PoolMap(Configuration const& configuration, Logger const& logger) noexcept : logger{logger}
+PoolMap<T>::PoolMap(Configuration const& configuration, Logger const& log) noexcept : log{log}
 {
 	for (Configuration::PoolMapType::value_type const& poolConfiguration : configuration.getPools()) {
 		insert(poolConfiguration.first, poolConfiguration.second);
@@ -22,8 +22,8 @@ PoolMap<T>::PoolMap(Configuration const& configuration, Logger const& logger) no
 template<typename T>
 void PoolMap<T>::insert(SizeRange const& range, std::size_t nChunks) noexcept
 {
-	if (!aggregate.emplace(range, range, nChunks, logger)) {
-		logger.error("PoolMap::insert([%lu, %lu], %lu) discarded due to range overlap", range.first, range.last, nChunks);
+	if (!aggregate.emplace(range, range, nChunks, log)) {
+		log(LogLevel::ERROR, "\tPoolMap::insert([%lu, %lu], %lu) discarded due to range overlap", range.first, range.last, nChunks);
 	}
 }
 

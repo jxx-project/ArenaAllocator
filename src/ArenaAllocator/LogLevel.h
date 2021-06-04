@@ -15,6 +15,7 @@ enum class LogLevel
 	NONE,
 	ERROR,
 	INFO,
+	TRACE,
 	DEBUG
 };
 

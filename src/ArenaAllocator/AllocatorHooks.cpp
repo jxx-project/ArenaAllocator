@@ -30,7 +30,7 @@ private:
 	class Factory : public AllocatorFactory
 	{
 	public:
-		Factory(Configuration const& configuration, Logger const& logger) noexcept;
+		Factory(Configuration const& configuration, Logger const& log) noexcept;
 		Factory(Factory const&) = delete;
 		Factory& operator=(Factory const&) = delete;
 		~Factory() noexcept;
@@ -39,7 +39,7 @@ private:
 
 	private:
 		Configuration const& configuration;
-		Logger const& logger;
+		Logger const& log;
 		std::optional<PassThroughAllocator> passThroughAllocator;
 		std::optional<PoolAllocator> poolAllocator;
 		std::optional<PoolStatisticsAllocator> poolStatisticsAllocator;
@@ -48,7 +48,7 @@ private:
 	AllocatorHooks() noexcept;
 
 	::pid_t pid;
-	ConsoleLogger logger;
+	ConsoleLogger log;
 	Allocator* allocator;
 	Factory factory;
 	EnvironmentConfiguration configuration;
@@ -74,8 +74,8 @@ Allocator& AllocatorHooks::getAllocator() noexcept
 	return *allocator;
 }
 
-AllocatorHooks::Factory::Factory(Configuration const& configuration, Logger const& logger) noexcept :
-	configuration{configuration}, logger{logger}
+AllocatorHooks::Factory::Factory(Configuration const& configuration, Logger const& log) noexcept :
+	configuration{configuration}, log{log}
 {
 }
 
@@ -88,17 +88,17 @@ Allocator* AllocatorHooks::Factory::getAllocator(Configuration::StringType const
 	Allocator* result{nullptr};
 	if (className == "PassThroughAllocator") {
 		if (!passThroughAllocator.has_value()) {
-			passThroughAllocator.emplace(logger);
+			passThroughAllocator.emplace(log);
 		}
 		result = &passThroughAllocator.value();
 	} else if (className == "PoolAllocator") {
 		if (!poolAllocator.has_value()) {
-			poolAllocator.emplace(configuration, getAllocator("PassThroughAllocator"), logger);
+			poolAllocator.emplace(configuration, getAllocator("PassThroughAllocator"), log);
 		}
 		result = &poolAllocator.value();
 	} else if (className == "PoolStatisticsAllocator") {
 		if (!poolStatisticsAllocator.has_value()) {
-			poolStatisticsAllocator.emplace(configuration, *getAllocator("PassThroughAllocator"), logger);
+			poolStatisticsAllocator.emplace(configuration, *getAllocator("PassThroughAllocator"), log);
 		}
 		result = &poolStatisticsAllocator.value();
 	}
@@ -106,9 +106,9 @@ Allocator* AllocatorHooks::Factory::getAllocator(Configuration::StringType const
 }
 
 AllocatorHooks::AllocatorHooks() noexcept :
-	pid{::getpid()}, logger{}, factory{configuration, logger}, configuration{factory, allocator, logger}
+	pid{::getpid()}, log{}, factory{configuration, log}, configuration{factory, allocator, log}
 {
-	logger.debug("AllocatorHooks::AllocatorHooks()\n");
+	log(LogLevel::DEBUG, "\tAllocatorHooks::AllocatorHooks()\n");
 }
 
 extern "C" void* malloc(std::size_t size)

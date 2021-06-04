@@ -10,8 +10,8 @@
 
 namespace ArenaAllocator {
 
-StaticConfiguration::StaticConfiguration(Allocator*& activeAllocator, Logger& logger) noexcept :
-	activeAllocator{activeAllocator}, logger{logger}
+StaticConfiguration::StaticConfiguration(Allocator*& activeAllocator, Logger& log) noexcept :
+	activeAllocator{activeAllocator}, log{log}
 {
 	pools.emplace(SizeRange{72704, 72704}, 1);
 	for (std::size_t size = 8; size <= 1000; size += 8) {

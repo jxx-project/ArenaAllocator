@@ -30,16 +30,16 @@ public:
 	using iterator = AggregateType::iterator;
 	using const_iterator = AggregateType::const_iterator;
 
-	AllocationMap(Logger const& logger) noexcept;
+	AllocationMap(Logger const& log) noexcept;
 
-	std::optional<const_iterator> find(void* ptr) const noexcept;
+	std::optional<iterator> find(void* ptr) noexcept;
 	void registerAllocation(void* ptr, Allocation const& allocation) noexcept;
-	void unregisterAllocation(AggregateType::const_iterator it) noexcept;
-	void updateAllocation(AggregateType::const_iterator it, void* ptr, Allocation const& allocation) noexcept;
+	void unregisterAllocation(iterator it) noexcept;
+	void updateAllocation(iterator it, void* ptr, Allocation const& allocation) noexcept;
 	void dump() const noexcept;
 
 private:
-	Logger const& logger;
+	Logger const& log;
 	AggregateType aggregate;
 };
 
