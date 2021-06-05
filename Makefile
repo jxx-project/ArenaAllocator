@@ -13,7 +13,6 @@ CUSTOM_ALLOCATORS_OBJECTS = \
         PoolStatistics.o \
         Pool.o \
         SizeRangeMap.o \
-        StaticConfiguration.o \
         Timer.o \
 
 CXXFLAGS = -std=c++17 -g -O3
@@ -27,7 +26,7 @@ clean:
 $(CUSTOM_ALLOCATORS_OBJECTS): %.o: src/ArenaAllocator/%.cpp
 	$(CXX) -c $(CPPFLAGS) $(CXXFLAGS) -fno-exceptions -fno-rtti -fPIC -o $@ $<
 
-benchmark.o: src/ArenaAllocator/benchmark.cpp
+benchmark.o: utils/src/benchmark.cpp
 	$(CXX) -c $(CPPFLAGS) -g -o $@ $<
 
 libArenaAllocator.so: $(CUSTOM_ALLOCATORS_OBJECTS)
