@@ -111,6 +111,11 @@ AllocatorHooks::AllocatorHooks() noexcept :
 	log(LogLevel::DEBUG, "AllocatorHooks::AllocatorHooks()");
 }
 
+extern "C" void initArenaAllocator()
+{
+	AllocatorHooks::getInstance().getAllocator();
+}
+
 extern "C" void* malloc(std::size_t size)
 {
 	return AllocatorHooks::getInstance().getAllocator().malloc(size);
@@ -160,4 +165,5 @@ extern "C" void* pvalloc(std::size_t size)
 {
 	return AllocatorHooks::getInstance().getAllocator().pvalloc(size);
 }
+
 } // namespace ArenaAllocator

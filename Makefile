@@ -31,7 +31,7 @@ benchmark.o: src/ArenaAllocator/benchmark.cpp
 	$(CXX) -c $(CPPFLAGS) -g -o $@ $<
 
 libArenaAllocator.so: $(CUSTOM_ALLOCATORS_OBJECTS)
-	$(CXX) -shared -o $@ $^
+	$(CXX) -shared -Wl,-init=initArenaAllocator -o $@ $^
 
 benchmark: benchmark.o
 	$(CXX) -o $@ benchmark.o
