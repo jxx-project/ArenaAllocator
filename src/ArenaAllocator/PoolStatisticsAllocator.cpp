@@ -31,7 +31,12 @@ PoolStatisticsAllocator::PoolStatisticsAllocator(
 	Configuration const& configuration,
 	Allocator& delegate,
 	Logger const& log) noexcept :
-	ptrToEmpty{getPtrToEmpty()}, delegate{delegate}, log{log}, allocations{configuration, log}
+	ptrToEmpty{getPtrToEmpty()},
+	delegate{delegate},
+	log{log},
+	pools{configuration, log},
+	delegatePool{SizeRange{1, std::numeric_limits<std::size_t>::max()}, 0, log},
+	allocations{pools, delegatePool, log}
 {
 	log(LogLevel::DEBUG,
 		"PoolStatisticsAllocator::PoolStatisticsAllocator(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}",
@@ -191,7 +196,11 @@ void* PoolStatisticsAllocator::pvalloc(std::size_t size) noexcept
 
 void PoolStatisticsAllocator::dump() const noexcept
 {
-	allocations.dump();
+	pools.dump();
+	delegatePool.dump();
+	if (log.isLevel(LogLevel::DEBUG)) {
+		allocations.dump();
+	}
 }
 
 } // namespace ArenaAllocator

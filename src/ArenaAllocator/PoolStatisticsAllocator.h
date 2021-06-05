@@ -42,6 +42,8 @@ private:
 	std::mutex mutex;
 	Allocator& delegate;
 	Logger const& log;
+	PoolMap<PoolStatistics> pools;
+	PoolStatistics delegatePool;
 	AllocationMap allocations;
 };
 

@@ -9,8 +9,8 @@
 
 namespace ArenaAllocator {
 
-AllocationMap::AllocationMap(Configuration const& configuration, Logger const& log) noexcept :
-	log{log}, pools{configuration, log}, delegatePool{SizeRange{1, std::numeric_limits<std::size_t>::max()}, 0, log}
+AllocationMap::AllocationMap(PoolMap<PoolStatistics>& pools, PoolStatistics& delegatePool, Logger const& log) noexcept :
+	log{log}, pools{pools}, delegatePool{delegatePool}
 {
 }
 
@@ -136,16 +136,12 @@ void AllocationMap::updateAllocation(AggregateType::iterator it, void* ptr, Allo
 
 void AllocationMap::dump() const noexcept
 {
-	pools.dump();
-	delegatePool.dump();
-	if (log.isLevel(LogLevel::DEBUG)) {
-		for (typename AggregateType::value_type const& allocation : allocations) {
-			log("%p: {pool: [%lu, %lu], size: %lu}",
-				allocation.first,
-				allocation.second.pool->getRange().first,
-				allocation.second.pool->getRange().last,
-				allocation.second.size);
-		}
+	for (typename AggregateType::value_type const& allocation : allocations) {
+		log("%p: {pool: [%lu, %lu], size: %lu}",
+			allocation.first,
+			allocation.second.pool->getRange().first,
+			allocation.second.pool->getRange().last,
+			allocation.second.size);
 	}
 }
 

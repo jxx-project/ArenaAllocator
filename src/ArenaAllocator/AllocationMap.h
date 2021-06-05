@@ -22,7 +22,7 @@ namespace ArenaAllocator {
 class AllocationMap
 {
 public:
-	AllocationMap(Configuration const& configuration, Logger const& log) noexcept;
+	AllocationMap(PoolMap<PoolStatistics>& pools, PoolStatistics& delegatePool, Logger const& log) noexcept;
 
 	void registerAllocate(std::size_t size, void* result) noexcept;
 	void registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept;
@@ -44,8 +44,8 @@ private:
 	void updateAllocation(AggregateType::iterator it, void* ptr, Allocation const& allocation) noexcept;
 
 	Logger const& log;
-	PoolMap<PoolStatistics> pools;
-	PoolStatistics delegatePool;
+	PoolMap<PoolStatistics>& pools;
+	PoolStatistics& delegatePool;
 	AggregateType allocations;
 };
 

@@ -39,32 +39,6 @@ public:
 	virtual void dump() const noexcept override;
 
 private:
-	struct AllocateResult
-	{
-		void* ptr;
-		int propagateErrno;
-		bool fromDelegate;
-	};
-
-	struct DeallocateResult
-	{
-		int propagateErrno;
-		bool fromDelegate;
-	};
-
-	template<typename DelegateF, typename AlignmentPredicate>
-	AllocateResult allocate(std::size_t size, DelegateF delegateF, AlignmentPredicate alignmentPredicate) noexcept;
-
-	DeallocateResult deallocate(void* ptr) noexcept;
-
-	template<typename DelegateF>
-	AllocateResult allocate(std::size_t nmemb, std::size_t size, DelegateF delegateF) noexcept;
-
-	AllocateResult reallocate(void* ptr, std::size_t size) noexcept;
-	AllocateResult reallocate(void* ptr, std::size_t nmemb, std::size_t size) noexcept;
-	AllocateResult reallocate(Pool::ListType::iterator const& currentChunk, std::size_t size) noexcept;
-
-	void* const ptrToEmpty;
 	Allocator* delegate;
 	Logger const& log;
 	PoolMap<Pool> pools;
