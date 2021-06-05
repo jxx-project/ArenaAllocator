@@ -15,3 +15,4 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS NO)
 
 add_subdirectory(lib)
+add_subdirectory(utils)
