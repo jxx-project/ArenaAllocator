@@ -14,16 +14,16 @@
 #include <optional>
 #include <unistd.h>
 
-namespace ArenaAllocator {
+namespace ArenaAllocator { namespace Hooks {
 
-class AllocatorHooks
+class ArenaAllocator
 {
 public:
-	AllocatorHooks(AllocatorHooks const&) = delete;
-	AllocatorHooks& operator=(AllocatorHooks const&) = delete;
-	~AllocatorHooks() noexcept;
+	ArenaAllocator(ArenaAllocator const&) = delete;
+	ArenaAllocator& operator=(ArenaAllocator const&) = delete;
+	~ArenaAllocator() noexcept;
 
-	static AllocatorHooks& getInstance() noexcept;
+	static ArenaAllocator& getInstance() noexcept;
 	Allocator& getAllocator() noexcept;
 
 private:
@@ -45,7 +45,7 @@ private:
 		std::optional<PoolStatisticsAllocator> poolStatisticsAllocator;
 	};
 
-	AllocatorHooks() noexcept;
+	ArenaAllocator() noexcept;
 
 	::pid_t pid;
 	ConsoleLogger log;
@@ -54,13 +54,13 @@ private:
 	EnvironmentConfiguration configuration;
 };
 
-AllocatorHooks::~AllocatorHooks() noexcept
+ArenaAllocator::~ArenaAllocator() noexcept
 {
 }
 
-AllocatorHooks& AllocatorHooks::getInstance() noexcept
+ArenaAllocator& ArenaAllocator::getInstance() noexcept
 {
-	static AllocatorHooks instance;
+	static ArenaAllocator instance;
 	::pid_t pid{::getpid()};
 	if (pid != instance.pid) {
 		instance.pid = pid;
@@ -69,21 +69,21 @@ AllocatorHooks& AllocatorHooks::getInstance() noexcept
 	return instance;
 }
 
-Allocator& AllocatorHooks::getAllocator() noexcept
+Allocator& ArenaAllocator::getAllocator() noexcept
 {
 	return *allocator;
 }
 
-AllocatorHooks::Factory::Factory(Configuration const& configuration, Logger const& log) noexcept :
+ArenaAllocator::Factory::Factory(Configuration const& configuration, Logger const& log) noexcept :
 	configuration{configuration}, log{log}
 {
 }
 
-AllocatorHooks::Factory::~Factory() noexcept
+ArenaAllocator::Factory::~Factory() noexcept
 {
 }
 
-Allocator* AllocatorHooks::Factory::getAllocator(Configuration::StringType const& className) noexcept
+Allocator* ArenaAllocator::Factory::getAllocator(Configuration::StringType const& className) noexcept
 {
 	Allocator* result{nullptr};
 	if (className == "PassThroughAllocator") {
@@ -105,65 +105,65 @@ Allocator* AllocatorHooks::Factory::getAllocator(Configuration::StringType const
 	return result;
 }
 
-AllocatorHooks::AllocatorHooks() noexcept :
+ArenaAllocator::ArenaAllocator() noexcept :
 	pid{::getpid()}, log{}, factory{configuration, log}, configuration{factory, allocator, log}
 {
-	log(LogLevel::DEBUG, "AllocatorHooks::AllocatorHooks()");
+	log(LogLevel::DEBUG, "ArenaAllocator::ArenaAllocator()");
 }
 
 extern "C" void initArenaAllocator()
 {
-	AllocatorHooks::getInstance().getAllocator();
+	ArenaAllocator::getInstance().getAllocator();
 }
 
 extern "C" void* malloc(std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().malloc(size);
+	return ArenaAllocator::getInstance().getAllocator().malloc(size);
 }
 
 extern "C" void free(void* ptr)
 {
-	AllocatorHooks::getInstance().getAllocator().free(ptr);
+	ArenaAllocator::getInstance().getAllocator().free(ptr);
 }
 
 extern "C" void* calloc(std::size_t nmemb, std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().calloc(nmemb, size);
+	return ArenaAllocator::getInstance().getAllocator().calloc(nmemb, size);
 }
 
 extern "C" void* realloc(void* ptr, std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().realloc(ptr, size);
+	return ArenaAllocator::getInstance().getAllocator().realloc(ptr, size);
 }
 
 extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
+	return ArenaAllocator::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
 }
 
 extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
+	return ArenaAllocator::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
 }
 
 extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().aligned_alloc(alignment, size);
+	return ArenaAllocator::getInstance().getAllocator().aligned_alloc(alignment, size);
 }
 
 extern "C" void* valloc(std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().valloc(size);
+	return ArenaAllocator::getInstance().getAllocator().valloc(size);
 }
 
 extern "C" void* memalign(std::size_t alignment, std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().memalign(alignment, size);
+	return ArenaAllocator::getInstance().getAllocator().memalign(alignment, size);
 }
 
 extern "C" void* pvalloc(std::size_t size)
 {
-	return AllocatorHooks::getInstance().getAllocator().pvalloc(size);
+	return ArenaAllocator::getInstance().getAllocator().pvalloc(size);
 }
 
-} // namespace ArenaAllocator
+}} // namespace ArenaAllocator::Hooks

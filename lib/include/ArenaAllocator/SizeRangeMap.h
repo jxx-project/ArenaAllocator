@@ -49,4 +49,5 @@ private:
 };
 
 } // namespace ArenaAllocator
+
 #endif // ARENA_ALLOCATOR_SIZE_RANGE_MAP_H_INCLUDED
