@@ -110,7 +110,13 @@ void* PassThroughAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
-		log(timer.getNanoseconds(), OperationType::REALLOCARRAY, "PassThroughAllocator::reallocarray(%p, %lu, %lu) -> %p", ptr, nmemb, size, result);
+		log(timer.getNanoseconds(),
+			OperationType::REALLOCARRAY,
+			"PassThroughAllocator::reallocarray(%p, %lu, %lu) -> %p",
+			ptr,
+			nmemb,
+			size,
+			result);
 	} else {
 		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
 	}
@@ -146,7 +152,13 @@ int PassThroughAllocator::posix_memalign(void** memptr, std::size_t alignment, s
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
-		log(timer.getNanoseconds(), OperationType::POSIX_MEMALIGN, "PassThroughAllocator::posix_memalign(&%p, %lu %lu) -> %d", *memptr, alignment, size, result);
+		log(timer.getNanoseconds(),
+			OperationType::POSIX_MEMALIGN,
+			"PassThroughAllocator::posix_memalign(&%p, %lu %lu) -> %d",
+			*memptr,
+			alignment,
+			size,
+			result);
 	} else {
 		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
 	}
@@ -169,7 +181,12 @@ void* PassThroughAllocator::aligned_alloc(std::size_t alignment, std::size_t siz
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = alignedAllocUsingLibcMemalign(alignment, size);
-		log(timer.getNanoseconds(), OperationType::ALIGNED_ALLOC, "PassThroughAllocator::aligned_alloc(%lu %lu) -> %p", alignment, size, result);
+		log(timer.getNanoseconds(),
+			OperationType::ALIGNED_ALLOC,
+			"PassThroughAllocator::aligned_alloc(%lu %lu) -> %p",
+			alignment,
+			size,
+			result);
 	} else {
 		result = alignedAllocUsingLibcMemalign(alignment, size);
 	}
@@ -195,7 +212,12 @@ void* PassThroughAllocator::memalign(std::size_t alignment, std::size_t size) no
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_memalign(alignment, size);
-		log(timer.getNanoseconds(), OperationType::MEMALIGN, "PassThroughAllocator::memalign(%lu %lu) -> %p", alignment, size, result);
+		log(timer.getNanoseconds(),
+			OperationType::MEMALIGN,
+			"PassThroughAllocator::memalign(%lu %lu) -> %p",
+			alignment,
+			size,
+			result);
 	} else {
 		result = __libc_memalign(alignment, size);
 	}

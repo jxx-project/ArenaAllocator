@@ -12,8 +12,6 @@
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/PoolMap.h"
-#include "ArenaAllocator/PoolStatistics.h"
 #include <cstddef>
 #include <mutex>
 
@@ -40,18 +38,10 @@ public:
 	virtual void dump() const noexcept override;
 
 private:
-	void registerAllocate(std::size_t size, void* result) noexcept;
-	void registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept;
-	void registerDeallocate(void* ptr) noexcept;
-	void registerReallocate(void* ptr, std::size_t size, void* result) noexcept;
-	void registerReallocate(void* ptr, std::size_t nmemb, std::size_t size, void* result) noexcept;
-
 	void* const ptrToEmpty;
 	std::mutex mutex;
 	Allocator& delegate;
 	Logger const& log;
-	PoolMap<PoolStatistics> pools;
-	PoolStatistics delegatePool;
 	AllocationMap allocations;
 };
 

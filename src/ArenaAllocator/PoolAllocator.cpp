@@ -131,7 +131,13 @@ void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size
 		Timer timer;
 		result = reallocate(ptr, nmemb, size);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::REALLOCARRAY, "PoolAllocator::reallocarray(%p, %lu, %lu) -> %p", ptr, nmemb, size, result.ptr);
+			log(timer.getNanoseconds(),
+				OperationType::REALLOCARRAY,
+				"PoolAllocator::reallocarray(%p, %lu, %lu) -> %p",
+				ptr,
+				nmemb,
+				size,
+				result.ptr);
 		}
 	} else {
 		result = reallocate(ptr, nmemb, size);
@@ -153,7 +159,13 @@ int PoolAllocator::posix_memalign(void** memptr, std::size_t alignment, std::siz
 		Timer timer;
 		result = allocate(size, delegateMemAlignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::POSIX_MEMALIGN, "PoolAllocator::posix_memalign(&%p, %lu, %lu) -> %p", *memptr, alignment, size, result.ptr);
+			log(timer.getNanoseconds(),
+				OperationType::POSIX_MEMALIGN,
+				"PoolAllocator::posix_memalign(&%p, %lu, %lu) -> %p",
+				*memptr,
+				alignment,
+				size,
+				result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateMemAlignFunc, alignWordTypeSize);
@@ -175,7 +187,12 @@ void* PoolAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noex
 		Timer timer;
 		result = allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::ALIGNED_ALLOC, "PoolAllocator::aligned_alloc(%lu, %lu) -> %p", alignment, size, result.ptr);
+			log(timer.getNanoseconds(),
+				OperationType::ALIGNED_ALLOC,
+				"PoolAllocator::aligned_alloc(%lu, %lu) -> %p",
+				alignment,
+				size,
+				result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
@@ -218,7 +235,12 @@ void* PoolAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
 		Timer timer;
 		result = allocate(size, delegateMemalignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::MEMALIGN, "PoolAllocator::memalign(%lu, %lu) -> %p", alignment, size, result.ptr);
+			log(timer.getNanoseconds(),
+				OperationType::MEMALIGN,
+				"PoolAllocator::memalign(%lu, %lu) -> %p",
+				alignment,
+				size,
+				result.ptr);
 		}
 	} else {
 		result = allocate(size, delegateMemalignFunc, alignWordTypeSize);

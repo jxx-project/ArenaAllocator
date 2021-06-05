@@ -9,25 +9,86 @@
 
 namespace ArenaAllocator {
 
-AllocationMap::AllocationMap(Logger const& log) noexcept : log{log}
+AllocationMap::AllocationMap(Configuration const& configuration, Logger const& log) noexcept :
+	log{log}, pools{configuration, log}, delegatePool{SizeRange{1, std::numeric_limits<std::size_t>::max()}, 0, log}
 {
 }
 
-std::optional<AllocationMap::AggregateType::iterator> AllocationMap::find(void* ptr) noexcept
+void AllocationMap::registerAllocate(std::size_t size, void* result) noexcept
 {
-	std::optional<iterator> result;
-	iterator it{aggregate.find(ptr)};
-	if (it != aggregate.end()) {
-		result.emplace(it);
+	log(LogLevel::DEBUG, "AllocationMap::registerAllocate(%lu, %p)", size, result);
+	PoolStatistics* pool{pools.at(size)};
+	if (!pool) {
+		pool = &delegatePool;
 	}
-	return result;
+	insertAllocation(result, {pool, size});
 }
 
-void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) noexcept
+void AllocationMap::registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept
 {
-	if (aggregate.emplace(ptr, allocation).second) {
+	log(LogLevel::DEBUG, "AllocationMap::registerAllocate(%lu, %p)", size, result);
+	PoolStatistics* pool{alignment <= sizeof(std::max_align_t) ? pools.at(size) : &delegatePool};
+	if (!pool) {
+		pool = &delegatePool;
+	}
+	insertAllocation(result, {pool, size});
+}
+
+void AllocationMap::registerDeallocate(void* ptr) noexcept
+{
+	log(LogLevel::DEBUG, "AllocationMap::registerDeallocate(%p)", ptr);
+	if (ptr) {
+		AggregateType::iterator it{allocations.find(ptr)};
+		if (it != allocations.end()) {
+			eraseAllocation(it);
+		} else {
+			log(LogLevel::ERROR, "AllocationMap::registerDeallocate(%p) allocation not found", ptr);
+			if (log.isLevel(LogLevel::DEBUG)) {
+				dump();
+			}
+		}
+	}
+}
+
+void AllocationMap::registerReallocate(void* ptr, std::size_t size, void* result) noexcept
+{
+	log(LogLevel::DEBUG, "AllocationMap::registerReallocate(%p, %lu, %p)", ptr, size, result);
+	if (ptr) {
+		AggregateType::iterator it{allocations.find(ptr)};
+		if (it != allocations.end()) {
+			if (size) {
+				PoolStatistics* destinationPool{pools.at(size)};
+				if (!destinationPool) {
+					destinationPool = &delegatePool;
+					if (it->second.pool != &delegatePool) {
+						log(LogLevel::ERROR,
+							"AllocationMap::registerReallocate(%p, %lu, %p) allocation moved out of arena pools",
+							ptr,
+							size,
+							result);
+					}
+				}
+				updateAllocation(it, result, {destinationPool, size});
+			} else {
+				eraseAllocation(it);
+			}
+		} else {
+			log(LogLevel::ERROR, "AllocationMap::registerReallocate(%p, %lu, %p): allocation not found", ptr, size, result);
+			if (log.isLevel(LogLevel::DEBUG)) {
+				dump();
+			}
+			registerAllocate(size, result);
+		}
+	} else {
+		registerAllocate(size, result);
+	}
+}
+
+void AllocationMap::insertAllocation(void* ptr, Allocation const& allocation) noexcept
+{
+	if (allocations.emplace(ptr, allocation).second) {
 		log(LogLevel::DEBUG,
-			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu})",
+			"AllocationMap::insertAllocation(%p, {[%lu, %lu], %lu})",
 			ptr,
 			allocation.pool->getRange().first,
 			allocation.pool->getRange().last,
@@ -35,7 +96,7 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 		allocation.pool->registerAllocate(allocation.size);
 	} else {
 		log(LogLevel::ERROR,
-			"AllocationMap::registerAllocation(%p, {[%lu, %lu], %lu}): pointer already registered",
+			"AllocationMap::insertAllocation(%p, {[%lu, %lu], %lu}): pointer already registered",
 			ptr,
 			allocation.pool->getRange().first,
 			allocation.pool->getRange().last,
@@ -43,16 +104,16 @@ void AllocationMap::registerAllocation(void* ptr, Allocation const& allocation) 
 	}
 }
 
-void AllocationMap::unregisterAllocation(AggregateType::iterator it) noexcept
+void AllocationMap::eraseAllocation(AggregateType::iterator it) noexcept
 {
 	log(LogLevel::DEBUG,
-		"AllocationMap::unregisterAllocation(%p, {[%lu, %lu], %lu})",
+		"AllocationMap::eraseAllocation(%p, {[%lu, %lu], %lu})",
 		it->first,
 		it->second.pool->getRange().first,
 		it->second.pool->getRange().last,
 		it->second.size);
 	it->second.pool->registerDeallocate();
-	aggregate.erase(it);
+	allocations.erase(it);
 }
 
 void AllocationMap::updateAllocation(AggregateType::iterator it, void* ptr, Allocation const& allocation) noexcept
@@ -68,19 +129,23 @@ void AllocationMap::updateAllocation(AggregateType::iterator it, void* ptr, Allo
 		allocation.pool->registerAllocate(allocation.size);
 		it->second = allocation;
 	} else {
-		unregisterAllocation(it);
-		registerAllocation(ptr, allocation);
+		eraseAllocation(it);
+		insertAllocation(ptr, allocation);
 	}
 }
 
 void AllocationMap::dump() const noexcept
 {
-	for (typename AggregateType::value_type const& element : aggregate) {
-		log("%p: {pool: [%lu, %lu], size: %lu}",
-			element.first,
-			element.second.pool->getRange().first,
-			element.second.pool->getRange().last,
-			element.second.size);
+	pools.dump();
+	delegatePool.dump();
+	if (log.isLevel(LogLevel::DEBUG)) {
+		for (typename AggregateType::value_type const& allocation : allocations) {
+			log("%p: {pool: [%lu, %lu], size: %lu}",
+				allocation.first,
+				allocation.second.pool->getRange().first,
+				allocation.second.pool->getRange().last,
+				allocation.second.size);
+		}
 	}
 }
 
