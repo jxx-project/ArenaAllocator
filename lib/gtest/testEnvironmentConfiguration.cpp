@@ -11,7 +11,7 @@
 #include "Mock/NullAllocatorFactory.h"
 #include "Mock/NullLogger.h"
 
-TEST(SizeRangeMap, EnvironmentVariableNotFound)
+TEST(EnvironmentConfiguration, EnvironmentVariableNotFound)
 {
 	Mock::NullAllocatorFactory allocatorFactory{};
 	ArenaAllocator::Allocator* allocator{nullptr};
