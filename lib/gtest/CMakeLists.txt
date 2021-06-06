@@ -16,8 +16,6 @@ target_include_directories(Mock PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(Mock PUBLIC ArenaAllocatorStatic)
 
-enable_testing()
-
 add_executable(testConsoleLogger testConsoleLogger.cpp)
 target_include_directories(testConsoleLogger PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(testConsoleLogger ArenaAllocatorStatic GTest::GTest)
@@ -26,7 +24,9 @@ add_test(NAME ConsoleLoggerTest COMMAND testConsoleLogger)
 add_executable(testEnvironmentConfiguration testEnvironmentConfiguration.cpp)
 target_include_directories(testEnvironmentConfiguration PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(testEnvironmentConfiguration ArenaAllocatorStatic Mock GTest::GTest)
+add_test(NAME EnvironmentConfigurationTest COMMAND testEnvironmentConfiguration)
 
 add_executable(testSizeRangeMap testSizeRangeMap.cpp)
 target_include_directories(testSizeRangeMap PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(testSizeRangeMap ArenaAllocatorStatic GTest::GTest)
+add_test(NAME SizeRangeMapTest COMMAND testSizeRangeMap)

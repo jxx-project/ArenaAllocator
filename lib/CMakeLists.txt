@@ -23,19 +23,19 @@ target_include_directories(ArenaAllocatorStatic PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
 
 file(GLOB ArenaAllocatorLibBootstrap_SRCS_G src/Bootstrap/*.cpp)
-add_library(ArenaAllocator SHARED ${ArenaAllocatorLibBootstrap_SRCS_G})
-add_library(${PROJECT_NAME}::ArenaAllocator ALIAS ArenaAllocator)
-set_target_properties(ArenaAllocator PROPERTIES DEBUG_POSTFIX d)
-#set_target_properties(ArenaAllocator PROPERTIES VERSION ${PROJECT_VERSION})
-target_compile_options(ArenaAllocator PRIVATE -fno-exceptions -fno-rtti)
-target_link_options(ArenaAllocator PRIVATE -Wl,-init=initArenaAllocator)
-target_include_directories(ArenaAllocator PUBLIC
+add_library(ArenaAllocatorLib SHARED ${ArenaAllocatorLibBootstrap_SRCS_G})
+add_library(${PROJECT_NAME}::ArenaAllocatorLib ALIAS ArenaAllocatorLib)
+set_target_properties(ArenaAllocatorLib PROPERTIES DEBUG_POSTFIX d)
+set_target_properties(ArenaAllocatorLib PROPERTIES OUTPUT_NAME ArenaAllocator VERSION ${PROJECT_VERSION})
+target_compile_options(ArenaAllocatorLib PRIVATE -fno-exceptions -fno-rtti)
+target_link_options(ArenaAllocatorLib PRIVATE -Wl,-init=initArenaAllocator)
+target_include_directories(ArenaAllocatorLib PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>)
-target_link_libraries(ArenaAllocator PUBLIC ArenaAllocatorStatic)
+target_link_libraries(ArenaAllocatorLib PUBLIC ArenaAllocatorStatic)
 
-install(TARGETS ArenaAllocator ArenaAllocatorStatic EXPORT ArenaAllocatorTargets
+install(TARGETS ArenaAllocatorLib ArenaAllocatorStatic EXPORT ArenaAllocatorTargets
 	RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
 install(EXPORT ArenaAllocatorTargets NAMESPACE ${PROJECT_NAME}:: DESTINATION share/ArenaAllocator/cmake)
@@ -47,7 +47,3 @@ install(FILES
 	DESTINATION share/ArenaAllocator/cmake)
 
 add_subdirectory(gtest)
-enable_testing()
-
-add_test(NAME ConsoleLoggerTest COMMAND testConsoleLogger)
-#add_dependencies(check testConsoleLogger)
