@@ -39,10 +39,14 @@ public:
 	template<typename... Args>
 	bool emplace(SizeRange const& range, Args&&... args) noexcept
 	{
-		return aggregate
-			.emplace(std::piecewise_construct, std::forward_as_tuple(range), std::forward_as_tuple(std::forward<Args>(args)...))
-			.second;
+		return range.first <= range.last &&
+			   aggregate
+				   .emplace(
+					   std::piecewise_construct, std::forward_as_tuple(range), std::forward_as_tuple(std::forward<Args>(args)...))
+				   .second;
 	}
+
+	std::size_t size() const noexcept;
 
 private:
 	AggregateType aggregate;

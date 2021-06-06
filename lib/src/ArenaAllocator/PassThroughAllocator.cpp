@@ -24,12 +24,12 @@ namespace ArenaAllocator {
 
 PassThroughAllocator::PassThroughAllocator(Logger const& log) noexcept : log{log}
 {
-	log(LogLevel::DEBUG, "\tPassThroughAllocator::PassThroughAllocator(Logger const&)");
+	log(LogLevel::DEBUG, "%s::%s(Logger const&)", className, className);
 }
 
 PassThroughAllocator::~PassThroughAllocator() noexcept
 {
-	log(LogLevel::DEBUG, "\tPassThroughAllocator::~PassThroughAllocator()");
+	log(LogLevel::DEBUG, "%s::~%s()", className, className);
 }
 
 void* PassThroughAllocator::malloc(std::size_t size) noexcept
@@ -38,7 +38,7 @@ void* PassThroughAllocator::malloc(std::size_t size) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_malloc(size);
-		log(timer.getNanoseconds(), OperationType::MALLOC, "PassThroughAllocator::malloc(%lu) -> %p", size, result);
+		log(timer.getNanoseconds(), OperationType::MALLOC, "%s::malloc(%lu) -> %p", className, size, result);
 	} else {
 		result = __libc_malloc(size);
 	}
@@ -51,7 +51,7 @@ void PassThroughAllocator::free(void* ptr) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		__libc_free(ptr);
-		log(timer.getNanoseconds(), OperationType::FREE, "PassThroughAllocator::free(%p)", ptr);
+		log(timer.getNanoseconds(), OperationType::FREE, "%s::free(%p)", className, ptr);
 	} else {
 		__libc_free(ptr);
 	}
@@ -63,7 +63,7 @@ void* PassThroughAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_calloc(nmemb, size);
-		log(timer.getNanoseconds(), OperationType::CALLOC, "PassThroughAllocator::calloc(%lu, %lu) -> %p", nmemb, size, result);
+		log(timer.getNanoseconds(), OperationType::CALLOC, "%s::calloc(%lu, %lu) -> %p", className, nmemb, size, result);
 	} else {
 		result = __libc_calloc(nmemb, size);
 	}
@@ -76,7 +76,7 @@ void* PassThroughAllocator::realloc(void* ptr, std::size_t size) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_realloc(ptr, size);
-		log(timer.getNanoseconds(), OperationType::REALLOC, "PassThroughAllocator::realloc(%p, %lu) -> %p", ptr, size, result);
+		log(timer.getNanoseconds(), OperationType::REALLOC, "%s::realloc(%p, %lu) -> %p", className, ptr, size, result);
 	} else {
 		result = __libc_realloc(ptr, size);
 	}
@@ -112,7 +112,8 @@ void* PassThroughAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size
 		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
 		log(timer.getNanoseconds(),
 			OperationType::REALLOCARRAY,
-			"PassThroughAllocator::reallocarray(%p, %lu, %lu) -> %p",
+			"%s::reallocarray(%p, %lu, %lu) -> %p",
+			className,
 			ptr,
 			nmemb,
 			size,
@@ -154,7 +155,8 @@ int PassThroughAllocator::posix_memalign(void** memptr, std::size_t alignment, s
 		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
 		log(timer.getNanoseconds(),
 			OperationType::POSIX_MEMALIGN,
-			"PassThroughAllocator::posix_memalign(&%p, %lu %lu) -> %d",
+			"%s::posix_memalign(&%p, %lu %lu) -> %d",
+			className,
 			*memptr,
 			alignment,
 			size,
@@ -183,7 +185,8 @@ void* PassThroughAllocator::aligned_alloc(std::size_t alignment, std::size_t siz
 		result = alignedAllocUsingLibcMemalign(alignment, size);
 		log(timer.getNanoseconds(),
 			OperationType::ALIGNED_ALLOC,
-			"PassThroughAllocator::aligned_alloc(%lu %lu) -> %p",
+			"%s::aligned_alloc(%lu %lu) -> %p",
+			className,
 			alignment,
 			size,
 			result);
@@ -212,12 +215,7 @@ void* PassThroughAllocator::memalign(std::size_t alignment, std::size_t size) no
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_memalign(alignment, size);
-		log(timer.getNanoseconds(),
-			OperationType::MEMALIGN,
-			"PassThroughAllocator::memalign(%lu %lu) -> %p",
-			alignment,
-			size,
-			result);
+		log(timer.getNanoseconds(), OperationType::MEMALIGN, "%s::memalign(%lu %lu) -> %p", className, alignment, size, result);
 	} else {
 		result = __libc_memalign(alignment, size);
 	}
@@ -230,7 +228,7 @@ void* PassThroughAllocator::pvalloc(std::size_t size) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_pvalloc(size);
-		log(timer.getNanoseconds(), OperationType::PVALLOC, "PassThroughAllocator::pvalloc(%lu) -> %p", size, result);
+		log(timer.getNanoseconds(), OperationType::PVALLOC, "%s::pvalloc(%lu) -> %p", className, size, result);
 	} else {
 		result = __libc_pvalloc(size);
 	}

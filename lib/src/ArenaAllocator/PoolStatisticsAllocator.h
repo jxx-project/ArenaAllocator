@@ -37,6 +37,8 @@ public:
 	virtual void* pvalloc(std::size_t size) noexcept override;
 	virtual void dump() const noexcept override;
 
+	static constexpr char const* className{"PoolStatisticsAllocator"};
+
 private:
 	void* const ptrToEmpty;
 	std::mutex mutex;

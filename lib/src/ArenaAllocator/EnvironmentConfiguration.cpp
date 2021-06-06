@@ -6,27 +6,25 @@
 
 
 #include "ArenaAllocator/EnvironmentConfiguration.h"
+#include "ArenaAllocator/ConsoleLogger.h"
 #include "ArenaAllocator/ParseConfiguration.h"
-#include <cstdlib>
 
 namespace ArenaAllocator {
 
 EnvironmentConfiguration::EnvironmentConfiguration(
+	char const* configStr,
 	AllocatorFactory& allocatorFactory,
 	Allocator*& activeAllocator,
 	Logger& log) noexcept :
 	activeAllocator{activeAllocator}, log{log}
 {
-	char* env{std::getenv("ARENA_ALLOCATOR_CONFIGURATION")};
-	if (!env) {
-		fprintf(stderr, "EnvironmentConfiguration: Failed to read environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
-		std::abort();
+	if (!configStr) {
+		ConsoleLogger::exit("failed to read environment variable %s", configurationEnvVarName);
 	}
-	ParseConfiguration(env, className, pools, logLevel);
+	ParseConfiguration(configStr, className, pools, logLevel);
 	log.setLevel(getLogLevel());
 	if (!(activeAllocator = allocatorFactory.getAllocator(getClass()))) {
-		fprintf(stderr, "EnvironmentConfiguration: Unexpected allocator class\n");
-		std::abort();
+		ConsoleLogger::exit("unexpected allocator class '%s' in environment variable %s", getClass(), configurationEnvVarName);
 	}
 }
 
@@ -37,10 +35,7 @@ EnvironmentConfiguration::~EnvironmentConfiguration() noexcept
 Configuration::StringType const& EnvironmentConfiguration::getClass() const noexcept
 {
 	if (!className.has_value()) {
-		fprintf(
-			stderr,
-			"EnvironmentConfiguration: Missing allocator class item in environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
-		std::abort();
+		ConsoleLogger::exit("missing allocator class item in environment variable %s", configurationEnvVarName);
 	}
 	return className.value();
 }
@@ -48,8 +43,7 @@ Configuration::StringType const& EnvironmentConfiguration::getClass() const noex
 Configuration::PoolMapType const& EnvironmentConfiguration::getPools() const noexcept
 {
 	if (!pools.has_value()) {
-		fprintf(stderr, "EnvironmentConfiguration: Missing pools item in environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
-		std::abort();
+		ConsoleLogger::exit("missing pools item in environment variable %s", configurationEnvVarName);
 	}
 	return pools.value();
 }
@@ -57,8 +51,7 @@ Configuration::PoolMapType const& EnvironmentConfiguration::getPools() const noe
 LogLevel const& EnvironmentConfiguration::getLogLevel() const noexcept
 {
 	if (!logLevel.has_value()) {
-		fprintf(stderr, "EnvironmentConfiguration: Missing log level item in environment variable ARENA_ALLOCATOR_CONFIGURATION\n");
-		std::abort();
+		ConsoleLogger::exit("missing log level item in environment variable %s", configurationEnvVarName);
 	}
 	return logLevel.value();
 }

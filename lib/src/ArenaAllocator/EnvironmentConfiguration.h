@@ -19,7 +19,11 @@ namespace ArenaAllocator {
 class EnvironmentConfiguration : public Configuration
 {
 public:
-	EnvironmentConfiguration(AllocatorFactory& allocatorFactory, Allocator*& activeAllocator, Logger& log) noexcept;
+	EnvironmentConfiguration(
+		char const* configStr,
+		AllocatorFactory& allocatorFactory,
+		Allocator*& activeAllocator,
+		Logger& log) noexcept;
 	EnvironmentConfiguration(EnvironmentConfiguration const&) = delete;
 	EnvironmentConfiguration& operator=(EnvironmentConfiguration const&) = delete;
 	~EnvironmentConfiguration() noexcept;
@@ -27,6 +31,8 @@ public:
 	virtual Configuration::StringType const& getClass() const noexcept override;
 	virtual Configuration::PoolMapType const& getPools() const noexcept override;
 	virtual LogLevel const& getLogLevel() const noexcept override;
+
+	static constexpr char const* configurationEnvVarName{"ARENA_ALLOCATOR_CONFIGURATION"};
 
 private:
 	Allocator*& activeAllocator;

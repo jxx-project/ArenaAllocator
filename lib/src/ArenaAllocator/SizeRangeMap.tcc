@@ -8,9 +8,9 @@
 #ifndef ARENA_ALLOCATOR_SIZE_RANGE_MAP_TCC_INCLUDED
 #define ARENA_ALLOCATOR_SIZE_RANGE_MAP_TCC_INCLUDED
 
-#include "ArenaAllocator/SizeRangeMap.h"
 #include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/PoolStatistics.h"
+#include "ArenaAllocator/SizeRangeMap.h"
 
 namespace ArenaAllocator {
 
@@ -66,6 +66,12 @@ T* SizeRangeMap<T>::at(std::size_t size) noexcept
 		result = &it->second;
 	}
 	return result;
+}
+
+template<typename T>
+std::size_t SizeRangeMap<T>::size() const noexcept
+{
+	return aggregate.size();
 }
 
 } // namespace ArenaAllocator

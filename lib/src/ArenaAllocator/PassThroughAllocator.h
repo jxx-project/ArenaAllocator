@@ -34,6 +34,8 @@ public:
 	virtual void* pvalloc(std::size_t size) noexcept override;
 	virtual void dump() const noexcept override;
 
+	static constexpr char const* className{"PassThroughAllocator"};
+
 private:
 	Logger const& log;
 };

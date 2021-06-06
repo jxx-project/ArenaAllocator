@@ -20,12 +20,12 @@ const auto alignPageSize{[]() { return ::sysconf(_SC_PAGESIZE) <= sizeof(std::ma
 PoolAllocator::PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept :
 	delegate{delegate}, log{log}, pools{configuration, log}, chunks{pools, delegate, log}
 {
-	log(LogLevel::DEBUG, "PoolAllocator::PoolAllocator(Configuration const&, Allocator*, Logger const&)");
+	log(LogLevel::DEBUG, "%s::%s(Configuration const&, Allocator*, Logger const&)", className, className);
 }
 
 PoolAllocator::~PoolAllocator() noexcept
 {
-	log(LogLevel::DEBUG, "PoolAllocator::~PoolAllocator()");
+	log(LogLevel::DEBUG, "%s::~%s()", className, className);
 	if (log.isLevel(LogLevel::INFO)) {
 		dump();
 	}
@@ -43,7 +43,7 @@ void* PoolAllocator::malloc(std::size_t size) noexcept
 		Timer timer;
 		result = chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::MALLOC, "PoolAllocator::malloc(%lu) -> %p", size, result.ptr);
+			log(timer.getNanoseconds(), OperationType::MALLOC, "%s::malloc(%lu) -> %p", className, size, result.ptr);
 		}
 	} else {
 		result = chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways);
@@ -59,7 +59,7 @@ void PoolAllocator::free(void* ptr) noexcept
 		Timer timer;
 		result = chunks.deallocate(ptr);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::FREE, "PoolAllocator::free(%p)", ptr);
+			log(timer.getNanoseconds(), OperationType::FREE, "%s::free(%p)", className, ptr);
 		}
 	} else {
 		result = chunks.deallocate(ptr);
@@ -79,7 +79,7 @@ void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 		Timer timer;
 		result = chunks.allocate(nmemb, size, delegateCallocFunc);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::CALLOC, "PoolAllocator::calloc(%lu, %lu) -> %p", nmemb, size, result.ptr);
+			log(timer.getNanoseconds(), OperationType::CALLOC, "%s::calloc(%lu, %lu) -> %p", className, nmemb, size, result.ptr);
 		}
 	} else {
 		result = chunks.allocate(nmemb, size, delegateCallocFunc);
@@ -95,7 +95,7 @@ void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
 		Timer timer;
 		result = chunks.reallocate(ptr, size);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::REALLOC, "PoolAllocator::realloc(%p, %lu) -> %p", ptr, size, result.ptr);
+			log(timer.getNanoseconds(), OperationType::REALLOC, "%s::realloc(%p, %lu) -> %p", className, ptr, size, result.ptr);
 		}
 	} else {
 		result = chunks.reallocate(ptr, size);
@@ -113,7 +113,8 @@ void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(),
 				OperationType::REALLOCARRAY,
-				"PoolAllocator::reallocarray(%p, %lu, %lu) -> %p",
+				"%s::reallocarray(%p, %lu, %lu) -> %p",
+				className,
 				ptr,
 				nmemb,
 				size,
@@ -141,7 +142,8 @@ int PoolAllocator::posix_memalign(void** memptr, std::size_t alignment, std::siz
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(),
 				OperationType::POSIX_MEMALIGN,
-				"PoolAllocator::posix_memalign(&%p, %lu, %lu) -> %p",
+				"%s::posix_memalign(&%p, %lu, %lu) -> %p",
+				className,
 				*memptr,
 				alignment,
 				size,
@@ -169,7 +171,8 @@ void* PoolAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noex
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(),
 				OperationType::ALIGNED_ALLOC,
-				"PoolAllocator::aligned_alloc(%lu, %lu) -> %p",
+				"%s::aligned_alloc(%lu, %lu) -> %p",
+				className,
 				alignment,
 				size,
 				result.ptr);
@@ -193,7 +196,7 @@ void* PoolAllocator::valloc(std::size_t size) noexcept
 		Timer timer;
 		result = chunks.allocate(size, delegateVallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::VALLOC, "PoolAllocator::valloc(%lu) -> %p", size, result.ptr);
+			log(timer.getNanoseconds(), OperationType::VALLOC, "%s::valloc(%lu) -> %p", className, size, result.ptr);
 		}
 	} else {
 		result = chunks.allocate(size, delegateVallocFunc, alignPageSize);
@@ -217,7 +220,8 @@ void* PoolAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(),
 				OperationType::MEMALIGN,
-				"PoolAllocator::memalign(%lu, %lu) -> %p",
+				"%s::memalign(%lu, %lu) -> %p",
+				className,
 				alignment,
 				size,
 				result.ptr);
@@ -241,7 +245,7 @@ void* PoolAllocator::pvalloc(std::size_t size) noexcept
 		Timer timer;
 		result = chunks.allocate(size, delegatePvallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::PVALLOC, "PoolAllocator::pvalloc(%lu) -> %p", size, result.ptr);
+			log(timer.getNanoseconds(), OperationType::PVALLOC, "%s::pvalloc(%lu) -> %p", className, size, result.ptr);
 		}
 	} else {
 		result = chunks.allocate(size, delegatePvallocFunc, alignPageSize);

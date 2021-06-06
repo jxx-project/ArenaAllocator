@@ -16,19 +16,18 @@ set(CMAKE_CXX_EXTENSIONS NO)
 
 set(ArenaAllocatorLib_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 
-file(GLOB ArenaAllocatorLib_SRCS_G
-  ${ArenaAllocatorLib_SOURCE_DIR}/src/Hooks/*.cpp
-  ${ArenaAllocatorLib_SOURCE_DIR}/src/ArenaAllocator/*.cpp)
+file(GLOB ArenaAllocatorLibBootstrap_SRCS_G src/Bootstrap/*.cpp)
+file(GLOB ArenaAllocatorLib_SRCS_G src/ArenaAllocator/*.cpp)
 
-add_library(ArenaAllocator SHARED  ${ArenaAllocatorLib_SRCS_G})
+add_library(ArenaAllocator SHARED ${ArenaAllocatorLibBootstrap_SRCS_G} ${ArenaAllocatorLib_SRCS_G})
 add_library(${PROJECT_NAME}::ArenaAllocator ALIAS ArenaAllocator)
 set_target_properties(ArenaAllocator PROPERTIES DEBUG_POSTFIX d)
 #set_target_properties(ArenaAllocator PROPERTIES VERSION ${PROJECT_VERSION})
 target_compile_options(ArenaAllocator PRIVATE -fno-exceptions -fno-rtti)
 target_link_options(ArenaAllocator PRIVATE -Wl,-init=initArenaAllocator)
 target_include_directories(ArenaAllocator PUBLIC
-	$<BUILD_INTERFACE:${ArenaAllocatorLib_SOURCE_DIR}/include>
-	$<BUILD_INTERFACE:${ArenaAllocatorLib_SOURCE_DIR}/src>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>
 	$<INSTALL_INTERFACE:include>)
 
 install(TARGETS ArenaAllocator EXPORT ArenaAllocatorTargets
@@ -42,4 +41,11 @@ install(FILES
 	${CMAKE_CURRENT_BINARY_DIR}/ArenaAllocatorConfigVersion.cmake
 	DESTINATION share/ArenaAllocator/cmake)
 
-add_subdirectory(test)
+add_library(ArenaAllocatorTest STATIC ${ArenaAllocatorLib_SRCS_G})
+set_target_properties(ArenaAllocatorTest PROPERTIES DEBUG_POSTFIX d)
+target_compile_options(ArenaAllocatorTest PRIVATE -fno-exceptions -fno-rtti)
+target_include_directories(ArenaAllocatorTest PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
+
+add_subdirectory(gtest)

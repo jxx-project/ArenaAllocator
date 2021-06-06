@@ -39,13 +39,15 @@ PoolStatisticsAllocator::PoolStatisticsAllocator(
 	allocations{pools, delegatePool, log}
 {
 	log(LogLevel::DEBUG,
-		"PoolStatisticsAllocator::PoolStatisticsAllocator(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}",
+		"%s::%s(Configuration const&, Allocator&, Logger const&) {ptrToEmpty: %p}",
+		className,
+		className,
 		ptrToEmpty);
 }
 
 PoolStatisticsAllocator::~PoolStatisticsAllocator() noexcept
 {
-	log(LogLevel::DEBUG, "PoolStatisticsAllocator::~PoolStatisticsAllocator()");
+	log(LogLevel::DEBUG, "%s::~%s()", className, className);
 	if (log.isLevel(LogLevel::INFO)) {
 		dump();
 	}
