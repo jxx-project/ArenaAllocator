@@ -10,10 +10,14 @@
 
 #include <cstddef>
 
+namespace ArenaAllocator {
+
 struct SizeRange
 {
 	std::size_t first;
 	std::size_t last;
 };
+
+} // namespace ArenaAllocator
 
 #endif // ARENA_ALLOCATOR_SIZE_RANGE_H_INCLUDED
