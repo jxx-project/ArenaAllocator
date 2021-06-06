@@ -14,12 +14,19 @@ set_target_properties(Mock PROPERTIES DEBUG_POSTFIX d)
 target_compile_options(Mock PRIVATE -fno-exceptions -fno-rtti)
 target_include_directories(Mock PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(Mock PUBLIC ArenaAllocatorTest)
+target_link_libraries(Mock PUBLIC ArenaAllocatorStatic)
 
-add_executable(testSizeRangeMap testSizeRangeMap.cpp)
-target_include_directories(testSizeRangeMap PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(testSizeRangeMap ArenaAllocatorTest GTest::GTest)
+enable_testing()
+
+add_executable(testConsoleLogger testConsoleLogger.cpp)
+target_include_directories(testConsoleLogger PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(testConsoleLogger ArenaAllocatorStatic GTest::GTest)
+add_test(NAME ConsoleLoggerTest COMMAND testConsoleLogger)
 
 add_executable(testEnvironmentConfiguration testEnvironmentConfiguration.cpp)
 target_include_directories(testEnvironmentConfiguration PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(testEnvironmentConfiguration ArenaAllocatorTest Mock GTest::GTest)
+target_link_libraries(testEnvironmentConfiguration ArenaAllocatorStatic Mock GTest::GTest)
+
+add_executable(testSizeRangeMap testSizeRangeMap.cpp)
+target_include_directories(testSizeRangeMap PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
+target_link_libraries(testSizeRangeMap ArenaAllocatorStatic GTest::GTest)
