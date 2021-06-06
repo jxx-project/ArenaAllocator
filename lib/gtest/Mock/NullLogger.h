@@ -5,8 +5,8 @@
 //
 
 
-#ifndef MOCK_NULL_LOGGER_H_INCLUDED
-#define MOCK_NULL_LOGGER_H_INCLUDED
+#ifndef Mock_NullLogger_h_INCLUDED
+#define Mock_NullLogger_h_INCLUDED
 
 #include "ArenaAllocator/Logger.h"
 
@@ -29,4 +29,4 @@ public:
 
 } // namespace Mock
 
-#endif // MOCK_NULL_LOGGER_H_INCLUDED
+#endif // Mock_NullLogger_h_INCLUDED

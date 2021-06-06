@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
-#define ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
+#ifndef ArenaAllocator_Configuration_h_INCLUDED
+#define ArenaAllocator_Configuration_h_INCLUDED
 
 #include "ArenaAllocator/LogLevel.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
@@ -31,4 +31,4 @@ public:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_CONFIGURATION_H_INCLUDED
+#endif // ArenaAllocator_Configuration_h_INCLUDED

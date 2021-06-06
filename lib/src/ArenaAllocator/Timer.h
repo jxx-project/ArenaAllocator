@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_TIMER_H_INCLUDED
-#define ARENA_ALLOCATOR_TIMER_H_INCLUDED
+#ifndef ArenaAllocator_Timer_h_INCLUDED
+#define ArenaAllocator_Timer_h_INCLUDED
 
 #include <chrono>
 
@@ -27,4 +27,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_TIMER_H_INCLUDED
+#endif // ArenaAllocator_Timer_h_INCLUDED

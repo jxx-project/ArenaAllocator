@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_PASS_THROUGH_CXX_ALLOCATOR_H_INCLUDED
-#define ARENA_ALLOCATOR_PASS_THROUGH_CXX_ALLOCATOR_H_INCLUDED
+#ifndef ArenaAllocator_PassThroughCXXAllocator_h_INCLUDED
+#define ArenaAllocator_PassThroughCXXAllocator_h_INCLUDED
 
 #include <cstddef>
 
@@ -56,4 +56,4 @@ bool operator!=(PassThroughCXXAllocator<T1> const&, PassThroughCXXAllocator<T2> 
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_PASS_THROUGH_CXX_ALLOCATOR_H_INCLUDED
+#endif // ArenaAllocator_PassThroughCXXAllocator_h_INCLUDED

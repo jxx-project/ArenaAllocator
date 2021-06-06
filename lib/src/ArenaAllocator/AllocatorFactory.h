@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_ALLOCATOR_FACTORY_H_INCLUDED
-#define ARENA_ALLOCATOR_ALLOCATOR_FACTORY_H_INCLUDED
+#ifndef ArenaAllocator_AllocatorFactory_h_INCLUDED
+#define ArenaAllocator_AllocatorFactory_h_INCLUDED
 
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Configuration.h"

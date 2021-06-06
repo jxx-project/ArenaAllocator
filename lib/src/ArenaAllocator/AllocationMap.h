@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_ALLOCATION_MAP_H_INCLUDED
-#define ARENA_ALLOCATOR_ALLOCATION_MAP_H_INCLUDED
+#ifndef ArenaAllocator_AllocationMap_h_INCLUDED
+#define ArenaAllocator_AllocationMap_h_INCLUDED
 
 #include "ArenaAllocator/Allocation.h"
 #include "ArenaAllocator/Logger.h"
@@ -51,4 +51,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_ALLOCATION_MAP_H_INCLUDED
+#endif // ArenaAllocator_AllocationMap_h_INCLUDED

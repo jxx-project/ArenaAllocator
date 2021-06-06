@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_CHUNK_H_INCLUDED
-#define ARENA_ALLOCATOR_CHUNK_H_INCLUDED
+#ifndef ArenaAllocator_Chunk_h_INCLUDED
+#define ArenaAllocator_Chunk_h_INCLUDED
 
 #include <cstddef>
 
@@ -23,4 +23,4 @@ struct Chunk
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_CHUNK_H_INCLUDED
+#endif // ArenaAllocator_Chunk_h_INCLUDED

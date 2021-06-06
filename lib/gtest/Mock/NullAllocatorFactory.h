@@ -5,8 +5,8 @@
 //
 
 
-#ifndef MOCK_NULL_ALLOCATOR_FACTORY_H_INCLUDED
-#define MOCK_NULL_ALLOCATOR_FACTORY_H_INCLUDED
+#ifndef Mock_NullAllocatorFactory_h_INCLUDED
+#define Mock_NullAllocatorFactory_h_INCLUDED
 
 #include "ArenaAllocator/AllocatorFactory.h"
 #include "ArenaAllocator/Configuration.h"
@@ -26,4 +26,4 @@ public:
 
 } // namespace Mock
 
-#endif // MOCK_NULL_ALLOCATOR_FACTORY_H_INCLUDED
+#endif // Mock_NullAllocatorFactory_h_INCLUDED

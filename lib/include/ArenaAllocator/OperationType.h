@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_OPERATION_TYPE_H_INCLUDED
-#define ARENA_ALLOCATOR_OPERATION_TYPE_H_INCLUDED
+#ifndef ArenaAllocator_OperationType_h_INCLUDED
+#define ArenaAllocator_OperationType_h_INCLUDED
 
 namespace ArenaAllocator {
 
@@ -28,4 +28,4 @@ char const* to_string(OperationType);
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_OPERATION_TYPE_H_INCLUDED
+#endif // ArenaAllocator_OperationType_h_INCLUDED

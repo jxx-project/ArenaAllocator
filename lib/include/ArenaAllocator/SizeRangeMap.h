@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_SIZE_RANGE_MAP_H_INCLUDED
-#define ARENA_ALLOCATOR_SIZE_RANGE_MAP_H_INCLUDED
+#ifndef ArenaAllocator_SizeRangeMap_h_INCLUDED
+#define ArenaAllocator_SizeRangeMap_h_INCLUDED
 
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
 #include "ArenaAllocator/SizeRange.h"
@@ -54,4 +54,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_SIZE_RANGE_MAP_H_INCLUDED
+#endif // ArenaAllocator_SizeRangeMap_h_INCLUDED

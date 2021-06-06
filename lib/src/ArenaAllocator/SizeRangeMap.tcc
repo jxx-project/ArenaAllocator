@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_SIZE_RANGE_MAP_TCC_INCLUDED
-#define ARENA_ALLOCATOR_SIZE_RANGE_MAP_TCC_INCLUDED
+#ifndef ArenaAllocator_SizeRangeMap_tcc_INCLUDED
+#define ArenaAllocator_SizeRangeMap_tcc_INCLUDED
 
 #include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/PoolStatistics.h"
@@ -76,4 +76,4 @@ std::size_t SizeRangeMap<T>::size() const noexcept
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_SIZE_RANGE_MAP_TCC_INCLUDED
+#endif // ArenaAllocator_SizeRangeMap_tcc_INCLUDED

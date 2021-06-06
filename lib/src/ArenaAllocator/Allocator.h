@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_ALLOCATOR_H_INCLUDED
-#define ARENA_ALLOCATOR_ALLOCATOR_H_INCLUDED
+#ifndef ArenaAllocator_Allocator_h_INCLUDED
+#define ArenaAllocator_Allocator_h_INCLUDED
 
 #include <cstddef>
 #include <map>
@@ -33,4 +33,4 @@ public:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_ALLOCATOR_H_INCLUDED
+#endif // ArenaAllocator_Allocator_h_INCLUDED

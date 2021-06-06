@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_LOG_LEVEL_H_INCLUDED
-#define ARENA_ALLOCATOR_LOG_LEVEL_H_INCLUDED
+#ifndef ArenaAllocator_LogLevel_h_INCLUDED
+#define ArenaAllocator_LogLevel_h_INCLUDED
 
 namespace ArenaAllocator {
 
@@ -21,4 +21,4 @@ enum class LogLevel
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_LOG_LEVEL_H_INCLUDED
+#endif // ArenaAllocator_LogLevel_h_INCLUDED

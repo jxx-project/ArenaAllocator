@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_INTERNAL_ALLOCATOR_FACTORY_H_INCLUDED
-#define ARENA_ALLOCATOR_INTERNAL_ALLOCATOR_FACTORY_H_INCLUDED
+#ifndef ArenaAllocator_InternalAllocatorFactory_h_INCLUDED
+#define ArenaAllocator_InternalAllocatorFactory_h_INCLUDED
 
 #include "ArenaAllocator/AllocatorFactory.h"
 #include "ArenaAllocator/Configuration.h"
@@ -38,4 +38,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_INTERNAL_ALLOCATOR_FACTORY_H_INCLUDED
+#endif // ArenaAllocator_InternalAllocatorFactory_h_INCLUDED

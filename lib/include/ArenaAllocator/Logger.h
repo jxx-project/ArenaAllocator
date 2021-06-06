@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_LOGGER_H_INCLUDED
-#define ARENA_ALLOCATOR_LOGGER_H_INCLUDED
+#ifndef ArenaAllocator_Logger_h_INCLUDED
+#define ArenaAllocator_Logger_h_INCLUDED
 
 #include "ArenaAllocator/LogLevel.h"
 #include "ArenaAllocator/OperationType.h"
@@ -28,4 +28,4 @@ public:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_LOGGER_H_INCLUDED
+#endif // ArenaAllocator_Logger_h_INCLUDED

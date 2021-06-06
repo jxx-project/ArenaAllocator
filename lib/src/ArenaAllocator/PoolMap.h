@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_POOL_MAP_H_INCLUDED
-#define ARENA_ALLOCATOR_POOL_MAP_H_INCLUDED
+#ifndef ArenaAllocator_PoolMap_h_INCLUDED
+#define ArenaAllocator_PoolMap_h_INCLUDED
 
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
@@ -55,4 +55,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_POOL_MAP_H_INCLUDED
+#endif // ArenaAllocator_PoolMap_h_INCLUDED

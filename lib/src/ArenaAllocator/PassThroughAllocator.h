@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_PASS_THROUGH_ALLOCATOR_H_INCLUDED
-#define ARENA_ALLOCATOR_PASS_THROUGH_ALLOCATOR_H_INCLUDED
+#ifndef ArenaAllocator_PassThroughAllocator_h_INCLUDED
+#define ArenaAllocator_PassThroughAllocator_h_INCLUDED
 
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Logger.h"
@@ -42,4 +42,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_PASS_THROUGH_ALLOCATOR_H_INCLUDED
+#endif // ArenaAllocator_PassThroughAllocator_h_INCLUDED

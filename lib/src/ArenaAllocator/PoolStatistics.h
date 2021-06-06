@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_POOL_STATISTICS_H_INCLUDED
-#define ARENA_ALLOCATOR_POOL_STATISTICS_H_INCLUDED
+#ifndef ArenaAllocator_PoolStatistics_h_INCLUDED
+#define ArenaAllocator_PoolStatistics_h_INCLUDED
 
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Chunk.h"
@@ -44,4 +44,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_POOL_STATISTICS_H_INCLUDED
+#endif // ArenaAllocator_PoolStatistics_h_INCLUDED

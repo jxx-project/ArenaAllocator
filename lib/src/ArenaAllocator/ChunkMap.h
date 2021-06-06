@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_CHUNK_MAP_H_INCLUDED
-#define ARENA_ALLOCATOR_CHUNK_MAP_H_INCLUDED
+#ifndef ArenaAllocator_ChunkMap_h_INCLUDED
+#define ArenaAllocator_ChunkMap_h_INCLUDED
 
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Chunk.h"
@@ -109,4 +109,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_CHUNK_MAP_H_INCLUDED
+#endif // ArenaAllocator_ChunkMap_h_INCLUDED

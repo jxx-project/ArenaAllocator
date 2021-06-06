@@ -5,8 +5,8 @@
 //
 
 
-#ifndef ARENA_ALLOCATOR_SIZE_RANGE_H_INCLUDED
-#define ARENA_ALLOCATOR_SIZE_RANGE_H_INCLUDED
+#ifndef ArenaAllocator_SizeRange_h_INCLUDED
+#define ArenaAllocator_SizeRange_h_INCLUDED
 
 #include <cstddef>
 
@@ -20,4 +20,4 @@ struct SizeRange
 
 } // namespace ArenaAllocator
 
-#endif // ARENA_ALLOCATOR_SIZE_RANGE_H_INCLUDED
+#endif // ArenaAllocator_SizeRange_h_INCLUDED
