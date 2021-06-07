@@ -20,12 +20,12 @@ const auto alignPageSize{[]() { return ::sysconf(_SC_PAGESIZE) <= sizeof(std::ma
 PoolAllocator::PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept :
 	delegate{delegate}, log{log}, pools{configuration, log}, chunks{pools, delegate, log}
 {
-	log(LogLevel::DEBUG, "%s::%s(Configuration const&, Allocator*, Logger const&)", className, className);
+	log(LogLevel::DEBUG, "%s::%s(Configuration const&, Allocator*, Logger const&) -> this:%p", className, className, this);
 }
 
 PoolAllocator::~PoolAllocator() noexcept
 {
-	log(LogLevel::DEBUG, "%s::~%s()", className, className);
+	log(LogLevel::DEBUG, "%s::~%s(this:%p)", className, className, this);
 	if (log.isLevel(LogLevel::INFO)) {
 		dump();
 	}

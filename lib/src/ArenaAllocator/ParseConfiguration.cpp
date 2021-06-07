@@ -1,5 +1,5 @@
 #include "ArenaAllocator/ParseConfiguration.h"
-#include <cstdio>
+#include "ArenaAllocator/ConsoleLogger.h"
 #include <cstring>
 
 namespace ArenaAllocator {
@@ -12,45 +12,45 @@ ParseConfiguration::ParseConfiguration(
 	current{str}, className{className}, pools{pools}, logLevel{logLevel}
 {
 	if (!parseDelimiter("{") == '{') {
-		raiseError("Expected '{' at configuration string begin");
+		ConsoleLogger::exit("ParseConfiguration: expected '{' at configuration string begin");
 	}
 	char delimiter{parseDelimiter("}")};
 	while (delimiter != '}') {
 		char const* configItem{parseIdentifier()};
 		if (strEqual(configItem, "pools")) {
 			if (!parseDelimiter(":")) {
-				raiseError("Expected ':' after item identifier");
+				ConsoleLogger::exit("ParseConfiguration: expected ':' after pools item identifier");
 			}
 			parsePoolMap();
 		} else if (strEqual(configItem, "class")) {
 			if (!parseDelimiter(":")) {
-				raiseError("Expected ':' after item identifier");
+				ConsoleLogger::exit("ParseConfiguration: expected ':' after class item identifier");
 			}
 			if (className.has_value()) {
-				raiseError("Duplicate allocator class item");
+				ConsoleLogger::exit("ParseConfiguration: duplicate allocator class item");
 			}
 			char const* classNameStr{parseIdentifier()};
 			className.emplace(classNameStr, current);
 		} else if (strEqual(configItem, "logLevel")) {
 			if (!parseDelimiter(":")) {
-				raiseError("Expected ':' after item identifier");
+				ConsoleLogger::exit("ParseConfiguration: expected ':' after logLevel item identifier");
 			}
 			if (logLevel.has_value()) {
-				raiseError("Duplicate allocator class item");
+				ConsoleLogger::exit("ParseConfiguration: duplicate allocator class item");
 			}
 			logLevel.emplace(parseLogLevel());
 		} else {
-			raiseError("Unexpected configuration item");
+			ConsoleLogger::exit("ParseConfiguration: unexpected configuration item");
 		}
 		if (!(delimiter = parseDelimiter(",}"))) {
-			raiseError("Expected ',' configuration item delimiter.");
+			ConsoleLogger::exit("ParseConfiguration: expected ',' configuration item delimiter.");
 		}
 	}
 	while (isSpace(*current)) {
 		++current;
 	}
 	if (*current) {
-		raiseError("Unexpected character after '}' at configuration string end");
+		ConsoleLogger::exit("ParseConfiguration: unexpected character after '}' at configuration string end");
 	}
 }
 
@@ -69,7 +69,7 @@ LogLevel ParseConfiguration::parseLogLevel() noexcept
 	} else if (strEqual(logLevelStr, "DEBUG")) {
 		result = LogLevel::DEBUG;
 	} else {
-		raiseError("Invalid log level");
+		ConsoleLogger::exit("ParseConfiguration: invalid log level");
 	}
 	return result;
 }
@@ -81,18 +81,18 @@ SizeRange ParseConfiguration::parseSizeRange() noexcept
 		++current;
 	}
 	if (!parseDelimiter("[")) {
-		raiseError("Expexted '[' at size range begin");
+		ConsoleLogger::exit("ParseConfiguration: expexted '[' at size range begin");
 	}
 	result.first = parseSize();
 	if (!parseDelimiter(",")) {
-		raiseError("Expexted ',' separating size range first and last");
+		ConsoleLogger::exit("ParseConfiguration: expexted ',' separating size range first and last");
 	}
 	result.last = parseSize();
 	if (!parseDelimiter("]")) {
-		raiseError("Expexted ']' at size range end");
+		ConsoleLogger::exit("ParseConfiguration: expexted ']' at size range end");
 	}
 	if (result.first > result.last) {
-		raiseError("Size range first grater than last");
+		ConsoleLogger::exit("ParseConfiguration: size range first grater than last");
 	}
 	return result;
 }
@@ -100,17 +100,17 @@ SizeRange ParseConfiguration::parseSizeRange() noexcept
 void ParseConfiguration::parsePoolMap() noexcept
 {
 	if (pools.has_value()) {
-		raiseError("Duplicate pools item");
+		ConsoleLogger::exit("ParseConfiguration: duplicate pools item");
 	}
 	pools.emplace();
 	if (!parseDelimiter("{") == '{') {
-		raiseError("Expected '{' at pool configuration begin");
+		ConsoleLogger::exit("ParseConfiguration: expected '{' at pool configuration begin");
 	}
 	char delimiter{parseDelimiter("}")};
 	while (delimiter != '}') {
 		parsePool();
 		if (!(delimiter = parseDelimiter(",}"))) {
-			raiseError("Expected ',' pool map element delimiter");
+			ConsoleLogger::exit("ParseConfiguration: expected ',' pool map element delimiter");
 		}
 	}
 }
@@ -119,11 +119,11 @@ void ParseConfiguration::parsePool() noexcept
 {
 	const SizeRange range{parseSizeRange()};
 	if (!parseDelimiter(":") == ':') {
-		raiseError("Expected ':' at pool configuration begin");
+		ConsoleLogger::exit("ParseConfiguration: Expected ':' at pool configuration begin");
 	}
 	std::size_t nChunks{parseSize()};
 	if (!pools.value().emplace(range, nChunks)) {
-		raiseError("Expected disjunct pool size ranges");
+		ConsoleLogger::exit("ParseConfiguration: Expected disjunct pool size ranges");
 	}
 }
 
@@ -161,7 +161,7 @@ std::size_t ParseConfiguration::parseSize() noexcept
 	char* end;
 	std::size_t result = std::strtoul(current, &end, 10);
 	if (current == end) {
-		raiseError("Invalid size value");
+		ConsoleLogger::exit("ParseConfiguration: invalid size value");
 	}
 	current = end;
 	return result;
@@ -192,12 +192,6 @@ bool ParseConfiguration::isSpace(const char c) noexcept
 bool ParseConfiguration::isAlpha(const char c) noexcept
 {
 	return c >= 'A' && c <= 'Z' || c >= 'a' && c <= 'z';
-}
-
-void ParseConfiguration::raiseError(char const* message) noexcept
-{
-	std::fprintf(stderr, "ParseConfiguration: %s\n", message);
-	std::abort();
 }
 
 } // namespace ArenaAllocator

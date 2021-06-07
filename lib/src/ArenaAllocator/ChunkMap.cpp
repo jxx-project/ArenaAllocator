@@ -26,7 +26,6 @@ void* getPtrToEmpty()
 ChunkMap::ChunkMap(PoolMap<Pool>& pools, Allocator* delegate, Logger const& log) noexcept :
 	ptrToEmpty{getPtrToEmpty()}, delegate{delegate}, log{log}, pools{pools}
 {
-	log(LogLevel::DEBUG, "ChunkMap::ChunkMap(Configuration const&, Allocator*, Logger const&) {ptrToEmpty: %p}", ptrToEmpty);
 	chunks.reserve(pools.nChunks());
 	pools.forEachChunk([this](Pool::ListType::iterator it) { chunks.insert(AggregateType::value_type(it->data, it)); });
 }

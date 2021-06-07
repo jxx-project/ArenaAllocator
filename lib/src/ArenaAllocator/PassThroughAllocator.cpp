@@ -24,12 +24,12 @@ namespace ArenaAllocator {
 
 PassThroughAllocator::PassThroughAllocator(Logger const& log) noexcept : log{log}
 {
-	log(LogLevel::DEBUG, "%s::%s(Logger const&)", className, className);
+	log(LogLevel::DEBUG, "%s::%s(Logger const&) -> this:%p", className, className, this);
 }
 
 PassThroughAllocator::~PassThroughAllocator() noexcept
 {
-	log(LogLevel::DEBUG, "%s::~%s()", className, className);
+	log(LogLevel::DEBUG, "%s::~%s(this:%p)", className, className, this);
 }
 
 void* PassThroughAllocator::malloc(std::size_t size) noexcept

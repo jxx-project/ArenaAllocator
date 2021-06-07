@@ -51,12 +51,12 @@ void write(std::chrono::nanoseconds duration, char const* fmt, std::va_list argp
 
 ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
 {
-	ConsoleLogger::operator()(LogLevel::DEBUG, "\tConsoleLogger::ConsoleLogger()\n");
+	ConsoleLogger::operator()(LogLevel::DEBUG, "ConsoleLogger::ConsoleLogger() -> this:%p\n", this);
 }
 
 ConsoleLogger::~ConsoleLogger() noexcept
 {
-	ConsoleLogger::operator()(LogLevel::DEBUG, "\tConsoleLogger::~ConsoleLogger()\n");
+	ConsoleLogger::operator()(LogLevel::DEBUG, "ConsoleLogger::~ConsoleLogger(this:%p)\n", this);
 }
 
 void ConsoleLogger::abort(char const* fmt, ...) noexcept

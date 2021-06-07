@@ -7,6 +7,7 @@
 
 #include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/Chunk.h"
+#include "ArenaAllocator/ConsoleLogger.h"
 #include <cstring>
 
 namespace ArenaAllocator {
@@ -17,7 +18,7 @@ Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& log) noexc
 	log{log},
 	hwm{0}
 {
-	log(LogLevel::DEBUG, "Pool::Pool([%lu, %lu], %lu)", range.first, range.last, nChunks);
+	log(LogLevel::DEBUG, "Pool::Pool([%lu, %lu], %lu) -> this:%p", range.first, range.last, nChunks, this);
 	const std::size_t wordsPerChunk{chunkSize / sizeof(std::max_align_t)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
@@ -27,6 +28,7 @@ Pool::Pool(SizeRange const& range, std::size_t nChunks, Logger const& log) noexc
 
 Pool::~Pool() noexcept
 {
+	log(LogLevel::DEBUG, "Pool::~Pool(this:%p)", this);
 }
 
 
@@ -49,8 +51,7 @@ void* Pool::reallocate(ListType::iterator it, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	if (it->allocatedSize == 0) {
-		log(LogLevel::ERROR, "Pool::reallocate(%p, %lu) not allocated", it->data, size);
-		std::abort();
+		ConsoleLogger::abort("Pool::reallocate(%p, %lu) not allocated", it->data, size);
 	}
 	it->allocatedSize = size;
 	return it->data;
@@ -60,8 +61,7 @@ void Pool::deallocate(ListType::const_iterator it) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	if (it->allocatedSize == 0) {
-		log(LogLevel::ERROR, "Pool::deallocate(%p): not allocated", it->data);
-		std::abort();
+		ConsoleLogger::abort("Pool::deallocate(%p): not allocated", it->data);
 	}
 	free.splice(free.begin(), allocated, it);
 	std::memset(free.front().data, 0, chunkSize);

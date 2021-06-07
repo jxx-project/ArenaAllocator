@@ -24,6 +24,7 @@ public:
 
 	static ArenaAllocatorSingleton& getInstance() noexcept;
 	ArenaAllocator::Allocator& getAllocator() noexcept;
+	ArenaAllocator::Logger& getLogger() noexcept;
 
 private:
 	ArenaAllocatorSingleton() noexcept;
@@ -35,24 +36,46 @@ private:
 	ArenaAllocator::EnvironmentConfiguration configuration;
 };
 
+namespace {
+
+static ArenaAllocatorSingleton* instance;
+
+} // namespace
+
 ArenaAllocatorSingleton::~ArenaAllocatorSingleton() noexcept
 {
+	log(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::~ArenaAllocatorSingleton(this:%p)", this);
 }
 
 ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 {
-	static ArenaAllocatorSingleton instance;
-	::pid_t pid{::getpid()};
-	if (pid != instance.pid) {
-		instance.pid = pid;
-		instance.allocator->dump();
+	// The idiomatic singleton based on a static local variable looks substatially more straightforward, but
+	// occasionally get destroyed while requests are still pouring in, resulting in "pure virtual method called",
+	// segmentation fault, crashes. We therefore base it on a global pointer variable and have destruction
+	// triggered by the shared object .fini hook instead.
+	if (!instance) {
+		static std::mutex mutex;
+		std::lock_guard<std::mutex> guard(mutex);
+		if (!instance) {
+			instance = static_cast<ArenaAllocatorSingleton*>(__libc_malloc(sizeof(ArenaAllocatorSingleton)));
+			if (instance) {
+				instance = new (instance) ArenaAllocatorSingleton();
+			} else {
+				ArenaAllocator::ConsoleLogger::exit("failed to allocate Bootstrap::ArenaAllocatorSingleton\n");
+			}
+		}
 	}
-	return instance;
+	return *instance;
 }
 
 ArenaAllocator::Allocator& ArenaAllocatorSingleton::getAllocator() noexcept
 {
 	return *allocator;
+}
+
+ArenaAllocator::Logger& ArenaAllocatorSingleton::getLogger() noexcept
+{
+	return log;
 }
 
 ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
@@ -61,62 +84,72 @@ ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	allocatorFactory{configuration, log},
 	configuration{std::getenv("ARENA_ALLOCATOR_CONFIGURATION"), allocatorFactory, allocator, log}
 {
-	log(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::ArenaAllocatorSingleton()");
+	log(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:%p", this);
 }
 
-extern "C" void initArenaAllocator()
+} // namespace Bootstrap
+
+extern "C" void initializeArenaAllocator()
 {
-	ArenaAllocatorSingleton::getInstance().getAllocator();
+	Bootstrap::ArenaAllocatorSingleton::getInstance().getLogger()(ArenaAllocator::LogLevel::DEBUG, "initializeArenaAllocator()");
+}
+
+extern "C" void finishArenaAllocator()
+{
+	if (Bootstrap::instance) {
+		Bootstrap::instance->getLogger()(ArenaAllocator::LogLevel::DEBUG, "finishArenaAllocator()");
+		Bootstrap::instance->Bootstrap::ArenaAllocatorSingleton::~ArenaAllocatorSingleton();
+		__libc_free(Bootstrap::instance);
+		Bootstrap::instance = nullptr;
+	}
 }
 
 extern "C" void* malloc(std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().malloc(size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().malloc(size);
 }
 
 extern "C" void free(void* ptr)
 {
-	ArenaAllocatorSingleton::getInstance().getAllocator().free(ptr);
+	Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().free(ptr);
 }
 
 extern "C" void* calloc(std::size_t nmemb, std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().calloc(nmemb, size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().calloc(nmemb, size);
 }
 
 extern "C" void* realloc(void* ptr, std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().realloc(ptr, size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().realloc(ptr, size);
 }
 
 extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
 }
 
 extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
 }
 
 extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().aligned_alloc(alignment, size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().aligned_alloc(alignment, size);
 }
 
 extern "C" void* valloc(std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().valloc(size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().valloc(size);
 }
 
 extern "C" void* memalign(std::size_t alignment, std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().memalign(alignment, size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().memalign(alignment, size);
 }
 
 extern "C" void* pvalloc(std::size_t size)
 {
-	return ArenaAllocatorSingleton::getInstance().getAllocator().pvalloc(size);
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().pvalloc(size);
 }
-
-} // namespace Bootstrap

@@ -37,7 +37,6 @@ private:
 	bool strEqual(char const* strConfig, char const* reference) const noexcept;
 	static bool isSpace(const char c) noexcept;
 	static bool isAlpha(const char c) noexcept;
-	void raiseError(char const* message) noexcept;
 
 	char const* current;
 	std::optional<Configuration::StringType>& className;

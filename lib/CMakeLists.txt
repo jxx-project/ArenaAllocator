@@ -28,7 +28,7 @@ add_library(${PROJECT_NAME}::ArenaAllocatorLib ALIAS ArenaAllocatorLib)
 set_target_properties(ArenaAllocatorLib PROPERTIES DEBUG_POSTFIX d)
 set_target_properties(ArenaAllocatorLib PROPERTIES OUTPUT_NAME ArenaAllocator VERSION ${PROJECT_VERSION})
 target_compile_options(ArenaAllocatorLib PRIVATE -fno-exceptions -fno-rtti)
-target_link_options(ArenaAllocatorLib PRIVATE -Wl,-init=initArenaAllocator)
+target_link_options(ArenaAllocatorLib PRIVATE -Wl,-init=initializeArenaAllocator,-fini=finishArenaAllocator)
 target_include_directories(ArenaAllocatorLib PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>

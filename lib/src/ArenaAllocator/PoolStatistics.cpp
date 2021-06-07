@@ -14,11 +14,12 @@ namespace ArenaAllocator {
 PoolStatistics::PoolStatistics(SizeRange const& range, std::size_t limit, Logger const& log) noexcept :
 	range{range}, limit{limit}, allocations{0}, minSize{std::numeric_limits<std::size_t>::max()}, maxSize{0}, hwm{0}, log{log}
 {
-	log(LogLevel::DEBUG, "PoolStatistics::PoolStatistics([%lu, %lu], %lu)", range.first, range.last, limit);
+	log(LogLevel::DEBUG, "PoolStatistics::PoolStatistics([%lu, %lu], %lu) -> this:%p", range.first, range.last, limit, this);
 }
 
 PoolStatistics::~PoolStatistics() noexcept
 {
+	log(LogLevel::DEBUG, "PoolStatistics::~PoolStatistics(this:%p)", this);
 }
 
 void PoolStatistics::registerAllocate(std::size_t size) noexcept
