@@ -28,7 +28,7 @@ public:
 	EnvironmentConfiguration& operator=(EnvironmentConfiguration const&) = delete;
 	~EnvironmentConfiguration() noexcept;
 
-	virtual Configuration::StringType const& getClass() const noexcept override;
+	virtual std::string_view const& getClass() const noexcept override;
 	virtual Configuration::PoolMapType const& getPools() const noexcept override;
 	virtual LogLevel const& getLogLevel() const noexcept override;
 
@@ -37,7 +37,7 @@ public:
 private:
 	Allocator*& activeAllocator;
 	Logger& log;
-	std::optional<Configuration::StringType> className;
+	std::optional<std::string_view> className;
 	std::optional<Configuration::PoolMapType> pools;
 	std::optional<LogLevel> logLevel;
 };

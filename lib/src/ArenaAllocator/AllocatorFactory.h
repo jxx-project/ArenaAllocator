@@ -18,7 +18,7 @@ class AllocatorFactory
 public:
 	virtual ~AllocatorFactory() noexcept = default;
 
-	virtual Allocator* getAllocator(Configuration::StringType const& className) noexcept = 0;
+	virtual Allocator* getAllocator(std::string_view const& className) noexcept = 0;
 };
 
 } // namespace ArenaAllocator

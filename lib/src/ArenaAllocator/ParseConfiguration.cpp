@@ -6,7 +6,7 @@ namespace ArenaAllocator {
 
 ParseConfiguration::ParseConfiguration(
 	char const* str,
-	std::optional<Configuration::StringType>& className,
+	std::optional<std::string_view>& className,
 	std::optional<Configuration::PoolMapType>& pools,
 	std::optional<LogLevel>& logLevel) noexcept :
 	current{str}, className{className}, pools{pools}, logLevel{logLevel}
@@ -16,22 +16,21 @@ ParseConfiguration::ParseConfiguration(
 	}
 	char delimiter{parseDelimiter("}")};
 	while (delimiter != '}') {
-		char const* configItem{parseIdentifier()};
-		if (strEqual(configItem, "pools")) {
+		std::string_view configItem{parseIdentifier()};
+		if (configItem == "pools") {
 			if (!parseDelimiter(":")) {
 				ConsoleLogger::exit("ParseConfiguration: expected ':' after pools item identifier");
 			}
 			parsePoolMap();
-		} else if (strEqual(configItem, "class")) {
+		} else if (configItem == "class") {
 			if (!parseDelimiter(":")) {
 				ConsoleLogger::exit("ParseConfiguration: expected ':' after class item identifier");
 			}
 			if (className.has_value()) {
 				ConsoleLogger::exit("ParseConfiguration: duplicate allocator class item");
 			}
-			char const* classNameStr{parseIdentifier()};
-			className.emplace(classNameStr, current);
-		} else if (strEqual(configItem, "logLevel")) {
+			className.emplace(parseIdentifier());
+		} else if (configItem == "logLevel") {
 			if (!parseDelimiter(":")) {
 				ConsoleLogger::exit("ParseConfiguration: expected ':' after logLevel item identifier");
 			}
@@ -57,16 +56,16 @@ ParseConfiguration::ParseConfiguration(
 LogLevel ParseConfiguration::parseLogLevel() noexcept
 {
 	LogLevel result;
-	char const* logLevelStr{parseIdentifier()};
-	if (strEqual(logLevelStr, "NONE")) {
+	std::string_view logLevel{parseIdentifier()};
+	if (logLevel == "NONE") {
 		result = LogLevel::NONE;
-	} else if (strEqual(logLevelStr, "ERROR")) {
+	} else if (logLevel == "ERROR") {
 		result = LogLevel::ERROR;
-	} else if (strEqual(logLevelStr, "INFO")) {
+	} else if (logLevel == "INFO") {
 		result = LogLevel::INFO;
-	} else if (strEqual(logLevelStr, "TRACE")) {
+	} else if (logLevel == "TRACE") {
 		result = LogLevel::TRACE;
-	} else if (strEqual(logLevelStr, "DEBUG")) {
+	} else if (logLevel == "DEBUG") {
 		result = LogLevel::DEBUG;
 	} else {
 		ConsoleLogger::exit("ParseConfiguration: invalid log level");
@@ -83,11 +82,11 @@ SizeRange ParseConfiguration::parseSizeRange() noexcept
 	if (!parseDelimiter("[")) {
 		ConsoleLogger::exit("ParseConfiguration: expexted '[' at size range begin");
 	}
-	result.first = parseSize();
+	result.first = parseUnsignedLong();
 	if (!parseDelimiter(",")) {
 		ConsoleLogger::exit("ParseConfiguration: expexted ',' separating size range first and last");
 	}
-	result.last = parseSize();
+	result.last = parseUnsignedLong();
 	if (!parseDelimiter("]")) {
 		ConsoleLogger::exit("ParseConfiguration: expexted ']' at size range end");
 	}
@@ -121,7 +120,7 @@ void ParseConfiguration::parsePool() noexcept
 	if (!parseDelimiter(":") == ':') {
 		ConsoleLogger::exit("ParseConfiguration: Expected ':' at pool configuration begin");
 	}
-	std::size_t nChunks{parseSize()};
+	std::size_t nChunks{parseUnsignedLong()};
 	if (!pools.value().emplace(range, nChunks)) {
 		ConsoleLogger::exit("ParseConfiguration: Expected disjunct pool size ranges");
 	}
@@ -144,43 +143,26 @@ char ParseConfiguration::parseDelimiter(char const* delimiters) noexcept
 	return result;
 }
 
-char const* ParseConfiguration::parseIdentifier() noexcept
+std::string_view ParseConfiguration::parseIdentifier() noexcept
 {
 	while (isSpace(*current)) {
 		++current;
 	}
-	char const* result{current};
+	char const* indentifierStr{current};
 	while (isAlpha(*current)) {
 		++current;
 	}
-	return result;
+	return std::string_view(indentifierStr, current - indentifierStr);
 }
 
-std::size_t ParseConfiguration::parseSize() noexcept
+std::size_t ParseConfiguration::parseUnsignedLong() noexcept
 {
 	char* end;
 	std::size_t result = std::strtoul(current, &end, 10);
 	if (current == end) {
-		ConsoleLogger::exit("ParseConfiguration: invalid size value");
+		ConsoleLogger::exit("ParseConfiguration: invalid unsigned long value");
 	}
 	current = end;
-	return result;
-}
-
-bool ParseConfiguration::strEqual(char const* strConfig, char const* reference) const noexcept
-{
-	bool result{true};
-	while (strConfig != current && *reference) {
-		if (*strConfig != *reference) {
-			result = false;
-			break;
-		}
-		++strConfig;
-		++reference;
-	}
-	if (strConfig != current || *reference) {
-		result = false;
-	}
 	return result;
 }
 

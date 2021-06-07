@@ -20,7 +20,7 @@ class ParseConfiguration
 public:
 	ParseConfiguration(
 		char const* str,
-		std::optional<Configuration::StringType>& className,
+		std::optional<std::string_view>& className,
 		std::optional<Configuration::PoolMapType>& pools,
 		std::optional<LogLevel>& logLevel) noexcept;
 
@@ -32,14 +32,13 @@ private:
 	void parseConfigStr() noexcept;
 
 	char parseDelimiter(char const* delimiters) noexcept;
-	char const* parseIdentifier() noexcept;
-	std::size_t parseSize() noexcept;
-	bool strEqual(char const* strConfig, char const* reference) const noexcept;
+	std::string_view parseIdentifier() noexcept;
+	std::size_t parseUnsignedLong() noexcept;
 	static bool isSpace(const char c) noexcept;
 	static bool isAlpha(const char c) noexcept;
 
 	char const* current;
-	std::optional<Configuration::StringType>& className;
+	std::optional<std::string_view>& className;
 	std::optional<Configuration::PoolMapType>& pools;
 	std::optional<LogLevel>& logLevel;
 };

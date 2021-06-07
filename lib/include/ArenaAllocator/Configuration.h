@@ -13,6 +13,7 @@
 #include "ArenaAllocator/SizeRangeMap.h"
 #include <cstddef>
 #include <map>
+#include <string_view>
 
 namespace ArenaAllocator {
 
@@ -20,11 +21,10 @@ class Configuration
 {
 public:
 	using PoolMapType = SizeRangeMap<std::size_t>;
-	using StringType = std::basic_string<char, std::char_traits<char>, PassThroughCXXAllocator<char>>;
 
 	virtual ~Configuration() noexcept = default;
 
-	virtual StringType const& getClass() const noexcept = 0;
+	virtual std::string_view const& getClass() const noexcept = 0;
 	virtual PoolMapType const& getPools() const noexcept = 0;
 	virtual LogLevel const& getLogLevel() const noexcept = 0;
 };

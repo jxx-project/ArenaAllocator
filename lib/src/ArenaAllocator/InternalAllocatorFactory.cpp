@@ -18,7 +18,7 @@ InternalAllocatorFactory::~InternalAllocatorFactory() noexcept
 {
 }
 
-Allocator* ArenaAllocator::InternalAllocatorFactory::getAllocator(Configuration::StringType const& className) noexcept
+Allocator* ArenaAllocator::InternalAllocatorFactory::getAllocator(std::string_view const& className) noexcept
 {
 	Allocator* result{nullptr};
 	if (className == PassThroughAllocator::className) {

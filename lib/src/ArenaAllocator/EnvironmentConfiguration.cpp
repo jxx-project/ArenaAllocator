@@ -32,7 +32,7 @@ EnvironmentConfiguration::~EnvironmentConfiguration() noexcept
 {
 }
 
-Configuration::StringType const& EnvironmentConfiguration::getClass() const noexcept
+std::string_view const& EnvironmentConfiguration::getClass() const noexcept
 {
 	if (!className.has_value()) {
 		ConsoleLogger::exit("missing allocator class item in environment variable %s", configurationEnvVarName);

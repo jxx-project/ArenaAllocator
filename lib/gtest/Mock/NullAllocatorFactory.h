@@ -21,7 +21,7 @@ public:
 	NullAllocatorFactory& operator=(NullAllocatorFactory const&) = delete;
 	~NullAllocatorFactory() noexcept;
 
-	virtual ArenaAllocator::Allocator* getAllocator(ArenaAllocator::Configuration::StringType const&) noexcept override;
+	virtual ArenaAllocator::Allocator* getAllocator(std::string_view const&) noexcept override;
 };
 
 } // namespace Mock
