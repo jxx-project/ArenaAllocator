@@ -8,7 +8,7 @@
 #ifndef ArenaAllocator_SizeRangeMap_tcc_INCLUDED
 #define ArenaAllocator_SizeRangeMap_tcc_INCLUDED
 
-#include "ArenaAllocator/Pool.h"
+#include "ArenaAllocator/FreeList.h"
 #include "ArenaAllocator/PoolStatistics.h"
 #include "ArenaAllocator/SizeRangeMap.h"
 

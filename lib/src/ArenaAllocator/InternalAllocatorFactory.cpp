@@ -21,21 +21,21 @@ InternalAllocatorFactory::~InternalAllocatorFactory() noexcept
 Allocator* ArenaAllocator::InternalAllocatorFactory::getAllocator(std::string_view const& className) noexcept
 {
 	Allocator* result{nullptr};
-	if (className == PassThroughAllocator::className) {
-		if (!passThroughAllocator.has_value()) {
-			passThroughAllocator.emplace(log);
+	if (className == PassThrough::className) {
+		if (!passThrough.has_value()) {
+			passThrough.emplace(log);
 		}
-		result = &passThroughAllocator.value();
-	} else if (className == PoolAllocator::className) {
-		if (!poolAllocator.has_value()) {
-			poolAllocator.emplace(configuration, getAllocator(PassThroughAllocator::className), log);
+		result = &passThrough.value();
+	} else if (className == SegregatedFreeLists::className) {
+		if (!segregatedFreeLists.has_value()) {
+			segregatedFreeLists.emplace(configuration, getAllocator(PassThrough::className), log);
 		}
-		result = &poolAllocator.value();
-	} else if (className == PoolStatisticsAllocator::className) {
-		if (!poolStatisticsAllocator.has_value()) {
-			poolStatisticsAllocator.emplace(configuration, *getAllocator(PassThroughAllocator::className), log);
+		result = &segregatedFreeLists.value();
+	} else if (className == SizeRangeStatistics::className) {
+		if (!sizeRangeStatistics.has_value()) {
+			sizeRangeStatistics.emplace(configuration, *getAllocator(PassThrough::className), log);
 		}
-		result = &poolStatisticsAllocator.value();
+		result = &sizeRangeStatistics.value();
 	}
 	return result;
 }

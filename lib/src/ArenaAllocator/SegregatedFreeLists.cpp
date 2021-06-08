@@ -5,7 +5,7 @@
 //
 
 
-#include "ArenaAllocator/PoolAllocator.h"
+#include "ArenaAllocator/SegregatedFreeLists.h"
 #include "ArenaAllocator/Timer.h"
 #include <cerrno>
 
@@ -17,13 +17,13 @@ const auto alignPageSize{[]() { return ::sysconf(_SC_PAGESIZE) <= sizeof(std::ma
 
 } // namespace
 
-PoolAllocator::PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept :
+SegregatedFreeLists::SegregatedFreeLists(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept :
 	delegate{delegate}, log{log}, pools{configuration, log}, chunks{pools, delegate, log}
 {
 	log(LogLevel::DEBUG, "%s::%s(Configuration const&, Allocator*, Logger const&) -> this:%p", className, className, this);
 }
 
-PoolAllocator::~PoolAllocator() noexcept
+SegregatedFreeLists::~SegregatedFreeLists() noexcept
 {
 	log(LogLevel::DEBUG, "%s::~%s(this:%p)", className, className, this);
 	if (log.isLevel(LogLevel::INFO)) {
@@ -31,7 +31,7 @@ PoolAllocator::~PoolAllocator() noexcept
 	}
 }
 
-void* PoolAllocator::malloc(std::size_t size) noexcept
+void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	auto delegateMallocFunc{[this](std::size_t size) {
@@ -52,7 +52,7 @@ void* PoolAllocator::malloc(std::size_t size) noexcept
 	return result.ptr;
 }
 
-void PoolAllocator::free(void* ptr) noexcept
+void SegregatedFreeLists::free(void* ptr) noexcept
 {
 	ChunkMap::DeallocateResult result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -67,7 +67,7 @@ void PoolAllocator::free(void* ptr) noexcept
 	errno = result.propagateErrno;
 }
 
-void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
+void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	auto delegateCallocFunc{[this](std::size_t nmemb, std::size_t size) {
@@ -88,7 +88,7 @@ void* PoolAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 	return result.ptr;
 }
 
-void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
+void* SegregatedFreeLists::realloc(void* ptr, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -104,7 +104,7 @@ void* PoolAllocator::realloc(void* ptr, std::size_t size) noexcept
 	return result.ptr;
 }
 
-void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
+void* SegregatedFreeLists::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -127,7 +127,7 @@ void* PoolAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size
 	return result.ptr;
 }
 
-int PoolAllocator::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
+int SegregatedFreeLists::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	auto delegateMemAlignFunc{[this, alignment](std::size_t size) {
@@ -156,7 +156,7 @@ int PoolAllocator::posix_memalign(void** memptr, std::size_t alignment, std::siz
 	return result.propagateErrno;
 }
 
-void* PoolAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
+void* SegregatedFreeLists::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	auto delegateAlignedAllocFunc{[this, alignment](std::size_t size) {
@@ -184,7 +184,7 @@ void* PoolAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noex
 	return result.ptr;
 }
 
-void* PoolAllocator::valloc(std::size_t size) noexcept
+void* SegregatedFreeLists::valloc(std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	auto delegateVallocFunc{[this](std::size_t size) {
@@ -205,7 +205,7 @@ void* PoolAllocator::valloc(std::size_t size) noexcept
 	return result.ptr;
 }
 
-void* PoolAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
+void* SegregatedFreeLists::memalign(std::size_t alignment, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	auto delegateMemalignFunc{[this, alignment](std::size_t size) {
@@ -233,7 +233,7 @@ void* PoolAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
 	return result.ptr;
 }
 
-void* PoolAllocator::pvalloc(std::size_t size) noexcept
+void* SegregatedFreeLists::pvalloc(std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result;
 	auto delegatePvallocFunc{[this](std::size_t size) {
@@ -254,7 +254,7 @@ void* PoolAllocator::pvalloc(std::size_t size) noexcept
 	return result.ptr;
 }
 
-void PoolAllocator::dump() const noexcept
+void SegregatedFreeLists::dump() const noexcept
 {
 	pools.dump();
 }

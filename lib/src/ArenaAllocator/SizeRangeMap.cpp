@@ -10,7 +10,7 @@
 namespace ArenaAllocator {
 
 template class SizeRangeMap<std::size_t>;
-template class SizeRangeMap<Pool>;
+template class SizeRangeMap<FreeList>;
 template class SizeRangeMap<PoolStatistics>;
 
 } // namespace ArenaAllocator

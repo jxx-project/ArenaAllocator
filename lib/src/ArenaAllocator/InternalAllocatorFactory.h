@@ -11,9 +11,9 @@
 #include "ArenaAllocator/AllocatorFactory.h"
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/PassThroughAllocator.h"
-#include "ArenaAllocator/PoolAllocator.h"
-#include "ArenaAllocator/PoolStatisticsAllocator.h"
+#include "ArenaAllocator/PassThrough.h"
+#include "ArenaAllocator/SegregatedFreeLists.h"
+#include "ArenaAllocator/SizeRangeStatistics.h"
 #include <optional>
 
 namespace ArenaAllocator {
@@ -31,9 +31,9 @@ public:
 private:
 	Configuration const& configuration;
 	Logger const& log;
-	std::optional<PassThroughAllocator> passThroughAllocator;
-	std::optional<PoolAllocator> poolAllocator;
-	std::optional<PoolStatisticsAllocator> poolStatisticsAllocator;
+	std::optional<PassThrough> passThrough;
+	std::optional<SegregatedFreeLists> segregatedFreeLists;
+	std::optional<SizeRangeStatistics> sizeRangeStatistics;
 };
 
 } // namespace ArenaAllocator

@@ -19,15 +19,15 @@
 
 namespace ArenaAllocator {
 
-class Pool
+class FreeList
 {
 public:
 	using ListType = std::list<Chunk, PassThroughCXXAllocator<Chunk>>;
 
-	Pool(SizeRange const& range, std::size_t nChunks, Logger const& log) noexcept;
-	Pool(Pool const& other) = delete;
-	Pool& operator=(Pool const& other) = delete;
-	~Pool() noexcept;
+	FreeList(SizeRange const& range, std::size_t nChunks, Logger const& log) noexcept;
+	FreeList(FreeList const& other) = delete;
+	FreeList& operator=(FreeList const& other) = delete;
+	~FreeList() noexcept;
 
 	void* allocate(std::size_t size) noexcept;
 	void* reallocate(ListType::iterator it, std::size_t size) noexcept;

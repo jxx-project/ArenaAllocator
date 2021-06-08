@@ -23,11 +23,11 @@ void* getPtrToEmpty()
 
 } // namespace
 
-ChunkMap::ChunkMap(PoolMap<Pool>& pools, Allocator* delegate, Logger const& log) noexcept :
+ChunkMap::ChunkMap(PoolMap<FreeList>& pools, Allocator* delegate, Logger const& log) noexcept :
 	ptrToEmpty{getPtrToEmpty()}, delegate{delegate}, log{log}, pools{pools}
 {
 	chunks.reserve(pools.nChunks());
-	pools.forEachChunk([this](Pool::ListType::iterator it) { chunks.insert(AggregateType::value_type(it->data, it)); });
+	pools.forEachChunk([this](FreeList::ListType::iterator it) { chunks.insert(AggregateType::value_type(it->data, it)); });
 }
 
 ChunkMap::DeallocateResult ChunkMap::deallocate(void* ptr) const noexcept
@@ -98,13 +98,13 @@ ChunkMap::AllocateResult ChunkMap::reallocate(void* ptr, std::size_t nmemb, std:
 	return result;
 }
 
-ChunkMap::AllocateResult ChunkMap::reallocate(Pool::ListType::iterator const& currentChunk, std::size_t size) const noexcept
+ChunkMap::AllocateResult ChunkMap::reallocate(FreeList::ListType::iterator const& currentChunk, std::size_t size) const noexcept
 {
 	AllocateResult result{nullptr, 0, false};
 	if (size) {
-		Pool* destinationPool{pools.at(size)};
+		FreeList* destinationPool{pools.at(size)};
 		if (destinationPool) {
-			Pool* currentPool{currentChunk->pool};
+			FreeList* currentPool{currentChunk->pool};
 			if (destinationPool == currentPool) {
 				result.ptr = currentPool->reallocate(currentChunk, size);
 			} else {

@@ -7,7 +7,7 @@
 
 #include "ArenaAllocator/PoolMap.h"
 #include "ArenaAllocator/ConsoleLogger.h"
-#include "ArenaAllocator/Pool.h"
+#include "ArenaAllocator/FreeList.h"
 #include "ArenaAllocator/PoolStatistics.h"
 
 namespace ArenaAllocator {
@@ -43,7 +43,7 @@ void PoolMap<T>::dump() const noexcept
 	}
 }
 
-template class PoolMap<Pool>;
+template class PoolMap<FreeList>;
 template class PoolMap<PoolStatistics>;
 
 } // namespace ArenaAllocator

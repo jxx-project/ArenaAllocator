@@ -9,9 +9,9 @@
 #define ArenaAllocator_PoolMap_h_INCLUDED
 
 #include "ArenaAllocator/Configuration.h"
+#include "ArenaAllocator/FreeList.h"
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PassThroughCXXAllocator.h"
-#include "ArenaAllocator/Pool.h"
 #include "ArenaAllocator/SizeRangeMap.h"
 
 namespace ArenaAllocator {
@@ -24,7 +24,7 @@ public:
 
 	T* at(std::size_t chunkSize) noexcept;
 
-	template<typename U = T, typename = typename std::enable_if<std::is_same<U, Pool>::value>::type>
+	template<typename U = T, typename = typename std::enable_if<std::is_same<U, FreeList>::value>::type>
 	std::size_t nChunks() const noexcept
 	{
 		std::size_t result{0};
@@ -34,7 +34,7 @@ public:
 		return result;
 	}
 
-	template<typename F, typename U = T, typename = typename std::enable_if<std::is_same<U, Pool>::value>::type>
+	template<typename F, typename U = T, typename = typename std::enable_if<std::is_same<U, FreeList>::value>::type>
 	void forEachChunk(F f) noexcept
 	{
 		for (typename AggregateType::value_type& element : aggregate) {

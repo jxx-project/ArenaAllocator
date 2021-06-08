@@ -12,12 +12,12 @@
 
 namespace ArenaAllocator {
 
-class Pool;
+class FreeList;
 
 struct Chunk
 {
 	void* data;
-	Pool* pool;
+	FreeList* pool;
 	std::size_t allocatedSize;
 };
 

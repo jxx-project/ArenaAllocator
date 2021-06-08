@@ -5,22 +5,25 @@
 //
 
 
-#ifndef ArenaAllocator_PassThroughAllocator_h_INCLUDED
-#define ArenaAllocator_PassThroughAllocator_h_INCLUDED
+#ifndef ArenaAllocator_PoolStatistics_Allocator_h_INCLUDED
+#define ArenaAllocator_PoolStatistics_Allocator_h_INCLUDED
 
+#include "ArenaAllocator/AllocationMap.h"
 #include "ArenaAllocator/Allocator.h"
+#include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
 #include <cstddef>
+#include <mutex>
 
 namespace ArenaAllocator {
 
-class PassThroughAllocator : public Allocator
+class SizeRangeStatistics : public Allocator
 {
 public:
-	explicit PassThroughAllocator(Logger const& log) noexcept;
-	PassThroughAllocator(PassThroughAllocator const&) = delete;
-	PassThroughAllocator& operator=(PassThroughAllocator const&) = delete;
-	virtual ~PassThroughAllocator() noexcept;
+	SizeRangeStatistics(Configuration const& configuration, Allocator& delegate, Logger const& log) noexcept;
+	SizeRangeStatistics(SizeRangeStatistics const&) = delete;
+	void operator=(SizeRangeStatistics const&) = delete;
+	virtual ~SizeRangeStatistics() noexcept;
 
 	virtual void* malloc(std::size_t size) noexcept override;
 	virtual void free(void* ptr) noexcept override;
@@ -34,12 +37,18 @@ public:
 	virtual void* pvalloc(std::size_t size) noexcept override;
 	virtual void dump() const noexcept override;
 
-	static constexpr char const* className{"PassThroughAllocator"};
+	static constexpr char const* className{"SizeRangeStatistics"};
 
 private:
+	void* const ptrToEmpty;
+	std::mutex mutex;
+	Allocator& delegate;
 	Logger const& log;
+	PoolMap<PoolStatistics> pools;
+	PoolStatistics delegatePool;
+	AllocationMap allocations;
 };
 
 } // namespace ArenaAllocator
 
-#endif // ArenaAllocator_PassThroughAllocator_h_INCLUDED
+#endif // ArenaAllocator_PoolStatistics_Allocator_h_INCLUDED

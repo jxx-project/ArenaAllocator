@@ -5,25 +5,26 @@
 //
 
 
-#ifndef ArenaAllocator_PoolStatistics_Allocator_h_INCLUDED
-#define ArenaAllocator_PoolStatistics_Allocator_h_INCLUDED
+#ifndef ArenaAllocator_SegregatedFreeLists_h_INCLUDED
+#define ArenaAllocator_SegregatedFreeLists_h_INCLUDED
 
-#include "ArenaAllocator/AllocationMap.h"
 #include "ArenaAllocator/Allocator.h"
+#include "ArenaAllocator/ChunkMap.h"
 #include "ArenaAllocator/Configuration.h"
+#include "ArenaAllocator/FreeList.h"
 #include "ArenaAllocator/Logger.h"
+#include "ArenaAllocator/PoolMap.h"
 #include <cstddef>
-#include <mutex>
 
 namespace ArenaAllocator {
 
-class PoolStatisticsAllocator : public Allocator
+class SegregatedFreeLists : public Allocator
 {
 public:
-	PoolStatisticsAllocator(Configuration const& configuration, Allocator& delegate, Logger const& log) noexcept;
-	PoolStatisticsAllocator(PoolStatisticsAllocator const&) = delete;
-	void operator=(PoolStatisticsAllocator const&) = delete;
-	virtual ~PoolStatisticsAllocator() noexcept;
+	SegregatedFreeLists(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept;
+	SegregatedFreeLists(SegregatedFreeLists const&) = delete;
+	void operator=(SegregatedFreeLists const&) = delete;
+	virtual ~SegregatedFreeLists() noexcept;
 
 	virtual void* malloc(std::size_t size) noexcept override;
 	virtual void free(void* ptr) noexcept override;
@@ -37,18 +38,15 @@ public:
 	virtual void* pvalloc(std::size_t size) noexcept override;
 	virtual void dump() const noexcept override;
 
-	static constexpr char const* className{"PoolStatisticsAllocator"};
+	static constexpr char const* className{"SegregatedFreeLists"};
 
 private:
-	void* const ptrToEmpty;
-	std::mutex mutex;
-	Allocator& delegate;
+	Allocator* delegate;
 	Logger const& log;
-	PoolMap<PoolStatistics> pools;
-	PoolStatistics delegatePool;
-	AllocationMap allocations;
+	PoolMap<FreeList> pools;
+	const ChunkMap chunks;
 };
 
 } // namespace ArenaAllocator
 
-#endif // ArenaAllocator_PoolStatistics_Allocator_h_INCLUDED
+#endif // ArenaAllocator_SegregatedFreeLists_h_INCLUDED

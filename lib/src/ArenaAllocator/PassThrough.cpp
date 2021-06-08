@@ -5,7 +5,7 @@
 //
 
 
-#include "ArenaAllocator/PassThroughAllocator.h"
+#include "ArenaAllocator/PassThrough.h"
 #include "ArenaAllocator/Timer.h"
 #include <cerrno>
 
@@ -22,17 +22,17 @@ extern "C" void* __libc_pvalloc(std::size_t size);
 
 namespace ArenaAllocator {
 
-PassThroughAllocator::PassThroughAllocator(Logger const& log) noexcept : log{log}
+PassThrough::PassThrough(Logger const& log) noexcept : log{log}
 {
 	log(LogLevel::DEBUG, "%s::%s(Logger const&) -> this:%p", className, className, this);
 }
 
-PassThroughAllocator::~PassThroughAllocator() noexcept
+PassThrough::~PassThrough() noexcept
 {
 	log(LogLevel::DEBUG, "%s::~%s(this:%p)", className, className, this);
 }
 
-void* PassThroughAllocator::malloc(std::size_t size) noexcept
+void* PassThrough::malloc(std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -45,7 +45,7 @@ void* PassThroughAllocator::malloc(std::size_t size) noexcept
 	return result;
 }
 
-void PassThroughAllocator::free(void* ptr) noexcept
+void PassThrough::free(void* ptr) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -57,7 +57,7 @@ void PassThroughAllocator::free(void* ptr) noexcept
 	}
 }
 
-void* PassThroughAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
+void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -70,7 +70,7 @@ void* PassThroughAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
 	return result;
 }
 
-void* PassThroughAllocator::realloc(void* ptr, std::size_t size) noexcept
+void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -104,7 +104,7 @@ void* reallocarrayUsingLibcRealloc(void* ptr, std::size_t nmemb, std::size_t siz
 
 } // namespace
 
-void* PassThroughAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
+void* PassThrough::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -147,7 +147,7 @@ int posixMemalignUsingLibcMemalign(void** memptr, std::size_t alignment, std::si
 
 } // namespace
 
-int PassThroughAllocator::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
+int PassThrough::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
 {
 	int result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -177,7 +177,7 @@ void* alignedAllocUsingLibcMemalign(std::size_t alignment, std::size_t size) noe
 
 } // namespace
 
-void* PassThroughAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
+void* PassThrough::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -196,20 +196,20 @@ void* PassThroughAllocator::aligned_alloc(std::size_t alignment, std::size_t siz
 	return result;
 }
 
-void* PassThroughAllocator::valloc(std::size_t size) noexcept
+void* PassThrough::valloc(std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_valloc(size);
-		log(timer.getNanoseconds(), OperationType::VALLOC, "PassThroughAllocator::valloc(%lu) -> %p", size, result);
+		log(timer.getNanoseconds(), OperationType::VALLOC, "PassThrough::valloc(%lu) -> %p", size, result);
 	} else {
 		result = __libc_valloc(size);
 	}
 	return result;
 }
 
-void* PassThroughAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
+void* PassThrough::memalign(std::size_t alignment, std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -222,7 +222,7 @@ void* PassThroughAllocator::memalign(std::size_t alignment, std::size_t size) no
 	return result;
 }
 
-void* PassThroughAllocator::pvalloc(std::size_t size) noexcept
+void* PassThrough::pvalloc(std::size_t size) noexcept
 {
 	void* result;
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -235,7 +235,7 @@ void* PassThroughAllocator::pvalloc(std::size_t size) noexcept
 	return result;
 }
 
-void PassThroughAllocator::dump() const noexcept
+void PassThrough::dump() const noexcept
 {
 	// Nothing to do.
 }

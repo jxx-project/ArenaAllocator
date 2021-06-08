@@ -5,8 +5,8 @@
 //
 
 
-#include "ArenaAllocator/PoolStatisticsAllocator.h"
-#include "ArenaAllocator/Pool.h"
+#include "ArenaAllocator/SizeRangeStatistics.h"
+#include "ArenaAllocator/FreeList.h"
 #include "ArenaAllocator/Timer.h"
 #include <cerrno>
 #include <cstring>
@@ -27,10 +27,7 @@ void* getPtrToEmpty()
 
 } // namespace
 
-PoolStatisticsAllocator::PoolStatisticsAllocator(
-	Configuration const& configuration,
-	Allocator& delegate,
-	Logger const& log) noexcept :
+SizeRangeStatistics::SizeRangeStatistics(Configuration const& configuration, Allocator& delegate, Logger const& log) noexcept :
 	ptrToEmpty{getPtrToEmpty()},
 	delegate{delegate},
 	log{log},
@@ -46,7 +43,7 @@ PoolStatisticsAllocator::PoolStatisticsAllocator(
 		ptrToEmpty);
 }
 
-PoolStatisticsAllocator::~PoolStatisticsAllocator() noexcept
+SizeRangeStatistics::~SizeRangeStatistics() noexcept
 {
 	log(LogLevel::DEBUG, "%s::~%s(this:%p)", className, className, this);
 	if (log.isLevel(LogLevel::INFO)) {
@@ -54,7 +51,7 @@ PoolStatisticsAllocator::~PoolStatisticsAllocator() noexcept
 	}
 }
 
-void* PoolStatisticsAllocator::malloc(std::size_t size) noexcept
+void* SizeRangeStatistics::malloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
@@ -69,7 +66,7 @@ void* PoolStatisticsAllocator::malloc(std::size_t size) noexcept
 	return result;
 }
 
-void PoolStatisticsAllocator::free(void* ptr) noexcept
+void SizeRangeStatistics::free(void* ptr) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	if (ptr && ptr != ptrToEmpty) {
@@ -78,7 +75,7 @@ void PoolStatisticsAllocator::free(void* ptr) noexcept
 	}
 }
 
-void* PoolStatisticsAllocator::calloc(std::size_t nmemb, std::size_t size) noexcept
+void* SizeRangeStatistics::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
@@ -93,7 +90,7 @@ void* PoolStatisticsAllocator::calloc(std::size_t nmemb, std::size_t size) noexc
 	return result;
 }
 
-void* PoolStatisticsAllocator::realloc(void* ptr, std::size_t size) noexcept
+void* SizeRangeStatistics::realloc(void* ptr, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* ptrOrNull{ptr == ptrToEmpty ? nullptr : ptr};
@@ -107,7 +104,7 @@ void* PoolStatisticsAllocator::realloc(void* ptr, std::size_t size) noexcept
 	return result;
 }
 
-void* PoolStatisticsAllocator::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
+void* SizeRangeStatistics::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* ptrOrNull{ptr == ptrToEmpty ? nullptr : ptr};
@@ -121,7 +118,7 @@ void* PoolStatisticsAllocator::reallocarray(void* ptr, std::size_t nmemb, std::s
 	return result;
 }
 
-int PoolStatisticsAllocator::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
+int SizeRangeStatistics::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	int result;
@@ -137,7 +134,7 @@ int PoolStatisticsAllocator::posix_memalign(void** memptr, std::size_t alignment
 	return result;
 }
 
-void* PoolStatisticsAllocator::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
+void* SizeRangeStatistics::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
@@ -152,7 +149,7 @@ void* PoolStatisticsAllocator::aligned_alloc(std::size_t alignment, std::size_t 
 	return result;
 }
 
-void* PoolStatisticsAllocator::valloc(std::size_t size) noexcept
+void* SizeRangeStatistics::valloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
@@ -167,7 +164,7 @@ void* PoolStatisticsAllocator::valloc(std::size_t size) noexcept
 	return result;
 }
 
-void* PoolStatisticsAllocator::memalign(std::size_t alignment, std::size_t size) noexcept
+void* SizeRangeStatistics::memalign(std::size_t alignment, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
@@ -182,7 +179,7 @@ void* PoolStatisticsAllocator::memalign(std::size_t alignment, std::size_t size)
 	return result;
 }
 
-void* PoolStatisticsAllocator::pvalloc(std::size_t size) noexcept
+void* SizeRangeStatistics::pvalloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
@@ -197,7 +194,7 @@ void* PoolStatisticsAllocator::pvalloc(std::size_t size) noexcept
 	return result;
 }
 
-void PoolStatisticsAllocator::dump() const noexcept
+void SizeRangeStatistics::dump() const noexcept
 {
 	pools.dump();
 	delegatePool.dump();

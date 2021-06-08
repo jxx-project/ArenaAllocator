@@ -5,26 +5,22 @@
 //
 
 
-#ifndef ArenaAllocator_PoolAllocator_h_INCLUDED
-#define ArenaAllocator_PoolAllocator_h_INCLUDED
+#ifndef ArenaAllocator_PassThrough_h_INCLUDED
+#define ArenaAllocator_PassThrough_h_INCLUDED
 
 #include "ArenaAllocator/Allocator.h"
-#include "ArenaAllocator/ChunkMap.h"
-#include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/Logger.h"
-#include "ArenaAllocator/Pool.h"
-#include "ArenaAllocator/PoolMap.h"
 #include <cstddef>
 
 namespace ArenaAllocator {
 
-class PoolAllocator : public Allocator
+class PassThrough : public Allocator
 {
 public:
-	PoolAllocator(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept;
-	PoolAllocator(PoolAllocator const&) = delete;
-	void operator=(PoolAllocator const&) = delete;
-	virtual ~PoolAllocator() noexcept;
+	explicit PassThrough(Logger const& log) noexcept;
+	PassThrough(PassThrough const&) = delete;
+	PassThrough& operator=(PassThrough const&) = delete;
+	virtual ~PassThrough() noexcept;
 
 	virtual void* malloc(std::size_t size) noexcept override;
 	virtual void free(void* ptr) noexcept override;
@@ -38,15 +34,12 @@ public:
 	virtual void* pvalloc(std::size_t size) noexcept override;
 	virtual void dump() const noexcept override;
 
-	static constexpr char const* className{"PoolAllocator"};
+	static constexpr char const* className{"PassThrough"};
 
 private:
-	Allocator* delegate;
 	Logger const& log;
-	PoolMap<Pool> pools;
-	const ChunkMap chunks;
 };
 
 } // namespace ArenaAllocator
 
-#endif // ArenaAllocator_PoolAllocator_h_INCLUDED
+#endif // ArenaAllocator_PassThrough_h_INCLUDED
