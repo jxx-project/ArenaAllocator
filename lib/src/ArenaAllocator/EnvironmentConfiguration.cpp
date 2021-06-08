@@ -24,7 +24,8 @@ EnvironmentConfiguration::EnvironmentConfiguration(
 	ParseConfiguration(configStr, className, pools, logLevel);
 	log.setLevel(getLogLevel());
 	if (!(activeAllocator = allocatorFactory.getAllocator(getClass()))) {
-		ConsoleLogger::exit("unexpected allocator class '%s' in environment variable %s", getClass(), configurationEnvVarName);
+		// ConsoleLogger::exit("unexpected allocator class '%s' in environment variable %s", getClass(), configurationEnvVarName);
+		ConsoleLogger::exit("unexpected allocator class in environment variable %s", configurationEnvVarName);
 	}
 }
 

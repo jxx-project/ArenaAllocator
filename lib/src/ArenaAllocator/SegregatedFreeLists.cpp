@@ -26,9 +26,6 @@ SegregatedFreeLists::SegregatedFreeLists(Configuration const& configuration, All
 SegregatedFreeLists::~SegregatedFreeLists() noexcept
 {
 	log(LogLevel::DEBUG, "%s::~%s(this:%p)", className, className, this);
-	if (log.isLevel(LogLevel::INFO)) {
-		dump();
-	}
 }
 
 void* SegregatedFreeLists::malloc(std::size_t size) noexcept
@@ -256,7 +253,9 @@ void* SegregatedFreeLists::pvalloc(std::size_t size) noexcept
 
 void SegregatedFreeLists::dump() const noexcept
 {
-	pools.dump();
+	if (log.isLevel(LogLevel::INFO)) {
+		pools.dump();
+	}
 }
 
 } // namespace ArenaAllocator

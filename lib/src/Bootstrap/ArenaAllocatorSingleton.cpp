@@ -51,8 +51,8 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 {
 	// The idiomatic singleton based on a static local variable looks substatially more straightforward, but
 	// occasionally get destroyed while requests are still pouring in, resulting in "pure virtual method called",
-	// segmentation fault, crashes. We therefore base it on a global pointer variable and have destruction
-	// triggered by the shared object .fini hook instead.
+	// segmentation fault, crashes. We therefore base it on a global pointer variable, have it never explicitly
+	// destroyed and the "cleanup" dump triggered by the shared object .fini hook instead.
 	if (!instance) {
 		static std::mutex mutex;
 		std::lock_guard<std::mutex> guard(mutex);
@@ -98,9 +98,7 @@ extern "C" void finishArenaAllocator()
 {
 	if (Bootstrap::instance) {
 		Bootstrap::instance->getLogger()(ArenaAllocator::LogLevel::DEBUG, "finishArenaAllocator()");
-		Bootstrap::instance->Bootstrap::ArenaAllocatorSingleton::~ArenaAllocatorSingleton();
-		__libc_free(Bootstrap::instance);
-		Bootstrap::instance = nullptr;
+		Bootstrap::instance->getAllocator().dump();
 	}
 }
 

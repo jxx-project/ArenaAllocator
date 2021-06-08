@@ -46,9 +46,6 @@ SizeRangeStatistics::SizeRangeStatistics(Configuration const& configuration, All
 SizeRangeStatistics::~SizeRangeStatistics() noexcept
 {
 	log(LogLevel::DEBUG, "%s::~%s(this:%p)", className, className, this);
-	if (log.isLevel(LogLevel::INFO)) {
-		dump();
-	}
 }
 
 void* SizeRangeStatistics::malloc(std::size_t size) noexcept
@@ -196,10 +193,12 @@ void* SizeRangeStatistics::pvalloc(std::size_t size) noexcept
 
 void SizeRangeStatistics::dump() const noexcept
 {
-	pools.dump();
-	delegatePool.dump();
-	if (log.isLevel(LogLevel::DEBUG)) {
-		allocations.dump();
+	if (log.isLevel(LogLevel::INFO)) {
+		pools.dump();
+		delegatePool.dump();
+		if (log.isLevel(LogLevel::DEBUG)) {
+			allocations.dump();
+		}
 	}
 }
 
