@@ -90,7 +90,7 @@ namespace {
 void* reallocarrayUsingLibcRealloc(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	void* result;
-	if (nmemb && size) {
+	if (nmemb > 0 && size > 0) {
 		if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
 			result = __libc_realloc(ptr, nmemb * size);
 		};
@@ -133,7 +133,7 @@ int posixMemalignUsingLibcMemalign(void** memptr, std::size_t alignment, std::si
 	if ((alignment & (alignment - 1)) == 0 && alignment >= sizeof(void*)) {
 		int propagateErrno{errno};
 		void* memalignResult{__libc_memalign(alignment, size)};
-		if (memalignResult) {
+		if (memalignResult != nullptr) {
 			*memptr = memalignResult;
 		} else {
 			result = ENOMEM;

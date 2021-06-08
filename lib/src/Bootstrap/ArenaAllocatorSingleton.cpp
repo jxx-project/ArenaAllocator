@@ -53,12 +53,12 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 	// occasionally get destroyed while requests are still pouring in, resulting in "pure virtual method called",
 	// segmentation fault, crashes. We therefore base it on a global pointer variable, have it never explicitly
 	// destroyed and the "cleanup" dump triggered by the shared object .fini hook instead.
-	if (!instance) {
+	if (instance == nullptr) {
 		static std::mutex mutex;
 		std::lock_guard<std::mutex> guard(mutex);
-		if (!instance) {
+		if (instance == nullptr) {
 			instance = static_cast<ArenaAllocatorSingleton*>(__libc_malloc(sizeof(ArenaAllocatorSingleton)));
-			if (instance) {
+			if (instance != nullptr) {
 				instance = new (instance) ArenaAllocatorSingleton();
 			} else {
 				ArenaAllocator::ConsoleLogger::exit("failed to allocate Bootstrap::ArenaAllocatorSingleton\n");
@@ -96,7 +96,7 @@ extern "C" void initializeArenaAllocator()
 
 extern "C" void finishArenaAllocator()
 {
-	if (Bootstrap::instance) {
+	if (Bootstrap::instance != nullptr) {
 		Bootstrap::instance->getLogger()(ArenaAllocator::LogLevel::DEBUG, "finishArenaAllocator()");
 		Bootstrap::instance->getAllocator().dump();
 	}

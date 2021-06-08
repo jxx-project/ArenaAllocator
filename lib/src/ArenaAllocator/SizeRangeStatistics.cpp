@@ -52,9 +52,9 @@ void* SizeRangeStatistics::malloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
-	if (size) {
+	if (size > 0) {
 		result = delegate.malloc(size);
-		if (result) {
+		if (result != nullptr) {
 			allocations.registerAllocate(size, result);
 		}
 	} else {
@@ -66,7 +66,7 @@ void* SizeRangeStatistics::malloc(std::size_t size) noexcept
 void SizeRangeStatistics::free(void* ptr) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	if (ptr && ptr != ptrToEmpty) {
+	if (ptr != 0 && ptr != ptrToEmpty) {
 		delegate.free(ptr);
 		allocations.registerDeallocate(ptr);
 	}
@@ -76,9 +76,9 @@ void* SizeRangeStatistics::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
-	if (nmemb && size) {
+	if (nmemb > 0 && size > 0) {
 		result = delegate.calloc(nmemb, size);
-		if (result) {
+		if (result != nullptr) {
 			allocations.registerAllocate(nmemb * size, result);
 		}
 	} else {
@@ -95,7 +95,7 @@ void* SizeRangeStatistics::realloc(void* ptr, std::size_t size) noexcept
 	if (size == 0) {
 		allocations.registerDeallocate(ptrOrNull);
 		result = ptrToEmpty;
-	} else if (result) {
+	} else if (result != nullptr) {
 		allocations.registerReallocate(ptrOrNull, size, result);
 	}
 	return result;
@@ -109,7 +109,7 @@ void* SizeRangeStatistics::reallocarray(void* ptr, std::size_t nmemb, std::size_
 	if (nmemb == 0 || size == 0) {
 		allocations.registerDeallocate(ptrOrNull);
 		result = ptrToEmpty;
-	} else if (result) {
+	} else if (result != nullptr) {
 		allocations.registerReallocate(ptrOrNull, nmemb * size, result);
 	}
 	return result;
@@ -119,9 +119,9 @@ int SizeRangeStatistics::posix_memalign(void** memptr, std::size_t alignment, st
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	int result;
-	if (size) {
+	if (size > 0) {
 		result = delegate.posix_memalign(memptr, alignment, size);
-		if (result) {
+		if (result != nullptr) {
 			allocations.registerAllocate(size, *memptr, alignment);
 		}
 	} else {
@@ -135,9 +135,9 @@ void* SizeRangeStatistics::aligned_alloc(std::size_t alignment, std::size_t size
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
-	if (size) {
+	if (size > 0) {
 		result = delegate.aligned_alloc(alignment, size);
-		if (result) {
+		if (result != nullptr) {
 			allocations.registerAllocate(size, result, alignment);
 		}
 	} else {
@@ -150,9 +150,9 @@ void* SizeRangeStatistics::valloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
-	if (size) {
+	if (size > 0) {
 		result = delegate.valloc(size);
-		if (result) {
+		if (result != nullptr) {
 			allocations.registerAllocate(size, result, ::sysconf(_SC_PAGESIZE));
 		}
 	} else {
@@ -165,9 +165,9 @@ void* SizeRangeStatistics::memalign(std::size_t alignment, std::size_t size) noe
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
-	if (size) {
+	if (size > 0) {
 		result = delegate.pvalloc(size);
-		if (result) {
+		if (result != nullptr) {
 			allocations.registerAllocate(size, result, alignment);
 		}
 	} else {
@@ -180,9 +180,9 @@ void* SizeRangeStatistics::pvalloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
 	void* result;
-	if (size) {
+	if (size > 0) {
 		result = delegate.pvalloc(size);
-		if (result) {
+		if (result != nullptr) {
 			allocations.registerAllocate(size, result, ::sysconf(_SC_PAGESIZE));
 		}
 	} else {

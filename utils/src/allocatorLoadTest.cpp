@@ -71,7 +71,7 @@ Allocation::Allocation() noexcept : ptr{nullptr}
 
 Allocation::~Allocation() noexcept
 {
-	if (ptr) {
+	if (ptr != nullptr) {
 		free();
 	}
 }
@@ -79,7 +79,7 @@ Allocation::~Allocation() noexcept
 void Allocation::malloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	if (ptr) {
+	if (ptr != nullptr) {
 		::free(ptr);
 	}
 	void* result{::malloc(size)};
@@ -98,7 +98,7 @@ void Allocation::free() noexcept
 void Allocation::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	if (ptr) {
+	if (ptr != nullptr) {
 		::free(ptr);
 	}
 	void* result{::calloc(nmemb, size)};

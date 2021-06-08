@@ -32,8 +32,7 @@ void write(char buffer[], std::size_t length) noexcept
 void write(char const* prefix, char const* fmt, std::va_list argp) noexcept
 {
 	char buffer[1024];
-	::ssize_t prefixLengthOrError{
-		std::snprintf(buffer, sizeof(buffer) - 1, "[pid:%u]\t%s\t", ::getpid(), prefix != nullptr ? prefix : "")};
+	::ssize_t prefixLengthOrError{std::snprintf(buffer, sizeof(buffer) - 1, "[pid:%u]\t%s\t", ::getpid(), prefix == nullptr ? prefix : "")};
 	std::size_t prefixLength{static_cast<std::size_t>(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
 	::ssize_t messageLengthOrError{std::vsnprintf(buffer + prefixLength, sizeof(buffer) - 1 - prefixLength, fmt, argp)};
 	write(buffer, std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), sizeof(buffer) - 1));

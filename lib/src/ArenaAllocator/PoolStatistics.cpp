@@ -28,7 +28,7 @@ void PoolStatistics::registerAllocate(std::size_t size) noexcept
 	minSize = std::min(size, minSize);
 	maxSize = std::max(size, maxSize);
 	hwm = std::max(allocations, hwm);
-	if (limit && allocations > limit && hwm == limit + 1) {
+	if (limit > 0 && allocations > limit && hwm == limit + 1) {
 		log(LogLevel::TRACE,
 			"PoolStatistics::registerAllocate(%lu) {range: [%lu, %lu], ...} exceeded limit: %lu",
 			size,
@@ -55,7 +55,7 @@ void PoolStatistics::dump() const noexcept
 		range.last,
 		limit,
 		allocations,
-		hwm ? minSize : 0,
+		hwm > 0 ? minSize : 0,
 		maxSize,
 		hwm);
 }

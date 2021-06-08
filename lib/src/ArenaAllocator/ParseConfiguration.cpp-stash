@@ -1,6 +1,6 @@
 #include "ArenaAllocator/ParseConfiguration.h"
 #include "ArenaAllocator/ConsoleLogger.h"
-#include <cstdlib>
+#include <cstring>
 
 namespace ArenaAllocator {
 
