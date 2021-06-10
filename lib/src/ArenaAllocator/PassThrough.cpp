@@ -90,14 +90,12 @@ namespace {
 void* reallocarrayUsingLibcRealloc(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
 	void* result;
-	if (nmemb > 0 && size > 0) {
-		if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
-			result = __libc_realloc(ptr, nmemb * size);
-		};
-	} else {
+	if (size > 0 && nmemb > std::numeric_limits<std::size_t>::max() / size) {
 		// nmemb * size would overflow
 		result = nullptr;
 		errno = ENOMEM;
+	} else {
+		result = __libc_realloc(ptr, nmemb * size);
 	}
 	return result;
 }

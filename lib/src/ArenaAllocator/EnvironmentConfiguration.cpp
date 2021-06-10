@@ -22,9 +22,9 @@ EnvironmentConfiguration::EnvironmentConfiguration(
 		ConsoleLogger::exit("failed to read environment variable %s", configurationEnvVarName);
 	}
 	ParseConfiguration(configStr, className, pools, logLevel);
-	log.setLevel(getLogLevel());
-	if ((activeAllocator = allocatorFactory.getAllocator(getClass())) == nullptr) {
-		ConsoleLogger::exit("unexpected allocator class '%s' in environment variable %s", getClass(), configurationEnvVarName);
+	log.setLevel(EnvironmentConfiguration::getLogLevel());
+	if ((activeAllocator = allocatorFactory.getAllocator(EnvironmentConfiguration::getClass())) == nullptr) {
+		ConsoleLogger::exit("unexpected allocator class in environment variable %s", configurationEnvVarName);
 	}
 }
 

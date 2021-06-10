@@ -121,7 +121,7 @@ int SizeRangeStatistics::posix_memalign(void** memptr, std::size_t alignment, st
 	int result;
 	if (size > 0) {
 		result = delegate.posix_memalign(memptr, alignment, size);
-		if (result != nullptr) {
+		if (result == 0) {
 			allocations.registerAllocate(size, *memptr, alignment);
 		}
 	} else {

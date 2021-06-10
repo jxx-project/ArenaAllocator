@@ -64,7 +64,11 @@ public:
 	AllocateResult allocate(std::size_t nmemb, std::size_t size, DelegateF delegateF) const noexcept
 	{
 		AllocateResult result{nullptr, 0, false};
-		if (nmemb <= std::numeric_limits<std::size_t>::max() / size) {
+		if (size > 0 && nmemb > std::numeric_limits<std::size_t>::max() / size) {
+			// nmemb * size would overflow
+			result.ptr = nullptr;
+			result.propagateErrno = ENOMEM;
+		} else {
 			std::size_t totalSize{nmemb * size};
 			if (totalSize) {
 				FreeList* pool{pools.at(totalSize)};
@@ -78,10 +82,6 @@ public:
 			} else {
 				result.ptr = ptrToEmpty;
 			}
-		} else {
-			// nmemb * size would overflow
-			result.ptr = nullptr;
-			result.propagateErrno = ENOMEM;
 		}
 		return result;
 	}
