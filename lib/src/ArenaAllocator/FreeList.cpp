@@ -35,7 +35,7 @@ FreeList::~FreeList() noexcept
 void* FreeList::allocate(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	void* result;
+	void* result{nullptr};
 	if (free.empty()) {
 		result = nullptr;
 	} else {

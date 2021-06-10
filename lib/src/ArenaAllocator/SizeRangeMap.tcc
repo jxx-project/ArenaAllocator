@@ -29,11 +29,6 @@ SizeRangeMap<T>::SizeRangeMap() noexcept : aggregate{rangeBelow}
 }
 
 template<typename T>
-SizeRangeMap<T>::~SizeRangeMap() noexcept
-{
-}
-
-template<typename T>
 typename SizeRangeMap<T>::iterator SizeRangeMap<T>::begin() noexcept
 {
 	return aggregate.begin();

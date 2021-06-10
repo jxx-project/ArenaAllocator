@@ -23,11 +23,11 @@ public:
 
 	[[noreturn]] static void abort(char const* fmt, ...) noexcept;
 	[[noreturn]] static void exit(char const* fmt, ...) noexcept;
-	virtual void operator()(char const* fmt, ...) const noexcept override;
-	virtual void operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept override;
-	virtual void operator()(LogLevel level, char const* fmt, ...) const noexcept override;
-	virtual bool isLevel(LogLevel level) const noexcept override;
-	virtual void setLevel(LogLevel level) noexcept override;
+	void operator()(char const* fmt, ...) const noexcept override;
+	void operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept override;
+	void operator()(LogLevel level, char const* fmt, ...) const noexcept override;
+	[[nodiscard]] bool isLevel(LogLevel level) const noexcept override;
+	void setLevel(LogLevel level) noexcept override;
 
 private:
 	LogLevel logLevel;

@@ -16,12 +16,12 @@ namespace Mock {
 class NullAllocatorFactory : public ArenaAllocator::AllocatorFactory
 {
 public:
-	NullAllocatorFactory() noexcept;
+	NullAllocatorFactory() = default;
 	NullAllocatorFactory(NullAllocatorFactory const&) = delete;
 	NullAllocatorFactory& operator=(NullAllocatorFactory const&) = delete;
 	virtual ~NullAllocatorFactory() = default;
 
-	virtual ArenaAllocator::Allocator* getAllocator(std::string_view const&) noexcept override;
+	ArenaAllocator::Allocator* getAllocator(std::string_view const&) noexcept override;
 };
 
 } // namespace Mock

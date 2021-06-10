@@ -51,7 +51,7 @@ SizeRangeStatistics::~SizeRangeStatistics() noexcept
 void* SizeRangeStatistics::malloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	void* result;
+	void* result{nullptr};
 	if (size > 0) {
 		result = delegate.malloc(size);
 		if (result != nullptr) {
@@ -75,7 +75,7 @@ void SizeRangeStatistics::free(void* ptr) noexcept
 void* SizeRangeStatistics::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	void* result;
+	void* result{nullptr};
 	if (nmemb > 0 && size > 0) {
 		result = delegate.calloc(nmemb, size);
 		if (result != nullptr) {
@@ -118,7 +118,7 @@ void* SizeRangeStatistics::reallocarray(void* ptr, std::size_t nmemb, std::size_
 int SizeRangeStatistics::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	int result;
+	int result{0};
 	if (size > 0) {
 		result = delegate.posix_memalign(memptr, alignment, size);
 		if (result == 0) {
@@ -134,7 +134,7 @@ int SizeRangeStatistics::posix_memalign(void** memptr, std::size_t alignment, st
 void* SizeRangeStatistics::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	void* result;
+	void* result{nullptr};
 	if (size > 0) {
 		result = delegate.aligned_alloc(alignment, size);
 		if (result != nullptr) {
@@ -149,7 +149,7 @@ void* SizeRangeStatistics::aligned_alloc(std::size_t alignment, std::size_t size
 void* SizeRangeStatistics::valloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	void* result;
+	void* result{nullptr};
 	if (size > 0) {
 		result = delegate.valloc(size);
 		if (result != nullptr) {
@@ -164,7 +164,7 @@ void* SizeRangeStatistics::valloc(std::size_t size) noexcept
 void* SizeRangeStatistics::memalign(std::size_t alignment, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	void* result;
+	void* result{nullptr};
 	if (size > 0) {
 		result = delegate.pvalloc(size);
 		if (result != nullptr) {
@@ -179,7 +179,7 @@ void* SizeRangeStatistics::memalign(std::size_t alignment, std::size_t size) noe
 void* SizeRangeStatistics::pvalloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard(mutex);
-	void* result;
+	void* result{nullptr};
 	if (size > 0) {
 		result = delegate.pvalloc(size);
 		if (result != nullptr) {

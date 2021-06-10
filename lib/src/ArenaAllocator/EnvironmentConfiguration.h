@@ -28,9 +28,9 @@ public:
 	EnvironmentConfiguration& operator=(EnvironmentConfiguration const&) = delete;
 	virtual ~EnvironmentConfiguration() = default;
 
-	virtual std::string_view const& getClass() const noexcept override;
-	virtual Configuration::PoolMapType const& getPools() const noexcept override;
-	virtual LogLevel const& getLogLevel() const noexcept override;
+	std::string_view const& getClass() const noexcept override;
+	Configuration::PoolMapType const& getPools() const noexcept override;
+	LogLevel const& getLogLevel() const noexcept override;
 
 	static constexpr char const* configurationEnvVarName{"ARENA_ALLOCATOR_CONFIGURATION"};
 

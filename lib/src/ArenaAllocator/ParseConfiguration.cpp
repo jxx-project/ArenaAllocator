@@ -157,7 +157,7 @@ std::string_view ParseConfiguration::parseIdentifier() noexcept
 
 std::size_t ParseConfiguration::parseUnsignedLong() noexcept
 {
-	char* end;
+	char* end{nullptr};
 	std::size_t result{std::strtoul(current, &end, 10)};
 	if (current == end) {
 		ConsoleLogger::exit("ParseConfiguration: invalid unsigned long value");

@@ -15,16 +15,16 @@ namespace Mock {
 class NullLogger : public ArenaAllocator::Logger
 {
 public:
-	NullLogger() noexcept;
+	NullLogger() = default;
 	NullLogger(Logger const&) = delete;
 	NullLogger& operator=(NullLogger const&) = delete;
 	virtual ~NullLogger() = default;
 
-	virtual void operator()(char const*, ...) const noexcept override;
-	virtual void operator()(std::chrono::nanoseconds, ArenaAllocator::OperationType, char const*, ...) const noexcept override;
-	virtual void operator()(ArenaAllocator::LogLevel, char const*, ...) const noexcept override;
-	virtual bool isLevel(ArenaAllocator::LogLevel) const noexcept override;
-	virtual void setLevel(ArenaAllocator::LogLevel) noexcept override;
+	void operator()(char const*, ...) const noexcept override;
+	void operator()(std::chrono::nanoseconds, ArenaAllocator::OperationType, char const*, ...) const noexcept override;
+	void operator()(ArenaAllocator::LogLevel, char const*, ...) const noexcept override;
+	bool isLevel(ArenaAllocator::LogLevel) const noexcept override;
+	void setLevel(ArenaAllocator::LogLevel) noexcept override;
 };
 
 } // namespace Mock

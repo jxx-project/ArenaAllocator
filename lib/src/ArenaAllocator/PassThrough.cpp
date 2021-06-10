@@ -34,7 +34,7 @@ PassThrough::~PassThrough() noexcept
 
 void* PassThrough::malloc(std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_malloc(size);
@@ -47,7 +47,7 @@ void* PassThrough::malloc(std::size_t size) noexcept
 
 void PassThrough::free(void* ptr) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		__libc_free(ptr);
@@ -59,7 +59,7 @@ void PassThrough::free(void* ptr) noexcept
 
 void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_calloc(nmemb, size);
@@ -72,7 +72,7 @@ void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 
 void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_realloc(ptr, size);
@@ -89,10 +89,9 @@ namespace {
 // into the custom allocator: Deflect into __libc_realloc directly.
 void* reallocarrayUsingLibcRealloc(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (size > 0 && nmemb > std::numeric_limits<std::size_t>::max() / size) {
 		// nmemb * size would overflow
-		result = nullptr;
 		errno = ENOMEM;
 	} else {
 		result = __libc_realloc(ptr, nmemb * size);
@@ -104,7 +103,7 @@ void* reallocarrayUsingLibcRealloc(void* ptr, std::size_t nmemb, std::size_t siz
 
 void* PassThrough::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
@@ -147,7 +146,7 @@ int posixMemalignUsingLibcMemalign(void** memptr, std::size_t alignment, std::si
 
 int PassThrough::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
 {
-	int result;
+	int result{0};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
@@ -177,7 +176,7 @@ void* alignedAllocUsingLibcMemalign(std::size_t alignment, std::size_t size) noe
 
 void* PassThrough::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = alignedAllocUsingLibcMemalign(alignment, size);
@@ -196,7 +195,7 @@ void* PassThrough::aligned_alloc(std::size_t alignment, std::size_t size) noexce
 
 void* PassThrough::valloc(std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_valloc(size);
@@ -209,7 +208,7 @@ void* PassThrough::valloc(std::size_t size) noexcept
 
 void* PassThrough::memalign(std::size_t alignment, std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_memalign(alignment, size);
@@ -222,7 +221,7 @@ void* PassThrough::memalign(std::size_t alignment, std::size_t size) noexcept
 
 void* PassThrough::pvalloc(std::size_t size) noexcept
 {
-	void* result;
+	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_pvalloc(size);

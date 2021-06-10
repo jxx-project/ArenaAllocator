@@ -9,10 +9,6 @@
 
 namespace Mock {
 
-NullAllocatorFactory::NullAllocatorFactory() noexcept
-{
-}
-
 ArenaAllocator::Allocator* NullAllocatorFactory::getAllocator(std::string_view const&) noexcept
 {
 	return nullptr;

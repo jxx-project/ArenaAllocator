@@ -28,12 +28,12 @@ public:
 	SizeRangeMap() noexcept;
 	SizeRangeMap(SizeRangeMap const&) = delete;
 	SizeRangeMap& operator=(SizeRangeMap const&) = delete;
-	~SizeRangeMap() noexcept;
+	~SizeRangeMap() = default;
 
 	iterator begin() noexcept;
-	const_iterator begin() const noexcept;
+	[[nodiscard]] const_iterator begin() const noexcept;
 	iterator end() noexcept;
-	const_iterator end() const noexcept;
+	[[nodiscard]] const_iterator end() const noexcept;
 	T* at(std::size_t size) noexcept;
 
 	template<typename... Args>
@@ -46,7 +46,7 @@ public:
 				   .second;
 	}
 
-	std::size_t size() const noexcept;
+	[[nodiscard]] std::size_t size() const noexcept;
 
 private:
 	AggregateType aggregate;

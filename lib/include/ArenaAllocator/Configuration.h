@@ -24,9 +24,9 @@ public:
 
 	virtual ~Configuration() noexcept = default;
 
-	virtual std::string_view const& getClass() const noexcept = 0;
-	virtual PoolMapType const& getPools() const noexcept = 0;
-	virtual LogLevel const& getLogLevel() const noexcept = 0;
+	[[nodiscard]] virtual std::string_view const& getClass() const noexcept = 0;
+	[[nodiscard]] virtual PoolMapType const& getPools() const noexcept = 0;
+	[[nodiscard]] virtual LogLevel const& getLogLevel() const noexcept = 0;
 };
 
 } // namespace ArenaAllocator

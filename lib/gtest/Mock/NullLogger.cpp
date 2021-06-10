@@ -9,10 +9,6 @@
 
 namespace Mock {
 
-NullLogger::NullLogger() noexcept
-{
-}
-
 void NullLogger::operator()(char const*, ...) const noexcept
 {
 }

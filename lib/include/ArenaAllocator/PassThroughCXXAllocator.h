@@ -27,7 +27,7 @@ public:
 	PassThroughCXXAllocator(const PassThroughCXXAllocator&) noexcept = default;
 
 	template<typename U>
-	PassThroughCXXAllocator(const PassThroughCXXAllocator<U>& other) noexcept
+	explicit PassThroughCXXAllocator(const PassThroughCXXAllocator<U>& other) noexcept
 	{
 	}
 
@@ -36,20 +36,20 @@ public:
 		return static_cast<T*>(__libc_malloc(size * sizeof(T)));
 	}
 
-	void deallocate(T* ptr, std::size_t n)
+	void deallocate(T* ptr, std::size_t)
 	{
 		__libc_free(ptr);
 	}
 };
 
-template<typename T1, typename T2>
-bool operator==(PassThroughCXXAllocator<T1> const&, PassThroughCXXAllocator<T2> const&) noexcept
+template<typename T, typename U>
+bool operator==(PassThroughCXXAllocator<T> const&, PassThroughCXXAllocator<U> const&) noexcept
 {
 	return true;
 }
 
-template<typename T1, typename T2>
-bool operator!=(PassThroughCXXAllocator<T1> const&, PassThroughCXXAllocator<T2> const&) noexcept
+template<typename T, typename U>
+bool operator!=(PassThroughCXXAllocator<T> const&, PassThroughCXXAllocator<U> const&) noexcept
 {
 	return false;
 }

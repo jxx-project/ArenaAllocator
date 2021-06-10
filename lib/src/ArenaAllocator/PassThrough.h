@@ -22,17 +22,17 @@ public:
 	PassThrough& operator=(PassThrough const&) = delete;
 	virtual ~PassThrough() noexcept;
 
-	virtual void* malloc(std::size_t size) noexcept override;
-	virtual void free(void* ptr) noexcept override;
-	virtual void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
-	virtual void* realloc(void* ptr, std::size_t size) noexcept override;
-	virtual void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
-	virtual int posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept override;
-	virtual void* aligned_alloc(std::size_t alignment, std::size_t size) noexcept override;
-	virtual void* valloc(std::size_t size) noexcept override;
-	virtual void* memalign(std::size_t alignment, std::size_t size) noexcept override;
-	virtual void* pvalloc(std::size_t size) noexcept override;
-	virtual void dump() const noexcept override;
+	void* malloc(std::size_t size) noexcept override;
+	void free(void* ptr) noexcept override;
+	void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
+	void* realloc(void* ptr, std::size_t size) noexcept override;
+	void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept override;
+	int posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept override;
+	void* aligned_alloc(std::size_t alignment, std::size_t size) noexcept override;
+	void* valloc(std::size_t size) noexcept override;
+	void* memalign(std::size_t alignment, std::size_t size) noexcept override;
+	void* pvalloc(std::size_t size) noexcept override;
+	void dump() const noexcept override;
 
 	static constexpr char const* className{"PassThrough"};
 

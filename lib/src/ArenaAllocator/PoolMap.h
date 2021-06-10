@@ -25,7 +25,7 @@ public:
 	T* at(std::size_t chunkSize) noexcept;
 
 	template<typename U = T, typename = typename std::enable_if<std::is_same<U, FreeList>::value>::type>
-	std::size_t nChunks() const noexcept
+	[[nodiscard]] std::size_t nChunks() const noexcept
 	{
 		std::size_t result{0};
 		for (typename AggregateType::value_type const& element : aggregate) {

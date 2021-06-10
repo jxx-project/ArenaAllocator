@@ -21,7 +21,7 @@ void write(char buffer[], std::size_t length) noexcept
 
 	buffer[length++] = '\n';
 	std::size_t totalBytesWritten{0};
-	::ssize_t bytesWritten;
+	::ssize_t bytesWritten{0};
 	while ((bytesWritten = ::write(STDERR_FILENO, &buffer[totalBytesWritten], length - totalBytesWritten)) > 0) {
 		totalBytesWritten += bytesWritten;
 	}
