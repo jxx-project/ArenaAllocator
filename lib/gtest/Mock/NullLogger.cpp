@@ -13,10 +13,6 @@ NullLogger::NullLogger() noexcept
 {
 }
 
-NullLogger::~NullLogger() noexcept
-{
-}
-
 void NullLogger::operator()(char const*, ...) const noexcept
 {
 }

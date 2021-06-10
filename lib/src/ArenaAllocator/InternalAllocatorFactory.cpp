@@ -14,10 +14,6 @@ InternalAllocatorFactory::InternalAllocatorFactory(Configuration const& configur
 {
 }
 
-InternalAllocatorFactory::~InternalAllocatorFactory() noexcept
-{
-}
-
 Allocator* ArenaAllocator::InternalAllocatorFactory::getAllocator(std::string_view const& className) noexcept
 {
 	Allocator* result{nullptr};

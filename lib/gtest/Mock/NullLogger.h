@@ -18,7 +18,7 @@ public:
 	NullLogger() noexcept;
 	NullLogger(Logger const&) = delete;
 	NullLogger& operator=(NullLogger const&) = delete;
-	virtual ~NullLogger() noexcept;
+	virtual ~NullLogger() = default;
 
 	virtual void operator()(char const*, ...) const noexcept override;
 	virtual void operator()(std::chrono::nanoseconds, ArenaAllocator::OperationType, char const*, ...) const noexcept override;

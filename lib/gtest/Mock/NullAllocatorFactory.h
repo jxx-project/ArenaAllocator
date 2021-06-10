@@ -19,7 +19,7 @@ public:
 	NullAllocatorFactory() noexcept;
 	NullAllocatorFactory(NullAllocatorFactory const&) = delete;
 	NullAllocatorFactory& operator=(NullAllocatorFactory const&) = delete;
-	~NullAllocatorFactory() noexcept;
+	virtual ~NullAllocatorFactory() = default;
 
 	virtual ArenaAllocator::Allocator* getAllocator(std::string_view const&) noexcept override;
 };
