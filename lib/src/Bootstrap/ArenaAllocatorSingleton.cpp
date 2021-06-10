@@ -55,7 +55,7 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 	// destroyed and the "cleanup" dump triggered by the shared object .fini hook instead.
 	if (instance == nullptr) {
 		static std::mutex mutex;
-		std::lock_guard<std::mutex> guard(mutex);
+		std::lock_guard<std::mutex> guard{mutex};
 		if (instance == nullptr) {
 			instance = static_cast<ArenaAllocatorSingleton*>(__libc_malloc(sizeof(ArenaAllocatorSingleton)));
 			if (instance != nullptr) {

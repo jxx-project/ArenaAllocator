@@ -34,7 +34,7 @@ FreeList::~FreeList() noexcept
 
 void* FreeList::allocate(std::size_t size) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	void* result{nullptr};
 	if (free.empty()) {
 		result = nullptr;
@@ -49,7 +49,7 @@ void* FreeList::allocate(std::size_t size) noexcept
 
 void* FreeList::reallocate(ListType::iterator it, std::size_t size) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
 		ConsoleLogger::abort("FreeList::reallocate(%p, %lu) not allocated", it->data, size);
 	}
@@ -59,7 +59,7 @@ void* FreeList::reallocate(ListType::iterator it, std::size_t size) noexcept
 
 void FreeList::deallocate(ListType::const_iterator it) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
 		ConsoleLogger::abort("FreeList::deallocate(%p): not allocated", it->data);
 	}
@@ -70,13 +70,13 @@ void FreeList::deallocate(ListType::const_iterator it) noexcept
 
 std::size_t FreeList::nChunks() const noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	return free.size() + allocated.size();
 }
 
 void FreeList::dump() const noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	log("[%lu, %lu]: {free: %lu, allocated: %lu, hwm: %lu}", range.first, range.last, free.size(), allocated.size(), hwm);
 }
 
