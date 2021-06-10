@@ -26,7 +26,7 @@ public:
 		Logger& log) noexcept;
 	EnvironmentConfiguration(EnvironmentConfiguration const&) = delete;
 	EnvironmentConfiguration& operator=(EnvironmentConfiguration const&) = delete;
-	~EnvironmentConfiguration() noexcept;
+	virtual ~EnvironmentConfiguration() = default;
 
 	virtual std::string_view const& getClass() const noexcept override;
 	virtual Configuration::PoolMapType const& getPools() const noexcept override;

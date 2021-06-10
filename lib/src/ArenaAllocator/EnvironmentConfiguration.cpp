@@ -28,10 +28,6 @@ EnvironmentConfiguration::EnvironmentConfiguration(
 	}
 }
 
-EnvironmentConfiguration::~EnvironmentConfiguration() noexcept
-{
-}
-
 std::string_view const& EnvironmentConfiguration::getClass() const noexcept
 {
 	if (!className.has_value()) {
