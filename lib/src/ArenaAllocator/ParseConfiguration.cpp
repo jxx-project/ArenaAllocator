@@ -148,7 +148,7 @@ std::string_view ParseConfiguration::parseIdentifier() noexcept
 	while (isSpace(*current)) {
 		++current;
 	}
-	char const* indentifierStr{current};
+	std::string_view::const_iterator indentifierStr{current};
 	while (isAlpha(*current)) {
 		++current;
 	}
