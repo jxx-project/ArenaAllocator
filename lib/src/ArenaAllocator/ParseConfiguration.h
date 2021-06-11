@@ -19,7 +19,7 @@ class ParseConfiguration
 {
 public:
 	ParseConfiguration(
-		char const* str,
+		std::string_view str,
 		std::optional<std::string_view>& className,
 		std::optional<Configuration::PoolMapType>& pools,
 		std::optional<LogLevel>& logLevel) noexcept;
@@ -31,13 +31,13 @@ private:
 	void parsePoolMap() noexcept;
 	void parseConfigStr() noexcept;
 
-	char parseDelimiter(char const* delimiters) noexcept;
+	char parseDelimiter(std::string_view delimiters) noexcept;
 	std::string_view parseIdentifier() noexcept;
 	std::size_t parseUnsignedLong() noexcept;
 	static bool isSpace(char c) noexcept;
 	static bool isAlpha(char c) noexcept;
 
-	char const* current;
+	std::string_view::const_iterator current;
 	std::optional<std::string_view>& className;
 	std::optional<Configuration::PoolMapType>& pools;
 	std::optional<LogLevel>& logLevel;

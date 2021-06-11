@@ -5,11 +5,11 @@
 namespace ArenaAllocator {
 
 ParseConfiguration::ParseConfiguration(
-	char const* str,
+	std::string_view str,
 	std::optional<std::string_view>& className,
 	std::optional<Configuration::PoolMapType>& pools,
 	std::optional<LogLevel>& logLevel) noexcept :
-	current{str}, className{className}, pools{pools}, logLevel{logLevel}
+	current{str.begin()}, className{className}, pools{pools}, logLevel{logLevel}
 {
 	if (parseDelimiter("{") != '{') {
 		ConsoleLogger::exit("ParseConfiguration: expected '{' at configuration string begin");
@@ -55,7 +55,7 @@ ParseConfiguration::ParseConfiguration(
 
 LogLevel ParseConfiguration::parseLogLevel() noexcept
 {
-	LogLevel result;
+	LogLevel result{};
 	std::string_view logLevel{parseIdentifier()};
 	if (logLevel == "NONE") {
 		result = LogLevel::NONE;
@@ -75,7 +75,7 @@ LogLevel ParseConfiguration::parseLogLevel() noexcept
 
 SizeRange ParseConfiguration::parseSizeRange() noexcept
 {
-	SizeRange result;
+	SizeRange result{};
 	while (isSpace(*current)) {
 		++current;
 	}
@@ -128,14 +128,14 @@ void ParseConfiguration::parsePool() noexcept
 
 // Generic primitives
 
-char ParseConfiguration::parseDelimiter(char const* delimiters) noexcept
+char ParseConfiguration::parseDelimiter(const std::string_view delimiters) noexcept
 {
 	while (isSpace(*current)) {
 		++current;
 	}
 	char result{0};
-	for (char const* p{delimiters}; *p != 0; ++p) {
-		if (*current == *p) {
+	for (const char p : delimiters) {
+		if (*current == p) {
 			result = *current++;
 			break;
 		}
