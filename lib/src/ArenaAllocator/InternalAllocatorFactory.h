@@ -24,7 +24,7 @@ public:
 	InternalAllocatorFactory(Configuration const& configuration, Logger const& log) noexcept;
 	InternalAllocatorFactory(InternalAllocatorFactory const&) = delete;
 	InternalAllocatorFactory& operator=(InternalAllocatorFactory const&) = delete;
-	virtual ~InternalAllocatorFactory() = default;
+	~InternalAllocatorFactory() override = default;
 
 	Allocator* getAllocator(std::string_view const& className) noexcept override;
 

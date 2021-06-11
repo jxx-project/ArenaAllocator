@@ -23,7 +23,7 @@ public:
 	SizeRangeStatistics(Configuration const& configuration, Allocator& delegate, Logger const& log) noexcept;
 	SizeRangeStatistics(SizeRangeStatistics const&) = delete;
 	void operator=(SizeRangeStatistics const&) = delete;
-	virtual ~SizeRangeStatistics() noexcept;
+	~SizeRangeStatistics() noexcept override;
 
 	void* malloc(std::size_t size) noexcept override;
 	void free(void* ptr) noexcept override;

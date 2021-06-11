@@ -30,7 +30,7 @@ SegregatedFreeLists::~SegregatedFreeLists() noexcept
 
 void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	auto delegateMallocFunc{[this](std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->malloc(size), 0, true};
 		result.propagateErrno = errno;
@@ -66,7 +66,7 @@ void SegregatedFreeLists::free(void* ptr) noexcept
 
 void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	auto delegateCallocFunc{[this](std::size_t nmemb, std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->calloc(nmemb, size), 0, true};
 		result.propagateErrno = errno;
@@ -87,7 +87,7 @@ void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 
 void* SegregatedFreeLists::realloc(void* ptr, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = chunks.reallocate(ptr, size);
@@ -103,7 +103,7 @@ void* SegregatedFreeLists::realloc(void* ptr, std::size_t size) noexcept
 
 void* SegregatedFreeLists::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = chunks.reallocate(ptr, nmemb, size);
@@ -126,7 +126,7 @@ void* SegregatedFreeLists::reallocarray(void* ptr, std::size_t nmemb, std::size_
 
 int SegregatedFreeLists::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	auto delegateMemAlignFunc{[this, alignment](std::size_t size) {
 		ChunkMap::AllocateResult result{nullptr, 0, true};
 		result.propagateErrno = delegate->posix_memalign(&result.ptr, alignment, size);
@@ -155,7 +155,7 @@ int SegregatedFreeLists::posix_memalign(void** memptr, std::size_t alignment, st
 
 void* SegregatedFreeLists::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	auto delegateAlignedAllocFunc{[this, alignment](std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->aligned_alloc(alignment, size), 0, true};
 		result.propagateErrno = errno;
@@ -183,7 +183,7 @@ void* SegregatedFreeLists::aligned_alloc(std::size_t alignment, std::size_t size
 
 void* SegregatedFreeLists::valloc(std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	auto delegateVallocFunc{[this](std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->valloc(size), 0, true};
 		result.propagateErrno = errno;
@@ -204,7 +204,7 @@ void* SegregatedFreeLists::valloc(std::size_t size) noexcept
 
 void* SegregatedFreeLists::memalign(std::size_t alignment, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	auto delegateMemalignFunc{[this, alignment](std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->memalign(alignment, size), 0, true};
 		result.propagateErrno = errno;
@@ -232,7 +232,7 @@ void* SegregatedFreeLists::memalign(std::size_t alignment, std::size_t size) noe
 
 void* SegregatedFreeLists::pvalloc(std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result;
+	ChunkMap::AllocateResult result{};
 	auto delegatePvallocFunc{[this](std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->pvalloc(size), 0, true};
 		result.propagateErrno = errno;

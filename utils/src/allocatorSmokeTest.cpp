@@ -25,6 +25,7 @@ int main(int argc, char* argv[])
 		std::fprintf(stderr, "-------- realloc(nullptr, 1) -> %p, errno: %d\n", ptr1, errno);
 		errno = 0;
 		void* ptr2{::realloc(ptr1, 1000)};
+		// NOLINTNEXTLINE ptr1 will point to memory after free
 		std::fprintf(stderr, "-------- realloc(%p, 1000) -> %p, errno: %d\n", ptr1, ptr2, errno);
 	}
 	{
@@ -40,7 +41,7 @@ int main(int argc, char* argv[])
 		std::fprintf(
 			stderr, "-------- reallocarray(%p, 9223372036854775807, 9223372036854775807) -> %p, errno: %d\n", ptr2, ptr3, errno);
 		errno = 0;
-		int invalid;
+		int invalid{0};
 		void* ptr4{::reallocarray(&invalid, 1, 1)};
 		std::fprintf(stderr, "-------- reallocarray(&invalid, 1, 1) -> %p, errno: %d\n", ptr4, errno);
 	}

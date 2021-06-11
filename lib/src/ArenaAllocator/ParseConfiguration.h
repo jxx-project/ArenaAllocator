@@ -34,8 +34,8 @@ private:
 	char parseDelimiter(char const* delimiters) noexcept;
 	std::string_view parseIdentifier() noexcept;
 	std::size_t parseUnsignedLong() noexcept;
-	static bool isSpace(const char c) noexcept;
-	static bool isAlpha(const char c) noexcept;
+	static bool isSpace(char c) noexcept;
+	static bool isAlpha(char c) noexcept;
 
 	char const* current;
 	std::optional<std::string_view>& className;

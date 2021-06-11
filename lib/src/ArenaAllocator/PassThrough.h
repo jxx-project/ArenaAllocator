@@ -20,7 +20,7 @@ public:
 	explicit PassThrough(Logger const& log) noexcept;
 	PassThrough(PassThrough const&) = delete;
 	PassThrough& operator=(PassThrough const&) = delete;
-	virtual ~PassThrough() noexcept;
+	~PassThrough() noexcept override;
 
 	void* malloc(std::size_t size) noexcept override;
 	void free(void* ptr) noexcept override;

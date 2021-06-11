@@ -19,7 +19,7 @@ public:
 	ConsoleLogger() noexcept;
 	ConsoleLogger(Logger const&) = delete;
 	ConsoleLogger& operator=(ConsoleLogger const&) = delete;
-	virtual ~ConsoleLogger() noexcept;
+	~ConsoleLogger() noexcept override;
 
 	[[noreturn]] static void abort(char const* fmt, ...) noexcept;
 	[[noreturn]] static void exit(char const* fmt, ...) noexcept;

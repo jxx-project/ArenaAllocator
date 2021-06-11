@@ -24,7 +24,7 @@ public:
 	SegregatedFreeLists(Configuration const& configuration, Allocator* delegate, Logger const& log) noexcept;
 	SegregatedFreeLists(SegregatedFreeLists const&) = delete;
 	void operator=(SegregatedFreeLists const&) = delete;
-	virtual ~SegregatedFreeLists() noexcept;
+	~SegregatedFreeLists() noexcept override;
 
 	void* malloc(std::size_t size) noexcept override;
 	void free(void* ptr) noexcept override;

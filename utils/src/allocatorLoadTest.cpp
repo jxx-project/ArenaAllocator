@@ -36,7 +36,7 @@ void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
 	std::size_t totalLength{std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), sizeof(buffer))};
 
 	std::size_t totalBytesWritten{0};
-	::ssize_t bytesWritten;
+	::ssize_t bytesWritten{0};
 	while ((bytesWritten = ::write(STDOUT_FILENO, buffer + totalBytesWritten, totalLength - totalBytesWritten)) > 0) {
 		totalBytesWritten += bytesWritten;
 	}
@@ -78,7 +78,7 @@ Allocation::~Allocation() noexcept
 
 void Allocation::malloc(std::size_t size) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	if (ptr != nullptr) {
 		::free(ptr);
 	}
@@ -89,7 +89,7 @@ void Allocation::malloc(std::size_t size) noexcept
 
 void Allocation::free() noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	::free(ptr);
 	logger.log("::free(%p)\n", ptr);
 	ptr = nullptr;
@@ -97,7 +97,7 @@ void Allocation::free() noexcept
 
 void Allocation::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	if (ptr != nullptr) {
 		::free(ptr);
 	}
@@ -108,7 +108,7 @@ void Allocation::calloc(std::size_t nmemb, std::size_t size) noexcept
 
 void Allocation::realloc(std::size_t size) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	void* result{::realloc(ptr, size)};
 	logger.log("::realloc(%p, %lu) -> %p\n", ptr, size, result);
 	ptr = result;
@@ -116,7 +116,7 @@ void Allocation::realloc(std::size_t size) noexcept
 
 void Allocation::reallocarray(std::size_t nmemb, std::size_t size) noexcept
 {
-	std::lock_guard<std::mutex> guard(mutex);
+	std::lock_guard<std::mutex> guard{mutex};
 	void* result{::reallocarray(ptr, nmemb, size)};
 	logger.log("::reallocarray(%p, %lu, %lu) -> %p\n", ptr, nmemb, size, result);
 	ptr = result;
