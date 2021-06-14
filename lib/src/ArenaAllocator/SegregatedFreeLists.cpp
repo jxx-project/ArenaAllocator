@@ -51,7 +51,7 @@ void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 
 void SegregatedFreeLists::free(void* ptr) noexcept
 {
-	ChunkMap::DeallocateResult result;
+	ChunkMap::DeallocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = chunks.deallocate(ptr);
