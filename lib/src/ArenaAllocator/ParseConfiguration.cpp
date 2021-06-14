@@ -149,11 +149,12 @@ std::string_view ParseConfiguration::parseIdentifier() noexcept
 	while (!current.empty() && isSpace(current.front())) {
 		current.remove_prefix(1);
 	}
-	std::string_view::const_iterator indentifierStr{current.begin()};
+	char const* const indentifierPtr{current.data()};
+	const std::string_view::const_iterator indentifierStr{current.begin()};
 	while (!current.empty() && isAlpha(current.front())) {
 		current.remove_prefix(1);
 	}
-	return std::string_view(&(*indentifierStr), current.begin() - indentifierStr);
+	return std::string_view(indentifierPtr, current.begin() - indentifierStr);
 }
 
 std::size_t ParseConfiguration::parseSize() noexcept
@@ -161,7 +162,7 @@ std::size_t ParseConfiguration::parseSize() noexcept
 	std::size_t result{0};
 	std::from_chars_result matchResult{std::from_chars(current.data(), current.data() + current.size(), result)};
 	if (!static_cast<bool>(matchResult.ec)) {
-		current.remove_prefix(matchResult.ptr - &current.front());
+		current.remove_prefix(matchResult.ptr - current.data());
 	} else if (matchResult.ec == std::errc::result_out_of_range) {
 		ConsoleLogger::exit("ParseConfiguration: size value out of range");
 	} else {

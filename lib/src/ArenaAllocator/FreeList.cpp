@@ -22,7 +22,7 @@ FreeList::FreeList(SizeRange const& range, std::size_t nChunks, Logger const& lo
 	const std::size_t wordsPerChunk{chunkSize / sizeof(std::max_align_t)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
-		free.emplace_back(Chunk{storage.data() + offset, this, 0});
+		free.emplace_back(Chunk{&storage[offset], this, 0});
 	}
 }
 
