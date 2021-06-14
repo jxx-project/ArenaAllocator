@@ -33,11 +33,11 @@ private:
 
 	char parseDelimiter(std::string_view delimiters) noexcept;
 	std::string_view parseIdentifier() noexcept;
-	std::size_t parseUnsignedLong() noexcept;
+	std::size_t parseSize() noexcept;
 	static bool isSpace(char c) noexcept;
 	static bool isAlpha(char c) noexcept;
 
-	std::string_view::const_iterator current;
+	std::string_view current;
 	std::optional<std::string_view>& className;
 	std::optional<Configuration::PoolMapType>& pools;
 	std::optional<LogLevel>& logLevel;

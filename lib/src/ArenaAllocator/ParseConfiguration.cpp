@@ -1,6 +1,6 @@
 #include "ArenaAllocator/ParseConfiguration.h"
 #include "ArenaAllocator/ConsoleLogger.h"
-#include <cstdlib>
+#include <charconv>
 
 namespace ArenaAllocator {
 
@@ -9,7 +9,7 @@ ParseConfiguration::ParseConfiguration(
 	std::optional<std::string_view>& className,
 	std::optional<Configuration::PoolMapType>& pools,
 	std::optional<LogLevel>& logLevel) noexcept :
-	current{str.begin()}, className{className}, pools{pools}, logLevel{logLevel}
+	current{str}, className{className}, pools{pools}, logLevel{logLevel}
 {
 	if (parseDelimiter("{") != '{') {
 		ConsoleLogger::exit("ParseConfiguration: expected '{' at configuration string begin");
@@ -45,10 +45,10 @@ ParseConfiguration::ParseConfiguration(
 			ConsoleLogger::exit("ParseConfiguration: expected ',' configuration item delimiter.");
 		}
 	}
-	while (isSpace(*current)) {
-		++current;
+	while (!current.empty() && isSpace(current.front())) {
+		current.remove_prefix(1);
 	}
-	if (*current != 0) {
+	if (!current.empty()) {
 		ConsoleLogger::exit("ParseConfiguration: unexpected character after '}' at configuration string end");
 	}
 }
@@ -76,17 +76,17 @@ LogLevel ParseConfiguration::parseLogLevel() noexcept
 SizeRange ParseConfiguration::parseSizeRange() noexcept
 {
 	SizeRange result{};
-	while (isSpace(*current)) {
-		++current;
+	while (!current.empty() && isSpace(current.front())) {
+		current.remove_prefix(1);
 	}
 	if (parseDelimiter("[") == 0) {
 		ConsoleLogger::exit("ParseConfiguration: expexted '[' at size range begin");
 	}
-	result.first = parseUnsignedLong();
+	result.first = parseSize();
 	if (parseDelimiter(",") == 0) {
 		ConsoleLogger::exit("ParseConfiguration: expexted ',' separating size range first and last");
 	}
-	result.last = parseUnsignedLong();
+	result.last = parseSize();
 	if (parseDelimiter("]") == 0) {
 		ConsoleLogger::exit("ParseConfiguration: expexted ']' at size range end");
 	}
@@ -120,7 +120,7 @@ void ParseConfiguration::parsePool() noexcept
 	if (parseDelimiter(":") != ':') {
 		ConsoleLogger::exit("ParseConfiguration: Expected ':' at pool configuration begin");
 	}
-	std::size_t nChunks{parseUnsignedLong()};
+	std::size_t nChunks{parseSize()};
 	if (!pools.value().emplace(range, nChunks)) {
 		ConsoleLogger::exit("ParseConfiguration: Expected disjunct pool size ranges");
 	}
@@ -130,13 +130,14 @@ void ParseConfiguration::parsePool() noexcept
 
 char ParseConfiguration::parseDelimiter(const std::string_view delimiters) noexcept
 {
-	while (isSpace(*current)) {
-		++current;
+	while (!current.empty() && isSpace(current.front())) {
+		current.remove_prefix(1);
 	}
 	char result{0};
 	for (const char p : delimiters) {
-		if (*current == p) {
-			result = *current++;
+		if (current.front() == p) {
+			result = p;
+			current.remove_prefix(1);
 			break;
 		}
 	}
@@ -145,24 +146,27 @@ char ParseConfiguration::parseDelimiter(const std::string_view delimiters) noexc
 
 std::string_view ParseConfiguration::parseIdentifier() noexcept
 {
-	while (isSpace(*current)) {
-		++current;
+	while (!current.empty() && isSpace(current.front())) {
+		current.remove_prefix(1);
 	}
-	std::string_view::const_iterator indentifierStr{current};
-	while (isAlpha(*current)) {
-		++current;
+	std::string_view::const_iterator indentifierStr{current.begin()};
+	while (!current.empty() && isAlpha(current.front())) {
+		current.remove_prefix(1);
 	}
-	return std::string_view(indentifierStr, current - indentifierStr);
+	return std::string_view(&(*indentifierStr), current.begin() - indentifierStr);
 }
 
-std::size_t ParseConfiguration::parseUnsignedLong() noexcept
+std::size_t ParseConfiguration::parseSize() noexcept
 {
-	char* end{nullptr};
-	std::size_t result{std::strtoul(current, &end, 10)};
-	if (current == end) {
+	std::size_t result{0};
+	std::from_chars_result matchResult{std::from_chars(current.data(), current.data() + current.size(), result)};
+	if (!static_cast<bool>(matchResult.ec)) {
+		current.remove_prefix(matchResult.ptr - &current.front());
+	} else if (matchResult.ec == std::errc::result_out_of_range) {
+		ConsoleLogger::exit("ParseConfiguration: size value out of range");
+	} else {
 		ConsoleLogger::exit("ParseConfiguration: invalid unsigned long value");
 	}
-	current = end;
 	return result;
 }
 
