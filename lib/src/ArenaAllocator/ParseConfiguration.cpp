@@ -150,11 +150,10 @@ std::string_view ParseConfiguration::parseIdentifier() noexcept
 		current.remove_prefix(1);
 	}
 	char const* const indentifierPtr{current.data()};
-	const std::string_view::const_iterator indentifierStr{current.begin()};
 	while (!current.empty() && isAlpha(current.front())) {
 		current.remove_prefix(1);
 	}
-	return std::string_view(indentifierPtr, current.begin() - indentifierStr);
+	return std::string_view(indentifierPtr, current.data() - indentifierPtr);
 }
 
 std::size_t ParseConfiguration::parseSize() noexcept
