@@ -9,20 +9,20 @@
 #include <algorithm>
 #include <cerrno>
 #include <cstdio>
+#include <string_view>
 #include <unistd.h>
 
 namespace ArenaAllocator {
 
 namespace {
 
-void write(char buffer[], std::size_t length) noexcept
+void write(std::string_view str) noexcept
 {
 	int propagateErrno{errno};
 
-	buffer[length++] = '\n';
 	std::size_t totalBytesWritten{0};
 	::ssize_t bytesWritten{0};
-	while ((bytesWritten = ::write(STDERR_FILENO, &buffer[totalBytesWritten], length - totalBytesWritten)) > 0) {
+	while ((bytesWritten = ::write(STDERR_FILENO, &str[totalBytesWritten], str.size() - totalBytesWritten)) > 0) {
 		totalBytesWritten += bytesWritten;
 	}
 
@@ -31,21 +31,28 @@ void write(char buffer[], std::size_t length) noexcept
 
 void write(char const* prefix, char const* fmt, std::va_list argp) noexcept
 {
-	char buffer[1024];
+	std::array<char, ConsoleLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
 	::ssize_t prefixLengthOrError{
-		std::snprintf(buffer, sizeof(buffer) - 1, "[pid:%u]\t%s\t", ::getpid(), prefix != nullptr ? prefix : "")};
-	std::size_t prefixLength{static_cast<std::size_t>(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
-	::ssize_t messageLengthOrError{std::vsnprintf(buffer + prefixLength, sizeof(buffer) - 1 - prefixLength, fmt, argp)};
-	write(buffer, std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), sizeof(buffer) - 1));
+		std::snprintf(buffer.data(), buffer.size() - 1, "[pid:%u]\t%s\t", ::getpid(), prefix != nullptr ? prefix : "")};
+	std::size_t prefixLength{std::size_t(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
+	// NOLINTNEXTLINE available buffer size checked in vsnprintf argument
+	::ssize_t messageLengthOrError{std::vsnprintf(&buffer[prefixLength], buffer.size() - 1 - prefixLength, fmt, argp)};
+	std::size_t totalLength{std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), buffer.size() - 1)};
+	buffer[totalLength++] = '\n'; // NOLINT available buffer size checked above
+	write(std::string_view(buffer.data(), totalLength));
 }
 
 void write(std::chrono::nanoseconds duration, char const* fmt, std::va_list argp) noexcept
 {
-	char buffer[1024];
-	::ssize_t prefixLengthOrError{std::snprintf(buffer, sizeof(buffer) - 1, "[pid:%u]\t%luns\t", ::getpid(), duration.count())};
-	std::size_t prefixLength{static_cast<std::size_t>(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
-	::ssize_t messageLengthOrError{std::vsnprintf(buffer + prefixLength, sizeof(buffer) - 1 - prefixLength, fmt, argp)};
-	write(buffer, std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), sizeof(buffer) - 1));
+	std::array<char, ConsoleLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
+	::ssize_t prefixLengthOrError{
+		std::snprintf(buffer.data(), buffer.size() - 1, "[pid:%u]\t%luns\t", ::getpid(), duration.count())};
+	std::size_t prefixLength{std::size_t(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
+	// NOLINTNEXTLINE available buffer size checked in vsnprintf argument
+	::ssize_t messageLengthOrError{std::vsnprintf(&buffer[prefixLength], buffer.size() - 1 - prefixLength, fmt, argp)};
+	std::size_t totalLength{std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), buffer.size() - 1)};
+	buffer[totalLength++] = '\n'; // NOLINT available buffer size checked above
+	write(std::string_view(buffer.data(), totalLength));
 }
 
 } // namespace
@@ -63,44 +70,44 @@ ConsoleLogger::~ConsoleLogger() noexcept
 void ConsoleLogger::abort(char const* fmt, ...) noexcept
 {
 	std::va_list argp;
-	::va_start(argp, fmt);
-	write("ArenaAllocator abort:", fmt, argp);
-	::va_end(argp);
+	::va_start(argp, fmt); // NOLINT std::va_list and ::va_start are libc provided
+	write("ArenaAllocator abort:", fmt, argp); // NOLINT std::va_list is libc defined
+	::va_end(argp); // NOLINT std::va_list is libc defined
 	std::abort();
 }
 
 void ConsoleLogger::exit(char const* fmt, ...) noexcept
 {
 	std::va_list argp;
-	::va_start(argp, fmt);
-	write("ArenaAllocator exit:", fmt, argp);
-	::va_end(argp);
+	::va_start(argp, fmt); // NOLINT std::va_list and ::va_start are libc defined
+	write("ArenaAllocator exit:", fmt, argp); // NOLINT std::va_list is libc defined
+	::va_end(argp); // NOLINT std::va_list is libc defined
 	std::exit(-1);
 }
 
 void ConsoleLogger::operator()(char const* fmt, ...) const noexcept
 {
 	std::va_list argp;
-	::va_start(argp, fmt);
-	write(nullptr, fmt, argp);
-	::va_end(argp);
+	::va_start(argp, fmt); // NOLINT std::va_list and ::va_start are libc defined
+	write(nullptr, fmt, argp); // NOLINT std::va_list is libc defined
+	::va_end(argp); // NOLINT std::va_list is libc defined
 }
 
 void ConsoleLogger::operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept
 {
 	std::va_list argp;
-	::va_start(argp, fmt);
-	write(duration, fmt, argp);
-	::va_end(argp);
+	::va_start(argp, fmt); // NOLINT std::va_list, ::va_start are libc defined
+	write(duration, fmt, argp); // NOLINT std::va_list is libc defined
+	::va_end(argp); // NOLINT std::va_list is libc defined
 }
 
 void ConsoleLogger::operator()(LogLevel level, char const* fmt, ...) const noexcept
 {
 	if (isLevel(level)) {
 		std::va_list argp;
-		::va_start(argp, fmt);
-		write(nullptr, fmt, argp);
-		::va_end(argp);
+		::va_start(argp, fmt); // NOLINT std::va_list and ::va_start are libc defined
+		write(nullptr, fmt, argp); // NOLINT std::va_list is libc defined
+		::va_end(argp); // NOLINT std::va_list is libc defined
 	}
 }
 

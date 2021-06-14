@@ -38,7 +38,7 @@ private:
 
 namespace {
 
-static ArenaAllocatorSingleton* instance;
+ArenaAllocatorSingleton* instance;
 
 } // namespace
 
@@ -59,7 +59,7 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 		if (instance == nullptr) {
 			instance = static_cast<ArenaAllocatorSingleton*>(__libc_malloc(sizeof(ArenaAllocatorSingleton)));
 			if (instance != nullptr) {
-				instance = new (instance) ArenaAllocatorSingleton();
+				instance = new (instance) ArenaAllocatorSingleton(); // NOLINT unlimited lifetime intended
 			} else {
 				ArenaAllocator::ConsoleLogger::exit("failed to allocate Bootstrap::ArenaAllocatorSingleton\n");
 			}
@@ -80,7 +80,7 @@ ArenaAllocator::Logger& ArenaAllocatorSingleton::getLogger() noexcept
 
 ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	pid{::getpid()},
-	log{},
+	allocator{nullptr},
 	allocatorFactory{configuration, log},
 	configuration{std::getenv("ARENA_ALLOCATOR_CONFIGURATION"), allocatorFactory, allocator, log}
 {
