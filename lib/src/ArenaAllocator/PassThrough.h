@@ -35,7 +35,7 @@ public:
 	void* pvalloc(std::size_t size) noexcept override;
 	void dump() const noexcept override;
 
-	static constexpr std::string_view className{"PassThrough"};
+	static constexpr char const* className{"PassThrough"};
 
 private:
 	Logger const& log;

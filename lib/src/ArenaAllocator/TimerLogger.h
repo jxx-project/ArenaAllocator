@@ -28,7 +28,7 @@ public:
 	[[nodiscard]] bool isLevel(LogLevel level) const noexcept override;
 	void setLevel(LogLevel level) noexcept override;
 
-	static constexpr std::string_view className{"TimerLogger"};
+	static constexpr char const* className{"TimerLogger"};
 	static constexpr std::size_t bufferSize{1024};
 
 private:

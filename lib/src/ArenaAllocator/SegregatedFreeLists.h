@@ -39,7 +39,7 @@ public:
 	void* pvalloc(std::size_t size) noexcept override;
 	void dump() const noexcept override;
 
-	static constexpr std::string_view className{"SegregatedFreeLists"};
+	static constexpr char const* className{"SegregatedFreeLists"};
 
 private:
 	Allocator* delegate;

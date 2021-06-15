@@ -38,7 +38,7 @@ public:
 	void* pvalloc(std::size_t size) noexcept override;
 	void dump() const noexcept override;
 
-	static constexpr std::string_view className{"SizeRangeStatistics"};
+	static constexpr char const* className{"SizeRangeStatistics"};
 
 private:
 	void* const ptrToEmpty;
