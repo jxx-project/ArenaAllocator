@@ -22,7 +22,8 @@ public:
 		std::string_view str,
 		std::optional<std::string_view>& className,
 		std::optional<Configuration::PoolMapType>& pools,
-		std::optional<LogLevel>& logLevel) noexcept;
+		std::optional<LogLevel>& logLevel,
+		std::optional<std::string_view>& loggerName) noexcept;
 
 private:
 	LogLevel parseLogLevel() noexcept;
@@ -41,6 +42,7 @@ private:
 	std::optional<std::string_view>& className;
 	std::optional<Configuration::PoolMapType>& pools;
 	std::optional<LogLevel>& logLevel;
+	std::optional<std::string_view>& loggerName;
 };
 
 } // namespace ArenaAllocator

@@ -11,6 +11,7 @@
 #include "ArenaAllocator/Allocator.h"
 #include "ArenaAllocator/Logger.h"
 #include <cstddef>
+#include <string_view>
 
 namespace ArenaAllocator {
 
@@ -34,7 +35,7 @@ public:
 	void* pvalloc(std::size_t size) noexcept override;
 	void dump() const noexcept override;
 
-	static constexpr char const* className{"PassThrough"};
+	static constexpr std::string_view className{"PassThrough"};
 
 private:
 	Logger const& log;

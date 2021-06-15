@@ -9,6 +9,7 @@
 #include "ArenaAllocator/ConsoleLogger.h"
 #include "ArenaAllocator/EnvironmentConfiguration.h"
 #include "ArenaAllocator/InternalAllocatorFactory.h"
+#include "ArenaAllocator/InternalLoggerFactory.h"
 #include <cstdlib>
 #include <optional>
 #include <unistd.h>
@@ -30,9 +31,10 @@ private:
 	ArenaAllocatorSingleton() noexcept;
 
 	::pid_t pid;
-	ArenaAllocator::ConsoleLogger log;
 	ArenaAllocator::Allocator* allocator;
+	ArenaAllocator::Logger* logger;
 	ArenaAllocator::InternalAllocatorFactory allocatorFactory;
+	ArenaAllocator::InternalLoggerFactory loggerFactory;
 	ArenaAllocator::EnvironmentConfiguration configuration;
 };
 
@@ -44,7 +46,7 @@ ArenaAllocatorSingleton* instance;
 
 ArenaAllocatorSingleton::~ArenaAllocatorSingleton() noexcept
 {
-	log(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::~ArenaAllocatorSingleton(this:%p)", this);
+	logger->operator()(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::~ArenaAllocatorSingleton(this:%p)", this);
 }
 
 ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
@@ -75,16 +77,18 @@ ArenaAllocator::Allocator& ArenaAllocatorSingleton::getAllocator() noexcept
 
 ArenaAllocator::Logger& ArenaAllocatorSingleton::getLogger() noexcept
 {
-	return log;
+	return *logger;
 }
 
 ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	pid{::getpid()},
 	allocator{nullptr},
-	allocatorFactory{configuration, log},
-	configuration{std::getenv("ARENA_ALLOCATOR_CONFIGURATION"), allocatorFactory, allocator, log}
+	allocatorFactory{configuration, logger},
+	logger{nullptr},
+	loggerFactory{},
+	configuration{std::getenv("ARENA_ALLOCATOR_CONFIGURATION"), allocatorFactory, allocator, loggerFactory, logger}
 {
-	log(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:%p", this);
+	logger->operator()(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:%p", this);
 }
 
 } // namespace Bootstrap

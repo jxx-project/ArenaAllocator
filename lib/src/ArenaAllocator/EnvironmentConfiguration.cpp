@@ -14,16 +14,20 @@ namespace ArenaAllocator {
 EnvironmentConfiguration::EnvironmentConfiguration(
 	char const* configStr,
 	AllocatorFactory& allocatorFactory,
-	Allocator*& activeAllocator,
-	Logger& log) noexcept :
-	activeAllocator{activeAllocator}, log{log}
+	Allocator*& allocator,
+	LoggerFactory& loggerFactory,
+	Logger*& logger) noexcept :
+	allocator{allocator}, logger{logger}
 {
 	if (configStr == nullptr) {
 		ConsoleLogger::exit("failed to read environment variable %s", configurationEnvVarName);
 	}
-	ParseConfiguration(configStr, className, pools, logLevel);
-	log.setLevel(EnvironmentConfiguration::getLogLevel());
-	if ((activeAllocator = allocatorFactory.getAllocator(EnvironmentConfiguration::getClass())) == nullptr) {
+	ParseConfiguration(configStr, className, pools, logLevel, loggerName);
+	if ((logger = loggerFactory.getLogger(EnvironmentConfiguration::getLogger())) == nullptr) {
+		ConsoleLogger::exit("unexpected logger class in environment variable %s", configurationEnvVarName);
+	}
+	logger->setLevel(EnvironmentConfiguration::getLogLevel());
+	if ((allocator = allocatorFactory.getAllocator(EnvironmentConfiguration::getClass())) == nullptr) {
 		ConsoleLogger::exit("unexpected allocator class in environment variable %s", configurationEnvVarName);
 	}
 }
@@ -50,6 +54,14 @@ LogLevel const& EnvironmentConfiguration::getLogLevel() const noexcept
 		ConsoleLogger::exit("missing log level item in environment variable %s", configurationEnvVarName);
 	}
 	return logLevel.value();
+}
+
+std::string_view const& EnvironmentConfiguration::getLogger() const noexcept
+{
+	if (!loggerName.has_value()) {
+		ConsoleLogger::exit("missing logger class item in environment variable %s", configurationEnvVarName);
+	}
+	return loggerName.value();
 }
 
 } // namespace ArenaAllocator

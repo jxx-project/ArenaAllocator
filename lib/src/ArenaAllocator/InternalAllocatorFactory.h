@@ -21,7 +21,7 @@ namespace ArenaAllocator {
 class InternalAllocatorFactory : public AllocatorFactory
 {
 public:
-	InternalAllocatorFactory(Configuration const& configuration, Logger const& log) noexcept;
+	InternalAllocatorFactory(Configuration const& configuration, Logger* const& logger) noexcept;
 	InternalAllocatorFactory(InternalAllocatorFactory const&) = delete;
 	InternalAllocatorFactory& operator=(InternalAllocatorFactory const&) = delete;
 	~InternalAllocatorFactory() override = default;
@@ -30,7 +30,7 @@ public:
 
 private:
 	Configuration const& configuration;
-	Logger const& log;
+	Logger* const& logger;
 	std::optional<PassThrough> passThrough;
 	std::optional<SegregatedFreeLists> segregatedFreeLists;
 	std::optional<SizeRangeStatistics> sizeRangeStatistics;

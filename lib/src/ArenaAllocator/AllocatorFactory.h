@@ -23,4 +23,4 @@ public:
 
 } // namespace ArenaAllocator
 
-#endif // ArenaAllocator
+#endif // ArenaAllocator_AllocatorFactory_h_INCLUDED

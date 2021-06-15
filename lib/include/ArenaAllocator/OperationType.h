@@ -8,9 +8,11 @@
 #ifndef ArenaAllocator_OperationType_h_INCLUDED
 #define ArenaAllocator_OperationType_h_INCLUDED
 
+#include <string_view>
+
 namespace ArenaAllocator {
 
-enum class OperationType
+enum class OperationType : unsigned
 {
 	MALLOC,
 	FREE,
@@ -21,10 +23,11 @@ enum class OperationType
 	ALIGNED_ALLOC,
 	VALLOC,
 	MEMALIGN,
-	PVALLOC
+	PVALLOC,
+	UNKNOWN // Last entry, index indicating number of types
 };
 
-char const* to_string(OperationType);
+std::string_view to_string(OperationType);
 
 } // namespace ArenaAllocator
 

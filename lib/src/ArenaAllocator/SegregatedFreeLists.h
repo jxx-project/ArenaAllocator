@@ -15,6 +15,7 @@
 #include "ArenaAllocator/Logger.h"
 #include "ArenaAllocator/PoolMap.h"
 #include <cstddef>
+#include <string_view>
 
 namespace ArenaAllocator {
 
@@ -38,7 +39,7 @@ public:
 	void* pvalloc(std::size_t size) noexcept override;
 	void dump() const noexcept override;
 
-	static constexpr char const* className{"SegregatedFreeLists"};
+	static constexpr std::string_view className{"SegregatedFreeLists"};
 
 private:
 	Allocator* delegate;

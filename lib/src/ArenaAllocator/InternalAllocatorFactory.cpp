@@ -9,8 +9,8 @@
 
 namespace ArenaAllocator {
 
-InternalAllocatorFactory::InternalAllocatorFactory(Configuration const& configuration, Logger const& log) noexcept :
-	configuration{configuration}, log{log}
+InternalAllocatorFactory::InternalAllocatorFactory(Configuration const& configuration, Logger* const& logger) noexcept :
+	configuration{configuration}, logger{logger}
 {
 }
 
@@ -19,17 +19,17 @@ Allocator* ArenaAllocator::InternalAllocatorFactory::getAllocator(std::string_vi
 	Allocator* result{nullptr};
 	if (className == PassThrough::className) {
 		if (!passThrough.has_value()) {
-			passThrough.emplace(log);
+			passThrough.emplace(*logger);
 		}
 		result = &passThrough.value();
 	} else if (className == SegregatedFreeLists::className) {
 		if (!segregatedFreeLists.has_value()) {
-			segregatedFreeLists.emplace(configuration, getAllocator(PassThrough::className), log);
+			segregatedFreeLists.emplace(configuration, getAllocator(PassThrough::className), *logger);
 		}
 		result = &segregatedFreeLists.value();
 	} else if (className == SizeRangeStatistics::className) {
 		if (!sizeRangeStatistics.has_value()) {
-			sizeRangeStatistics.emplace(configuration, *getAllocator(PassThrough::className), log);
+			sizeRangeStatistics.emplace(configuration, *getAllocator(PassThrough::className), *logger);
 		}
 		result = &sizeRangeStatistics.value();
 	}

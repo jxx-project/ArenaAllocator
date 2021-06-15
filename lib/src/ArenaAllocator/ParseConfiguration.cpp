@@ -8,8 +8,9 @@ ParseConfiguration::ParseConfiguration(
 	std::string_view str,
 	std::optional<std::string_view>& className,
 	std::optional<Configuration::PoolMapType>& pools,
-	std::optional<LogLevel>& logLevel) noexcept :
-	current{str}, className{className}, pools{pools}, logLevel{logLevel}
+	std::optional<LogLevel>& logLevel,
+	std::optional<std::string_view>& loggerName) noexcept :
+	current{str}, className{className}, pools{pools}, logLevel{logLevel}, loggerName{loggerName}
 {
 	if (parseDelimiter("{") != '{') {
 		ConsoleLogger::exit("ParseConfiguration: expected '{' at configuration string begin");
@@ -38,6 +39,14 @@ ParseConfiguration::ParseConfiguration(
 				ConsoleLogger::exit("ParseConfiguration: duplicate allocator class item");
 			}
 			logLevel.emplace(parseLogLevel());
+		} else if (configItem == "logger") {
+			if (parseDelimiter(":") == 0) {
+				ConsoleLogger::exit("ParseConfiguration: expected ':' after logger item identifier");
+			}
+			if (loggerName.has_value()) {
+				ConsoleLogger::exit("ParseConfiguration: duplicate logger class item");
+			}
+			loggerName.emplace(parseIdentifier());
 		} else {
 			ConsoleLogger::exit("ParseConfiguration: unexpected configuration item");
 		}

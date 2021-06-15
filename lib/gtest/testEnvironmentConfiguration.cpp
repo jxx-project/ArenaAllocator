@@ -9,15 +9,18 @@
 
 #include "ArenaAllocator/EnvironmentConfiguration.h"
 #include "Mock/NullAllocatorFactory.h"
-#include "Mock/NullLogger.h"
+#include "Mock/NullLoggerFactory.h"
 
 TEST(EnvironmentConfiguration, EnvironmentVariableNotFound)
 {
 	Mock::NullAllocatorFactory allocatorFactory{};
 	ArenaAllocator::Allocator* allocator{nullptr};
-	Mock::NullLogger logger{};
+	Mock::NullLoggerFactory loggerFactory{};
+	ArenaAllocator::Logger* logger{nullptr};
 
-	ASSERT_DEATH(ArenaAllocator::EnvironmentConfiguration(nullptr, allocatorFactory, allocator, logger), "ArenaAllocator exit");
+	ASSERT_DEATH(
+		ArenaAllocator::EnvironmentConfiguration(nullptr, allocatorFactory, allocator, loggerFactory, logger),
+		"ArenaAllocator exit");
 }
 
 int main(int argc, char* argv[])
