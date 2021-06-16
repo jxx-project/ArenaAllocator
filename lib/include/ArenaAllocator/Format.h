@@ -16,12 +16,11 @@
 
 namespace ArenaAllocator {
 
-template<std::size_t bufferSize = 1024>
 class Format
 {
 public:
 	template<typename... Args>
-	Format(std::string_view fmt, Args const&... args)
+	Format(std::string_view fmt, Args const&... args) noexcept
 	{
 		if constexpr (sizeof...(args) > 0) {
 			format(fmt, std::forward<Args const&>(args)...);
@@ -34,6 +33,8 @@ public:
 	{
 		return std::string_view(buffer.data(), length);
 	}
+
+	static constexpr std::size_t bufferSize{1024};
 
 private:
 	template<typename First, typename... Rest>
@@ -66,6 +67,7 @@ private:
 	void writeToBuffer(std::string_view value) noexcept;
 	void writeToBuffer(bool value) noexcept;
 	void writeToBuffer(double value) noexcept;
+	void writeToBuffer(char const* ptr) noexcept;
 	void writeToBuffer(void const* ptr) noexcept;
 
 	std::array<char, bufferSize> buffer;

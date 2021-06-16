@@ -63,7 +63,8 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 			if (instance != nullptr) {
 				instance = new (instance) ArenaAllocatorSingleton(); // NOLINT unlimited lifetime intended
 			} else {
-				ArenaAllocator::ConsoleLogger::exit("failed to allocate Bootstrap::ArenaAllocatorSingleton\n");
+				ArenaAllocator::ConsoleLogger::exit(
+					[] { return ArenaAllocator::Format("failed to allocate Bootstrap::ArenaAllocatorSingleton\n"); });
 			}
 		}
 	}

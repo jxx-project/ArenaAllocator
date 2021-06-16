@@ -59,6 +59,7 @@ void write(std::chrono::nanoseconds duration, char const* fmt, std::va_list argp
 
 void writeWithPrefix(std::string_view prefix, std::string_view message) noexcept
 {
+	std::cout << "writeWithPrefix(" << prefix << ", " << message << ")" << std::endl;
 	std::array<char, ConsoleLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
 	Format prefixFormat{"[pid:{}]\t{}\t", ::getpid(), prefix};
 	std::string_view prefixStr{prefixFormat.getStringView()};
@@ -68,6 +69,7 @@ void writeWithPrefix(std::string_view prefix, std::string_view message) noexcept
 	std::memcpy(&buffer[prefixLength], message.data(), messageLength);
 	std::size_t totalLength{std::min(prefixLength + messageLength, buffer.size() - 1)};
 	buffer[totalLength++] = '\n'; // NOLINT available buffer size checked above
+	std::cout << "writeWithPrefix(" << prefix << ", " << message << ")" << std::endl;
 	write(std::string_view(buffer.data(), totalLength));
 }
 
@@ -95,36 +97,6 @@ ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
 ConsoleLogger::~ConsoleLogger() noexcept
 {
 	ConsoleLogger::operator()(LogLevel::DEBUG, "ConsoleLogger::~ConsoleLogger(this:%p)\n", this);
-}
-
-void ConsoleLogger::abort(char const* fmt, ...) noexcept
-{
-	std::va_list argp;
-	::va_start(argp, fmt); // NOLINT std::va_list and ::va_start are libc provided
-	write("ArenaAllocator abort:", fmt, argp); // NOLINT std::va_list is libc defined
-	::va_end(argp); // NOLINT std::va_list is libc defined
-	std::abort();
-}
-
-void ConsoleLogger::exit(char const* fmt, ...) noexcept
-{
-	std::va_list argp;
-	::va_start(argp, fmt); // NOLINT std::va_list and ::va_start are libc defined
-	write("ArenaAllocator exit:", fmt, argp); // NOLINT std::va_list is libc defined
-	::va_end(argp); // NOLINT std::va_list is libc defined
-	std::exit(-1);
-}
-
-void ConsoleLogger::abort(Formatter const& formatter) noexcept
-{
-	writeWithPrefix(std::string_view{"ArenaAllocator abort:"}, formatter.getStringView());
-	std::abort();
-}
-
-void ConsoleLogger::exit(Formatter const& formatter) noexcept
-{
-	writeWithPrefix(std::string_view{"ArenaAllocator exit:"}, formatter.getStringView());
-	std::exit(-1);
 }
 
 void ConsoleLogger::operator()(char const* fmt, ...) const noexcept
@@ -165,19 +137,36 @@ void ConsoleLogger::setLevel(LogLevel level) noexcept
 
 void ConsoleLogger::log(Formatter const& formatter) const noexcept
 {
-	writeWithPrefix(std::string_view{}, formatter.getStringView());
+	Format message{formatter()};
+	writeWithPrefix(std::string_view{}, message.getStringView());
 }
 
-void ConsoleLogger::log(std::chrono::nanoseconds duration, OperationType opType, Formatter const& formatter) const noexcept
+void ConsoleLogger::log(std::chrono::nanoseconds duration, OperationType, Formatter const& formatter) const noexcept
 {
-	writeWithPrefix(duration, formatter.getStringView());
+	Format message = formatter();
+	writeWithPrefix(duration, message.getStringView());
 }
 
 void ConsoleLogger::log(LogLevel level, Formatter const& formatter) const noexcept
 {
 	if (isLevel(level)) {
-		writeWithPrefix(std::string_view{}, formatter.getStringView());
+		Format message{formatter()};
+		writeWithPrefix(std::string_view{}, message.getStringView());
 	}
+}
+
+void ConsoleLogger::logAbort(Formatter const& formatter) noexcept
+{
+	Format message{formatter()};
+	writeWithPrefix(std::string_view{"ArenaAllocator abort:"}, message.getStringView());
+	std::abort();
+}
+
+void ConsoleLogger::logExit(Formatter const& formatter) noexcept
+{
+	Format message{formatter()};
+	writeWithPrefix(std::string_view{"ArenaAllocator exit:"}, message.getStringView());
+	std::exit(-1);
 }
 
 } // namespace ArenaAllocator

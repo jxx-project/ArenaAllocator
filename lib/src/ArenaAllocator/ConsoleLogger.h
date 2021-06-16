@@ -10,6 +10,7 @@
 
 #include "ArenaAllocator/Logger.h"
 #include <cstdarg>
+#include <iostream> //DEBUG
 
 namespace ArenaAllocator {
 
@@ -21,10 +22,18 @@ public:
 	ConsoleLogger& operator=(ConsoleLogger const&) = delete;
 	~ConsoleLogger() noexcept override;
 
-	[[noreturn]] static void abort(char const* fmt, ...) noexcept;
-	[[noreturn]] static void exit(char const* fmt, ...) noexcept;
-	[[noreturn]] static void abort(Formatter const& formatter) noexcept;
-	[[noreturn]] static void exit(Formatter const& formatter) noexcept;
+	template<typename F>
+	[[noreturn]] static void abort(F callback) noexcept
+	{
+		logAbort(FormattingCallback{callback});
+	}
+
+	template<typename F>
+	[[noreturn]] static void exit(F callback) noexcept
+	{
+		logExit(FormattingCallback{callback});
+	}
+
 	void operator()(char const* fmt, ...) const noexcept override;
 	void operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept override;
 	void operator()(LogLevel level, char const* fmt, ...) const noexcept override;
@@ -40,6 +49,9 @@ protected:
 	void log(LogLevel level, Formatter const& formatter) const noexcept override;
 
 private:
+	[[noreturn]] static void logAbort(Formatter const& formatter) noexcept;
+	[[noreturn]] static void logExit(Formatter const& formatter) noexcept;
+
 	LogLevel logLevel;
 };
 

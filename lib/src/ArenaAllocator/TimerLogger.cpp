@@ -112,7 +112,8 @@ void TimerLogger::setLevel(LogLevel level) noexcept
 
 void TimerLogger::log(Formatter const& formatter) const noexcept
 {
-	writeWithPrefix(formatter.getStringView());
+	Format message = formatter();
+	writeWithPrefix(message.getStringView());
 }
 
 void TimerLogger::log(std::chrono::nanoseconds duration, OperationType operationType, Formatter const& formatter) const noexcept
@@ -123,7 +124,8 @@ void TimerLogger::log(std::chrono::nanoseconds duration, OperationType operation
 void TimerLogger::log(LogLevel level, Formatter const& formatter) const noexcept
 {
 	if (isLevel(level)) {
-		writeWithPrefix(formatter.getStringView());
+		Format message = formatter();
+		writeWithPrefix(message.getStringView());
 	}
 }
 

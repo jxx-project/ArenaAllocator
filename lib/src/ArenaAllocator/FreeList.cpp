@@ -51,7 +51,7 @@ void* FreeList::reallocate(ListType::iterator it, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
-		ConsoleLogger::abort("FreeList::reallocate(%p, %lu) not allocated", it->data, size);
+		ConsoleLogger::abort([it, size] { return Format("FreeList::reallocate(%p, %lu) not allocated", it->data, size); });
 	}
 	it->allocatedSize = size;
 	return it->data;
@@ -61,7 +61,7 @@ void FreeList::deallocate(ListType::const_iterator it) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
-		ConsoleLogger::abort("FreeList::deallocate(%p): not allocated", it->data);
+		ConsoleLogger::abort([it] { return Format("FreeList::deallocate({}): not allocated", it->data); });
 	}
 	free.splice(free.begin(), allocated, it);
 	std::memset(free.front().data, 0, chunkSize);

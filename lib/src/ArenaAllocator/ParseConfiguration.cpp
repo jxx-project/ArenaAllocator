@@ -13,52 +13,53 @@ ParseConfiguration::ParseConfiguration(
 	current{str}, className{className}, pools{pools}, logLevel{logLevel}, loggerName{loggerName}
 {
 	if (parseDelimiter("{") != '{') {
-		ConsoleLogger::exit("ParseConfiguration: expected '{' at configuration string begin");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: expected '{' at configuration string begin"); });
 	}
 	char delimiter{parseDelimiter("}")};
 	while (delimiter != '}') {
 		std::string_view configItem{parseIdentifier()};
 		if (configItem == "pools") {
 			if (parseDelimiter(":") == 0) {
-				ConsoleLogger::exit("ParseConfiguration: expected ':' after pools item identifier");
+				ConsoleLogger::exit([] { return Format("ParseConfiguration: expected ':' after pools item identifier"); });
 			}
 			parsePoolMap();
 		} else if (configItem == "class") {
 			if (parseDelimiter(":") == 0) {
-				ConsoleLogger::exit("ParseConfiguration: expected ':' after class item identifier");
+				ConsoleLogger::exit([] { return Format("ParseConfiguration: expected ':' after class item identifier"); });
 			}
 			if (className.has_value()) {
-				ConsoleLogger::exit("ParseConfiguration: duplicate allocator class item");
+				ConsoleLogger::exit([] { return Format("ParseConfiguration: duplicate allocator class item"); });
 			}
 			className.emplace(parseIdentifier());
 		} else if (configItem == "logLevel") {
 			if (parseDelimiter(":") == 0) {
-				ConsoleLogger::exit("ParseConfiguration: expected ':' after logLevel item identifier");
+				ConsoleLogger::exit([] { return Format("ParseConfiguration: expected ':' after logLevel item identifier"); });
 			}
 			if (logLevel.has_value()) {
-				ConsoleLogger::exit("ParseConfiguration: duplicate allocator class item");
+				ConsoleLogger::exit([] { return Format("ParseConfiguration: duplicate allocator class item"); });
 			}
 			logLevel.emplace(parseLogLevel());
 		} else if (configItem == "logger") {
 			if (parseDelimiter(":") == 0) {
-				ConsoleLogger::exit("ParseConfiguration: expected ':' after logger item identifier");
+				ConsoleLogger::exit([] { return Format("ParseConfiguration: expected ':' after logger item identifier"); });
 			}
 			if (loggerName.has_value()) {
-				ConsoleLogger::exit("ParseConfiguration: duplicate logger class item");
+				ConsoleLogger::exit([] { return Format("ParseConfiguration: duplicate logger class item"); });
 			}
 			loggerName.emplace(parseIdentifier());
 		} else {
-			ConsoleLogger::exit("ParseConfiguration: unexpected configuration item");
+			ConsoleLogger::exit([] { return Format("ParseConfiguration: unexpected configuration item"); });
 		}
 		if ((delimiter = parseDelimiter(",}")) == 0) {
-			ConsoleLogger::exit("ParseConfiguration: expected ',' configuration item delimiter.");
+			ConsoleLogger::exit([] { return Format("ParseConfiguration: expected ',' configuration item delimiter."); });
 		}
 	}
 	while (!current.empty() && isSpace(current.front())) {
 		current.remove_prefix(1);
 	}
 	if (!current.empty()) {
-		ConsoleLogger::exit("ParseConfiguration: unexpected character after '}' at configuration string end");
+		ConsoleLogger::exit(
+			[] { return Format("ParseConfiguration: unexpected character after '}' at configuration string end"); });
 	}
 }
 
@@ -77,7 +78,7 @@ LogLevel ParseConfiguration::parseLogLevel() noexcept
 	} else if (logLevel == "DEBUG") {
 		result = LogLevel::DEBUG;
 	} else {
-		ConsoleLogger::exit("ParseConfiguration: invalid log level");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: invalid log level"); });
 	}
 	return result;
 }
@@ -89,18 +90,18 @@ SizeRange ParseConfiguration::parseSizeRange() noexcept
 		current.remove_prefix(1);
 	}
 	if (parseDelimiter("[") == 0) {
-		ConsoleLogger::exit("ParseConfiguration: expexted '[' at size range begin");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: expexted '[' at size range begin"); });
 	}
 	result.first = parseSize();
 	if (parseDelimiter(",") == 0) {
-		ConsoleLogger::exit("ParseConfiguration: expexted ',' separating size range first and last");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: expexted ',' separating size range first and last"); });
 	}
 	result.last = parseSize();
 	if (parseDelimiter("]") == 0) {
-		ConsoleLogger::exit("ParseConfiguration: expexted ']' at size range end");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: expexted ']' at size range end"); });
 	}
 	if (result.first > result.last) {
-		ConsoleLogger::exit("ParseConfiguration: size range first grater than last");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: size range first grater than last"); });
 	}
 	return result;
 }
@@ -108,17 +109,17 @@ SizeRange ParseConfiguration::parseSizeRange() noexcept
 void ParseConfiguration::parsePoolMap() noexcept
 {
 	if (pools.has_value()) {
-		ConsoleLogger::exit("ParseConfiguration: duplicate pools item");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: duplicate pools item"); });
 	}
 	pools.emplace();
 	if (parseDelimiter("{") != '{') {
-		ConsoleLogger::exit("ParseConfiguration: expected '{' at pool configuration begin");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: expected '{' at pool configuration begin"); });
 	}
 	char delimiter{parseDelimiter("}")};
 	while (delimiter != '}') {
 		parsePool();
 		if ((delimiter = parseDelimiter(",}")) == 0) {
-			ConsoleLogger::exit("ParseConfiguration: expected ',' pool map element delimiter");
+			ConsoleLogger::exit([] { return Format("ParseConfiguration: expected ',' pool map element delimiter"); });
 		}
 	}
 }
@@ -127,11 +128,11 @@ void ParseConfiguration::parsePool() noexcept
 {
 	const SizeRange range{parseSizeRange()};
 	if (parseDelimiter(":") != ':') {
-		ConsoleLogger::exit("ParseConfiguration: Expected ':' at pool configuration begin");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: Expected ':' at pool configuration begin"); });
 	}
 	std::size_t nChunks{parseSize()};
 	if (!pools.value().emplace(range, nChunks)) {
-		ConsoleLogger::exit("ParseConfiguration: Expected disjunct pool size ranges");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: Expected disjunct pool size ranges"); });
 	}
 }
 
@@ -172,9 +173,9 @@ std::size_t ParseConfiguration::parseSize() noexcept
 	if (!static_cast<bool>(matchResult.ec)) {
 		current.remove_prefix(matchResult.ptr - current.data());
 	} else if (matchResult.ec == std::errc::result_out_of_range) {
-		ConsoleLogger::exit("ParseConfiguration: size value out of range");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: size value out of range"); });
 	} else {
-		ConsoleLogger::exit("ParseConfiguration: invalid unsigned long value");
+		ConsoleLogger::exit([] { return Format("ParseConfiguration: invalid unsigned long value"); });
 	}
 	return result;
 }

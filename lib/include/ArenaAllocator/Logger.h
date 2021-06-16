@@ -8,6 +8,7 @@
 #ifndef ArenaAllocator_Logger_h_INCLUDED
 #define ArenaAllocator_Logger_h_INCLUDED
 
+#include "ArenaAllocator/Format.h"
 #include "ArenaAllocator/LogLevel.h"
 #include "ArenaAllocator/OperationType.h"
 #include <chrono>
@@ -22,19 +23,19 @@ public:
 	template<typename F>
 	void operator()(F callback) const noexcept
 	{
-		log(FormattingCallback(std::forward<F>(callback)));
+		log(FormattingCallback{callback});
 	}
 
 	template<typename F>
-	void operator()(std::chrono::nanoseconds duration, OperationType opType, F callback) const noexcept
+	void operator()(std::chrono::nanoseconds duration, OperationType operationType, F callback) const noexcept
 	{
-		log(duration, opType, FormattingCallback(std::forward<F>(callback)));
+		log(duration, operationType, FormattingCallback{callback});
 	}
 
 	template<typename F>
 	void operator()(LogLevel level, F callback) const noexcept
 	{
-		log(level, FormattingCallback(std::forward<F>(callback)));
+		log(level, FormattingCallback{callback});
 	}
 
 	virtual void operator()(char const* fmt, ...) const noexcept = 0;
@@ -48,7 +49,7 @@ protected:
 	{
 	public:
 		virtual ~Formatter() noexcept = default;
-		virtual std::string_view getStringView() const noexcept = 0;
+		virtual Format operator()() const noexcept = 0;
 	};
 
 	template<typename F>
@@ -60,9 +61,9 @@ protected:
 		}
 		~FormattingCallback() noexcept override = default;
 
-		std::string_view getStringView() const noexcept override
+		Format operator()() const noexcept override
 		{
-			return callback().getStringView();
+			return callback();
 		}
 
 	private:

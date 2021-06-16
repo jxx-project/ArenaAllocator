@@ -24,8 +24,10 @@ template<typename T>
 void PoolMap<T>::insert(SizeRange const& range, std::size_t nChunks) noexcept
 {
 	if (!aggregate.emplace(range, range, nChunks, log)) {
-		ConsoleLogger::exit(
-			"PoolMap::insert([%lu, %lu], %lu) failed due to inavlid range or overlap", range.first, range.last, nChunks);
+		ConsoleLogger::exit([range, nChunks] {
+			return Format(
+				"PoolMap::insert([%lu, %lu], %lu) failed due to inavlid range or overlap", range.first, range.last, nChunks);
+		});
 	}
 }
 
