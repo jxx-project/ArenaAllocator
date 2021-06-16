@@ -31,6 +31,11 @@ public:
 	static constexpr char const* className{"TimerLogger"};
 	static constexpr std::size_t bufferSize{1024};
 
+protected:
+	void log(Formatter const& formatter) const noexcept override;
+	void log(std::chrono::nanoseconds duration, OperationType operationType, Formatter const& formatter) const noexcept override;
+	void log(LogLevel level, Formatter const& formatter) const noexcept override;
+
 private:
 	LogLevel logLevel;
 };

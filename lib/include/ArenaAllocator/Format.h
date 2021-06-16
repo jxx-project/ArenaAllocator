@@ -37,7 +37,7 @@ public:
 
 private:
 	template<typename First, typename... Rest>
-	void format(std::string_view fmt, First const& first, Rest const&... rest)
+	constexpr void format(std::string_view fmt, First const& first, Rest const&... rest)
 	{
 		std::size_t placeholderPos{fmt.find("{}")};
 		if (placeholderPos == std::string_view::npos) {

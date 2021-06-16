@@ -6,9 +6,11 @@
 
 
 #include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/Format.h"
 #include <algorithm>
 #include <cerrno>
 #include <cstdio>
+#include <cstring>
 #include <string_view>
 #include <unistd.h>
 
@@ -55,6 +57,34 @@ void write(std::chrono::nanoseconds duration, char const* fmt, std::va_list argp
 	write(std::string_view(buffer.data(), totalLength));
 }
 
+void writeWithPrefix(std::string_view prefix, std::string_view message) noexcept
+{
+	std::array<char, ConsoleLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
+	Format prefixFormat{"[pid:{}]\t{}\t", ::getpid(), prefix};
+	std::string_view prefixStr{prefixFormat.getStringView()};
+	std::size_t prefixLength{std::min(prefixStr.size(), buffer.size() - 1)};
+	std::memcpy(buffer.data(), prefixStr.data(), prefixLength);
+	std::size_t messageLength{std::min(message.size(), buffer.size() - 1 - prefixLength)};
+	std::memcpy(&buffer[prefixLength], message.data(), messageLength);
+	std::size_t totalLength{std::min(prefixLength + messageLength, buffer.size() - 1)};
+	buffer[totalLength++] = '\n'; // NOLINT available buffer size checked above
+	write(std::string_view(buffer.data(), totalLength));
+}
+
+void writeWithPrefix(std::chrono::nanoseconds duration, std::string_view message) noexcept
+{
+	std::array<char, ConsoleLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
+	Format prefixFormat{"[pid:{}]\t{}\t", ::getpid(), duration.count()};
+	std::string_view prefixStr{prefixFormat.getStringView()};
+	std::size_t prefixLength{std::min(prefixStr.size(), buffer.size() - 1)};
+	std::memcpy(buffer.data(), prefixStr.data(), prefixLength);
+	std::size_t messageLength{std::min(message.size(), buffer.size() - 1 - prefixLength)};
+	std::memcpy(&buffer[prefixLength], message.data(), messageLength);
+	std::size_t totalLength{std::min(prefixLength + messageLength, buffer.size() - 1)};
+	buffer[totalLength++] = '\n'; // NOLINT available buffer size checked above
+	write(std::string_view(buffer.data(), totalLength));
+}
+
 } // namespace
 
 ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
@@ -82,6 +112,18 @@ void ConsoleLogger::exit(char const* fmt, ...) noexcept
 	::va_start(argp, fmt); // NOLINT std::va_list and ::va_start are libc defined
 	write("ArenaAllocator exit:", fmt, argp); // NOLINT std::va_list is libc defined
 	::va_end(argp); // NOLINT std::va_list is libc defined
+	std::exit(-1);
+}
+
+void ConsoleLogger::abort(Formatter const& formatter) noexcept
+{
+	writeWithPrefix(std::string_view{"ArenaAllocator abort:"}, formatter.getStringView());
+	std::abort();
+}
+
+void ConsoleLogger::exit(Formatter const& formatter) noexcept
+{
+	writeWithPrefix(std::string_view{"ArenaAllocator exit:"}, formatter.getStringView());
 	std::exit(-1);
 }
 
@@ -121,5 +163,21 @@ void ConsoleLogger::setLevel(LogLevel level) noexcept
 	logLevel = level;
 }
 
+void ConsoleLogger::log(Formatter const& formatter) const noexcept
+{
+	writeWithPrefix(std::string_view{}, formatter.getStringView());
+}
+
+void ConsoleLogger::log(std::chrono::nanoseconds duration, OperationType opType, Formatter const& formatter) const noexcept
+{
+	writeWithPrefix(duration, formatter.getStringView());
+}
+
+void ConsoleLogger::log(LogLevel level, Formatter const& formatter) const noexcept
+{
+	if (isLevel(level)) {
+		writeWithPrefix(std::string_view{}, formatter.getStringView());
+	}
+}
 
 } // namespace ArenaAllocator

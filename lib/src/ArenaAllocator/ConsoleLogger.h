@@ -23,6 +23,8 @@ public:
 
 	[[noreturn]] static void abort(char const* fmt, ...) noexcept;
 	[[noreturn]] static void exit(char const* fmt, ...) noexcept;
+	[[noreturn]] static void abort(Formatter const& formatter) noexcept;
+	[[noreturn]] static void exit(Formatter const& formatter) noexcept;
 	void operator()(char const* fmt, ...) const noexcept override;
 	void operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept override;
 	void operator()(LogLevel level, char const* fmt, ...) const noexcept override;
@@ -31,6 +33,11 @@ public:
 
 	static constexpr char const* className{"ConsoleLogger"};
 	static constexpr std::size_t bufferSize{1024};
+
+protected:
+	void log(Formatter const& formatter) const noexcept override;
+	void log(std::chrono::nanoseconds duration, OperationType, Formatter const& formatter) const noexcept override;
+	void log(LogLevel level, Formatter const& formatter) const noexcept override;
 
 private:
 	LogLevel logLevel;
