@@ -14,12 +14,13 @@ namespace ArenaAllocator {
 PoolStatistics::PoolStatistics(SizeRange const& range, std::size_t limit, Logger const& log) noexcept :
 	range{range}, limit{limit}, allocations{0}, minSize{std::numeric_limits<std::size_t>::max()}, maxSize{0}, hwm{0}, log{log}
 {
-	log(LogLevel::DEBUG, "PoolStatistics::PoolStatistics([%lu, %lu], %lu) -> this:%p", range.first, range.last, limit, this);
+	log(LogLevel::DEBUG,
+		[&] { return Format("PoolStatistics::PoolStatistics([{}, {}], {}) -> this:{}", range.first, range.last, limit, this); });
 }
 
 PoolStatistics::~PoolStatistics() noexcept
 {
-	log(LogLevel::DEBUG, "PoolStatistics::~PoolStatistics(this:%p)", this);
+	log(LogLevel::DEBUG, [&] { return Format("PoolStatistics::~PoolStatistics(this:{})", this); });
 }
 
 void PoolStatistics::registerAllocate(std::size_t size) noexcept
@@ -29,12 +30,14 @@ void PoolStatistics::registerAllocate(std::size_t size) noexcept
 	maxSize = std::max(size, maxSize);
 	hwm = std::max(allocations, hwm);
 	if (limit > 0 && allocations > limit && hwm == limit + 1) {
-		log(LogLevel::TRACE,
-			"PoolStatistics::registerAllocate(%lu) {range: [%lu, %lu], ...} exceeded limit: %lu",
-			size,
-			range.first,
-			range.last,
-			limit);
+		log(LogLevel::TRACE, [&] {
+			return Format(
+				"PoolStatistics::registerAllocate({}) {range: [{}, {}], ...} exceeded limit: {}",
+				size,
+				range.first,
+				range.last,
+				limit);
+		});
 	}
 }
 
@@ -50,14 +53,17 @@ SizeRange const& PoolStatistics::getRange() const noexcept
 
 void PoolStatistics::dump() const noexcept
 {
-	log("[%lu, %lu]: {limit: %lu, allocations: %lu, minSize: %lu, maxSize: %lu, hwm: %lu}",
-		range.first,
-		range.last,
-		limit,
-		allocations,
-		hwm > 0 ? minSize : 0,
-		maxSize,
-		hwm);
+	log([&] {
+		return Format(
+			"[{}, {}]: {limit: {}, allocations: {}, minSize: {}, maxSize: {}, hwm: {}}",
+			range.first,
+			range.last,
+			limit,
+			allocations,
+			hwm > 0 ? minSize : 0,
+			maxSize,
+			hwm);
+	});
 }
 
 } // namespace ArenaAllocator

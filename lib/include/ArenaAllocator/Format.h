@@ -10,6 +10,7 @@
 
 #include <array>
 #include <charconv>
+#include <chrono>
 #include <cstddef>
 #include <string_view>
 #include <type_traits>
@@ -69,6 +70,12 @@ private:
 	void writeToBuffer(double value) noexcept;
 	void writeToBuffer(char const* ptr) noexcept;
 	void writeToBuffer(void const* ptr) noexcept;
+	void writeToBuffer(std::chrono::nanoseconds duration) noexcept;
+	void writeToBuffer(std::chrono::microseconds duration) noexcept;
+	void writeToBuffer(std::chrono::milliseconds duration) noexcept;
+	void writeToBuffer(std::chrono::seconds duration) noexcept;
+	void writeToBuffer(std::chrono::minutes duration) noexcept;
+	void writeToBuffer(std::chrono::hours duration) noexcept;
 
 	std::array<char, bufferSize> buffer;
 	std::size_t length{0};

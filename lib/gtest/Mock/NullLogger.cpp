@@ -9,24 +9,24 @@
 
 namespace Mock {
 
-void NullLogger::operator()(char const*, ...) const noexcept
-{
-}
-
-void NullLogger::operator()(std::chrono::nanoseconds, ArenaAllocator::OperationType, char const*, ...) const noexcept
-{
-}
-
-void NullLogger::operator()(ArenaAllocator::LogLevel level, char const* fmt, ...) const noexcept
-{
-}
-
 bool NullLogger::isLevel(ArenaAllocator::LogLevel) const noexcept
 {
 	return false;
 }
 
 void NullLogger::setLevel(ArenaAllocator::LogLevel) noexcept
+{
+}
+
+void NullLogger::log(Formatter const&) const noexcept
+{
+}
+
+void NullLogger::log(std::chrono::nanoseconds, ArenaAllocator::OperationType, Formatter const&) const noexcept
+{
+}
+
+void NullLogger::log(ArenaAllocator::LogLevel, Formatter const&) const noexcept
 {
 }
 

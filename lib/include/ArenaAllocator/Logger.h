@@ -38,9 +38,6 @@ public:
 		log(level, FormattingCallback{callback});
 	}
 
-	virtual void operator()(char const* fmt, ...) const noexcept = 0;
-	virtual void operator()(std::chrono::nanoseconds duration, OperationType opType, char const* fmt, ...) const noexcept = 0;
-	virtual void operator()(LogLevel level, char const* fmt, ...) const noexcept = 0;
 	[[nodiscard]] virtual bool isLevel(LogLevel level) const noexcept = 0;
 	virtual void setLevel(LogLevel level) noexcept = 0;
 

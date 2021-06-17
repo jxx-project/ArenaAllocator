@@ -20,11 +20,13 @@ public:
 	NullLogger& operator=(NullLogger const&) = delete;
 	~NullLogger() override = default;
 
-	void operator()(char const*, ...) const noexcept override;
-	void operator()(std::chrono::nanoseconds, ArenaAllocator::OperationType, char const*, ...) const noexcept override;
-	void operator()(ArenaAllocator::LogLevel, char const*, ...) const noexcept override;
 	bool isLevel(ArenaAllocator::LogLevel) const noexcept override;
 	void setLevel(ArenaAllocator::LogLevel) noexcept override;
+
+protected:
+	void log(Formatter const&) const noexcept override;
+	void log(std::chrono::nanoseconds, ArenaAllocator::OperationType, Formatter const&) const noexcept override;
+	void log(ArenaAllocator::LogLevel, Formatter const&) const noexcept override;
 };
 
 } // namespace Mock

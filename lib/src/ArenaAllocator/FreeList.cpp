@@ -18,7 +18,8 @@ FreeList::FreeList(SizeRange const& range, std::size_t nChunks, Logger const& lo
 	log{log},
 	hwm{0}
 {
-	log(LogLevel::DEBUG, "FreeList::FreeList([%lu, %lu], %lu) -> this:%p", range.first, range.last, nChunks, this);
+	log(LogLevel::DEBUG,
+		[&] { return Format("FreeList::FreeList([{}, {}], {}) -> this:{}", range.first, range.last, nChunks, this); });
 	const std::size_t wordsPerChunk{chunkSize / sizeof(std::max_align_t)};
 	storage.resize(nChunks * wordsPerChunk);
 	for (std::size_t offset = 0; offset < storage.size(); offset += wordsPerChunk) {
@@ -28,7 +29,7 @@ FreeList::FreeList(SizeRange const& range, std::size_t nChunks, Logger const& lo
 
 FreeList::~FreeList() noexcept
 {
-	log(LogLevel::DEBUG, "FreeList::~FreeList(this:%p)", this);
+	log(LogLevel::DEBUG, [&] { return Format("FreeList::~FreeList(this:{})", this); });
 }
 
 
@@ -51,7 +52,7 @@ void* FreeList::reallocate(ListType::iterator it, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
-		ConsoleLogger::abort([it, size] { return Format("FreeList::reallocate(%p, %lu) not allocated", it->data, size); });
+		ConsoleLogger::abort([&] { return Format("FreeList::reallocate({}, {}) not allocated", it->data, size); });
 	}
 	it->allocatedSize = size;
 	return it->data;
@@ -61,7 +62,7 @@ void FreeList::deallocate(ListType::const_iterator it) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
-		ConsoleLogger::abort([it] { return Format("FreeList::deallocate({}): not allocated", it->data); });
+		ConsoleLogger::abort([&] { return Format("FreeList::deallocate({}): not allocated", it->data); });
 	}
 	free.splice(free.begin(), allocated, it);
 	std::memset(free.front().data, 0, chunkSize);
@@ -77,7 +78,9 @@ std::size_t FreeList::nChunks() const noexcept
 void FreeList::dump() const noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
-	log("[%lu, %lu]: {free: %lu, allocated: %lu, hwm: %lu}", range.first, range.last, free.size(), allocated.size(), hwm);
+	log([&] {
+		return Format("[{}, {}]: {free: {}, allocated: {}, hwm: {}}", range.first, range.last, free.size(), allocated.size(), hwm);
+	});
 }
 
 } // namespace ArenaAllocator

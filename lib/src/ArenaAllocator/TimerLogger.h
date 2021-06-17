@@ -9,8 +9,6 @@
 #define ArenaAllocator_TimerLogger_h_INCLUDED
 
 #include "ArenaAllocator/Logger.h"
-#include <cstdarg>
-#include <string_view>
 
 namespace ArenaAllocator {
 
@@ -22,9 +20,6 @@ public:
 	TimerLogger& operator=(TimerLogger const&) = delete;
 	~TimerLogger() noexcept override;
 
-	void operator()(char const* fmt, ...) const noexcept override;
-	void operator()(std::chrono::nanoseconds duration, OperationType, char const* fmt, ...) const noexcept override;
-	void operator()(LogLevel level, char const* fmt, ...) const noexcept override;
 	[[nodiscard]] bool isLevel(LogLevel level) const noexcept override;
 	void setLevel(LogLevel level) noexcept override;
 

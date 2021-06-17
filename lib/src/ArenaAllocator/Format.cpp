@@ -56,4 +56,40 @@ void Format::writeToBuffer(void const* ptr) noexcept
 	}
 }
 
+void Format::writeToBuffer(std::chrono::nanoseconds duration) noexcept
+{
+	writeToBuffer(duration.count());
+	writeToBuffer(std::string_view("ns"));
+}
+
+void Format::writeToBuffer(std::chrono::microseconds duration) noexcept
+{
+	writeToBuffer(duration.count());
+	writeToBuffer(std::string_view("us"));
+}
+
+void Format::writeToBuffer(std::chrono::milliseconds duration) noexcept
+{
+	writeToBuffer(duration.count());
+	writeToBuffer(std::string_view("ms"));
+}
+
+void Format::writeToBuffer(std::chrono::seconds duration) noexcept
+{
+	writeToBuffer(duration.count());
+	writeToBuffer(std::string_view("s"));
+}
+
+void Format::writeToBuffer(std::chrono::minutes duration) noexcept
+{
+	writeToBuffer(duration.count());
+	writeToBuffer(std::string_view("min"));
+}
+
+void Format::writeToBuffer(std::chrono::hours duration) noexcept
+{
+	writeToBuffer(duration.count());
+	writeToBuffer(std::string_view("h"));
+}
+
 } // namespace ArenaAllocator

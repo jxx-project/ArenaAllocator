@@ -27,7 +27,7 @@ ChunkMap::ChunkMap(PoolMap<FreeList>& pools, Allocator* delegate, Logger const& 
 	ptrToEmpty{getPtrToEmpty()}, delegate{delegate}, log{log}, pools{pools}
 {
 	chunks.reserve(pools.nChunks());
-	pools.forEachChunk([this](FreeList::ListType::iterator it) { chunks.insert(AggregateType::value_type(it->data, it)); });
+	pools.forEachChunk([&](FreeList::ListType::iterator it) { chunks.insert(AggregateType::value_type(it->data, it)); });
 }
 
 ChunkMap::DeallocateResult ChunkMap::deallocate(void* ptr) const noexcept
@@ -60,7 +60,7 @@ ChunkMap::AllocateResult ChunkMap::reallocate(void* ptr, std::size_t size) const
 	} else {
 		result = allocate(
 			size,
-			[this](std::size_t size) {
+			[&](std::size_t size) {
 				AllocateResult result{delegate->realloc(nullptr, size), 0, true};
 				result.propagateErrno = errno;
 				return result;
@@ -89,7 +89,7 @@ ChunkMap::AllocateResult ChunkMap::reallocate(void* ptr, std::size_t nmemb, std:
 			result.fromDelegate = true;
 		}
 	} else {
-		result = allocate(nmemb, size, [this](std::size_t nmemb, std::size_t size) {
+		result = allocate(nmemb, size, [&](std::size_t nmemb, std::size_t size) {
 			AllocateResult result{delegate->reallocarray(nullptr, nmemb, size), 0, true};
 			result.propagateErrno = errno;
 			return result;

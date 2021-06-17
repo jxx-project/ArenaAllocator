@@ -8,11 +8,9 @@
 #include "gtest/gtest.h"
 
 #include "ArenaAllocator/ConsoleLogger.h"
-#include "ArenaAllocator/Format.h"
 #include "Mock/NullAllocatorFactory.h"
 #include "Mock/NullLogger.h"
 #include <chrono>
-#include <iostream> //DEBUG
 
 using namespace std::chrono_literals;
 
@@ -82,25 +80,25 @@ TEST(ConsoleLogger, logLevelError)
 	log.setLevel(ArenaAllocator::LogLevel::ERROR);
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::ERROR, "testing %s", "error message");
+	log(ArenaAllocator::LogLevel::ERROR, [] { return ArenaAllocator::Format("testing {}", "error message"); });
 	std::string capturedErrorStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing error message", capturedErrorStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::ERROR));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::INFO, "testing %s", "info message");
+	log(ArenaAllocator::LogLevel::INFO, [] { return ArenaAllocator::Format("testing {}", "info message"); });
 	std::string capturedInfoStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_FALSE(testing::IsSubstring("", "", "testing info message", capturedInfoStderr));
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::INFO));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::TRACE, "testing %s", "trace message");
+	log(ArenaAllocator::LogLevel::TRACE, [] { return ArenaAllocator::Format("testing {}", "trace message"); });
 	std::string capturedTraceStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_FALSE(testing::IsSubstring("", "", "testing trace message", capturedTraceStderr));
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::TRACE));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::DEBUG, "testing %s", "debug message");
+	log(ArenaAllocator::LogLevel::DEBUG, [] { return ArenaAllocator::Format("testing {}", "debug message"); });
 	std::string capturedDebugStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_FALSE(testing::IsSubstring("", "", "testing debug message", capturedDebugStderr));
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));
@@ -112,25 +110,25 @@ TEST(ConsoleLogger, logLevelInfo)
 	log.setLevel(ArenaAllocator::LogLevel::INFO);
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::ERROR, "testing %s", "error message");
+	log(ArenaAllocator::LogLevel::ERROR, [] { return ArenaAllocator::Format("testing {}", "error message"); });
 	std::string capturedErrorStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing error message", capturedErrorStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::ERROR));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::INFO, "testing %s", "info message");
+	log(ArenaAllocator::LogLevel::INFO, [] { return ArenaAllocator::Format("testing {}", "info message"); });
 	std::string capturedInfoStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing info message", capturedInfoStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::INFO));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::TRACE, "testing %s", "trace message");
+	log(ArenaAllocator::LogLevel::TRACE, [] { return ArenaAllocator::Format("testing {}", "trace message"); });
 	std::string capturedTraceStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_FALSE(testing::IsSubstring("", "", "testing trace message", capturedTraceStderr));
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::TRACE));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::DEBUG, "testing %s", "debug message");
+	log(ArenaAllocator::LogLevel::DEBUG, [] { return ArenaAllocator::Format("testing {}", "debug message"); });
 	std::string capturedDebugStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_FALSE(testing::IsSubstring("", "", "testing debug message", capturedDebugStderr));
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));
@@ -142,25 +140,25 @@ TEST(ConsoleLogger, logLevelTrace)
 	log.setLevel(ArenaAllocator::LogLevel::TRACE);
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::ERROR, "testing %s", "error message");
+	log(ArenaAllocator::LogLevel::ERROR, [] { return ArenaAllocator::Format("testing {}", "error message"); });
 	std::string capturedErrorStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing error message", capturedErrorStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::ERROR));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::INFO, "testing %s", "info message");
+	log(ArenaAllocator::LogLevel::INFO, [] { return ArenaAllocator::Format("testing {}", "info message"); });
 	std::string capturedInfoStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing info message", capturedInfoStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::INFO));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::TRACE, "testing %s", "trace message");
+	log(ArenaAllocator::LogLevel::TRACE, [] { return ArenaAllocator::Format("testing {}", "trace message"); });
 	std::string capturedTraceStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing trace message", capturedTraceStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::TRACE));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::DEBUG, "testing %s", "debug message");
+	log(ArenaAllocator::LogLevel::DEBUG, [] { return ArenaAllocator::Format("testing {}", "debug message"); });
 	std::string capturedDebugStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_FALSE(testing::IsSubstring("", "", "testing debug message", capturedDebugStderr));
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));
@@ -172,25 +170,25 @@ TEST(ConsoleLogger, logLevelDebug)
 	log.setLevel(ArenaAllocator::LogLevel::DEBUG);
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::ERROR, "testing %s", "error message");
+	log(ArenaAllocator::LogLevel::ERROR, [] { return ArenaAllocator::Format("testing {}", "error message"); });
 	std::string capturedErrorStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing error message", capturedErrorStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::ERROR));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::INFO, "testing %s", "info message");
+	log(ArenaAllocator::LogLevel::INFO, [] { return ArenaAllocator::Format("testing {}", "info message"); });
 	std::string capturedInfoStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing info message", capturedInfoStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::INFO));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::TRACE, "testing %s", "trace message");
+	log(ArenaAllocator::LogLevel::TRACE, [] { return ArenaAllocator::Format("testing {}", "trace message"); });
 	std::string capturedTraceStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing trace message", capturedTraceStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::TRACE));
 
 	testing::internal::CaptureStderr();
-	log(ArenaAllocator::LogLevel::DEBUG, "testing %s", "debug message");
+	log(ArenaAllocator::LogLevel::DEBUG, [] { return ArenaAllocator::Format("testing {}", "debug message"); });
 	std::string capturedDebugStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing debug message", capturedDebugStderr));
 	EXPECT_TRUE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));

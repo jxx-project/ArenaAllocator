@@ -46,7 +46,9 @@ ArenaAllocatorSingleton* instance;
 
 ArenaAllocatorSingleton::~ArenaAllocatorSingleton() noexcept
 {
-	logger->operator()(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::~ArenaAllocatorSingleton(this:%p)", this);
+	logger->operator()(ArenaAllocator::LogLevel::DEBUG, [&] {
+		return ArenaAllocator::Format("ArenaAllocatorSingleton::~ArenaAllocatorSingleton(this:{})", this);
+	});
 }
 
 ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
@@ -89,20 +91,24 @@ ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	loggerFactory{},
 	configuration{std::getenv("ARENA_ALLOCATOR_CONFIGURATION"), allocatorFactory, allocator, loggerFactory, logger}
 {
-	logger->operator()(ArenaAllocator::LogLevel::DEBUG, "ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:%p", this);
+	logger->operator()(ArenaAllocator::LogLevel::DEBUG, [&] {
+		return ArenaAllocator::Format("ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:{}", this);
+	});
 }
 
 } // namespace Bootstrap
 
 extern "C" void initializeArenaAllocator()
 {
-	Bootstrap::ArenaAllocatorSingleton::getInstance().getLogger()(ArenaAllocator::LogLevel::DEBUG, "initializeArenaAllocator()");
+	Bootstrap::ArenaAllocatorSingleton::getInstance().getLogger()(
+		ArenaAllocator::LogLevel::DEBUG, [&] { return ArenaAllocator::Format("initializeArenaAllocator()"); });
 }
 
 extern "C" void finishArenaAllocator()
 {
 	if (Bootstrap::instance != nullptr) {
-		Bootstrap::instance->getLogger()(ArenaAllocator::LogLevel::DEBUG, "finishArenaAllocator()");
+		Bootstrap::instance->getLogger()(
+			ArenaAllocator::LogLevel::DEBUG, [&] { return ArenaAllocator::Format("finishArenaAllocator()"); });
 		Bootstrap::instance->getAllocator().dump();
 	}
 }
