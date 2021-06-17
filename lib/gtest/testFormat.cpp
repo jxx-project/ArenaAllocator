@@ -17,7 +17,7 @@ using namespace std::chrono_literals;
 TEST(Format, noArgument)
 {
 	ArenaAllocator::Format testee("This is a raw string");
-	EXPECT_EQ("This is a raw string", testee.getStringView());
+	EXPECT_EQ("This is a raw string", testee.getResult());
 }
 
 TEST(Format, integralTypes)
@@ -32,25 +32,25 @@ TEST(Format, integralTypes)
 		(unsigned int){3},
 		long{-4},
 		(unsigned long){4});
-	EXPECT_EQ("Integral values: -1, 1, -2, 2, -3, 3, -4, 4", testee.getStringView());
+	EXPECT_EQ("Integral values: -1, 1, -2, 2, -3, 3, -4, 4", testee.getResult());
 }
 
 TEST(Format, stringView)
 {
 	ArenaAllocator::Format testee("std::string_view values: {}", std::string_view{"string_view"});
-	EXPECT_EQ("std::string_view values: string_view", testee.getStringView());
+	EXPECT_EQ("std::string_view values: string_view", testee.getResult());
 }
 
 TEST(Format, boolTypes)
 {
 	ArenaAllocator::Format testee("Boolean values: {}, {}", false, true);
-	EXPECT_EQ("Boolean values: false, true", testee.getStringView());
+	EXPECT_EQ("Boolean values: false, true", testee.getResult());
 }
 
 TEST(Format, floatTypes)
 {
 	ArenaAllocator::Format testee("Float values: {}", 3.14);
-	EXPECT_EQ("Float values: 3.140000", testee.getStringView());
+	EXPECT_EQ("Float values: 3.140000", testee.getResult());
 }
 
 TEST(Format, charPointerTypes)
@@ -61,7 +61,7 @@ TEST(Format, charPointerTypes)
 		static_cast<char*>(nullptr),
 		(char const*){"char const*"},
 		(char const*){nullptr});
-	EXPECT_EQ("Char pointer values: char*, (nil), char const*, (nil)", testee.getStringView());
+	EXPECT_EQ("Char pointer values: char*, (nil), char const*, (nil)", testee.getResult());
 }
 
 TEST(Format, pointerTypes)
@@ -72,13 +72,13 @@ TEST(Format, pointerTypes)
 		(void*){nullptr},
 		reinterpret_cast<int*>(0x4d5f60),
 		(int*){nullptr});
-	EXPECT_EQ("Pointer values: 0x1a2b3c, (nil), 0x4d5f60, (nil)", testee.getStringView());
+	EXPECT_EQ("Pointer values: 0x1a2b3c, (nil), 0x4d5f60, (nil)", testee.getResult());
 }
 
 TEST(Format, durationTypes)
 {
 	ArenaAllocator::Format testee("Duration values: {}, {}, {}, {}, {}, {}", 1ns, 2us, 3ms, 4s, 5min, 6h);
-	EXPECT_EQ("Duration values: 1ns, 2us, 3ms, 4s, 5min, 6h", testee.getStringView());
+	EXPECT_EQ("Duration values: 1ns, 2us, 3ms, 4s, 5min, 6h", testee.getResult());
 }
 
 int main(int argc, char* argv[])

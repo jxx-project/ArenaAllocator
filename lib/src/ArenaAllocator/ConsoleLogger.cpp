@@ -37,7 +37,7 @@ void writeToBuffer(T prefix, std::string_view message) noexcept
 	std::array<char, ConsoleLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
 
 	Format prefixFormat{"[pid:{}]\t{}\t", ::getpid(), prefix};
-	std::string_view prefixStr{prefixFormat.getStringView()};
+	std::string_view prefixStr{prefixFormat.getResult()};
 	std::size_t prefixLength{std::min(prefixStr.size(), buffer.size() - 1)};
 	std::memcpy(buffer.data(), prefixStr.data(), prefixLength);
 
@@ -74,34 +74,34 @@ void ConsoleLogger::setLevel(LogLevel level) noexcept
 void ConsoleLogger::log(Formatter const& formatter) const noexcept
 {
 	Format message{formatter()};
-	writeToBuffer(std::string_view{}, message.getStringView());
+	writeToBuffer(std::string_view{}, message.getResult());
 }
 
 void ConsoleLogger::log(std::chrono::nanoseconds duration, OperationType, Formatter const& formatter) const noexcept
 {
 	Format message = formatter();
-	writeToBuffer(duration, message.getStringView());
+	writeToBuffer(duration, message.getResult());
 }
 
 void ConsoleLogger::log(LogLevel level, Formatter const& formatter) const noexcept
 {
 	if (isLevel(level)) {
 		Format message{formatter()};
-		writeToBuffer(std::string_view{}, message.getStringView());
+		writeToBuffer(std::string_view{}, message.getResult());
 	}
 }
 
 void ConsoleLogger::logAbort(Formatter const& formatter) noexcept
 {
 	Format message{formatter()};
-	writeToBuffer(std::string_view{"ArenaAllocator abort:"}, message.getStringView());
+	writeToBuffer(std::string_view{"ArenaAllocator abort:"}, message.getResult());
 	std::abort();
 }
 
 void ConsoleLogger::logExit(Formatter const& formatter) noexcept
 {
 	Format message{formatter()};
-	writeToBuffer(std::string_view{"ArenaAllocator exit:"}, message.getStringView());
+	writeToBuffer(std::string_view{"ArenaAllocator exit:"}, message.getResult());
 	std::exit(-1);
 }
 

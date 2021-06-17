@@ -36,7 +36,7 @@ void writeToBuffer(std::string_view message) noexcept
 	std::array<char, TimerLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
 
 	Format prefixFormat{"[pid:{}]\t\t", ::getpid()};
-	std::string_view prefixStr{prefixFormat.getStringView()};
+	std::string_view prefixStr{prefixFormat.getResult()};
 	std::size_t prefixLength{std::min(prefixStr.size(), buffer.size() - 1)};
 	std::memcpy(buffer.data(), prefixStr.data(), prefixLength);
 
@@ -73,19 +73,19 @@ void TimerLogger::setLevel(LogLevel level) noexcept
 void TimerLogger::log(Formatter const& formatter) const noexcept
 {
 	Format message = formatter();
-	writeToBuffer(message.getStringView());
+	writeToBuffer(message.getResult());
 }
 
 void TimerLogger::log(std::chrono::nanoseconds duration, OperationType operationType, Formatter const& formatter) const noexcept
 {
-	write(Format{"[pid:{}]\tTimerLogger:{},{}", ::getpid(), to_string(operationType), duration.count()}.getStringView());
+	write(Format{"[pid:{}]\tTimerLogger:{},{}", ::getpid(), to_string(operationType), duration.count()}.getResult());
 }
 
 void TimerLogger::log(LogLevel level, Formatter const& formatter) const noexcept
 {
 	if (isLevel(level)) {
 		Format message = formatter();
-		writeToBuffer(message.getStringView());
+		writeToBuffer(message.getResult());
 	}
 }
 

@@ -11,85 +11,90 @@
 
 namespace ArenaAllocator {
 
-void Format::writeToBuffer(std::string_view value) noexcept
+std::string_view Format::getResult() const noexcept
 {
-	std::size_t copySize{std::min(value.size(), buffer.size() - length)};
-	::memcpy(&buffer[length], value.data(), copySize);
-	length += copySize;
+	return result;
 }
 
-void Format::writeToBuffer(bool value) noexcept
+void Format::writeToBuffer(BufferView& bufferView, std::string_view value) noexcept
+{
+	std::size_t size{std::min(value.size(), bufferView.size())};
+	::memcpy(bufferView.data(), value.data(), size);
+	bufferView.removePrefix(size);
+}
+
+void Format::writeToBuffer(BufferView& bufferView, bool value) noexcept
 {
 	if (value) {
-		writeToBuffer(std::string_view("true"));
+		writeToBuffer(bufferView, std::string_view("true"));
 	} else {
-		writeToBuffer(std::string_view("false"));
+		writeToBuffer(bufferView, std::string_view("false"));
 	}
 }
 
-void Format::writeToBuffer(double value) noexcept
+void Format::writeToBuffer(BufferView& bufferView, double value) noexcept
 {
-	std::size_t conversionlength{std::size_t(::snprintf(&buffer[length], buffer.size() - length, "%f", double(value)))};
-	length += std::min(conversionlength, buffer.size() - length);
+	std::size_t length{std::size_t(::snprintf(bufferView.data(), bufferView.size(), "%f", double(value)))};
+	bufferView.removePrefix(std::min(length, bufferView.size()));
 }
 
-void Format::writeToBuffer(char const* ptr) noexcept
+void Format::writeToBuffer(BufferView& bufferView, char const* ptr) noexcept
 {
 	if (ptr == nullptr) {
-		writeToBuffer(std::string_view("(nil)"));
+		writeToBuffer(bufferView, std::string_view("(nil)"));
 	} else {
-		writeToBuffer(std::string_view(ptr));
+		writeToBuffer(bufferView, std::string_view(ptr));
 	}
 }
 
-void Format::writeToBuffer(void const* ptr) noexcept
+void Format::writeToBuffer(BufferView& bufferView, void const* ptr) noexcept
 {
 	if (ptr == nullptr) {
-		writeToBuffer(std::string_view("(nil)"));
+		writeToBuffer(bufferView, std::string_view("(nil)"));
 	} else {
-		writeToBuffer(std::string_view("0x"));
+		writeToBuffer(bufferView, std::string_view("0x"));
 		std::to_chars_result conversionResult{
-			std::to_chars(&buffer[length], buffer.data() + buffer.size(), std::ptrdiff_t(ptr), 16)};
+			std::to_chars(bufferView.data(), bufferView.data() + bufferView.size(), std::ptrdiff_t(ptr), 16)};
 		if (conversionResult.ec == std::errc{}) {
-			length += conversionResult.ptr - &buffer[length];
+			bufferView.removePrefix(conversionResult.ptr - bufferView.data());
 		}
 	}
 }
 
-void Format::writeToBuffer(std::chrono::nanoseconds duration) noexcept
+void Format::writeToBuffer(BufferView& bufferView, std::chrono::nanoseconds duration) noexcept
 {
-	writeToBuffer(duration.count());
-	writeToBuffer(std::string_view("ns"));
+	writeToBuffer(bufferView, duration.count());
+	writeToBuffer(bufferView, std::string_view("ns"));
 }
 
-void Format::writeToBuffer(std::chrono::microseconds duration) noexcept
+void Format::writeToBuffer(BufferView& bufferView, std::chrono::microseconds duration) noexcept
 {
-	writeToBuffer(duration.count());
-	writeToBuffer(std::string_view("us"));
+	writeToBuffer(bufferView, duration.count());
+	writeToBuffer(bufferView, std::string_view("us"));
 }
 
-void Format::writeToBuffer(std::chrono::milliseconds duration) noexcept
+void Format::writeToBuffer(BufferView& bufferView, std::chrono::milliseconds duration) noexcept
 {
-	writeToBuffer(duration.count());
-	writeToBuffer(std::string_view("ms"));
+	writeToBuffer(bufferView, duration.count());
+	writeToBuffer(bufferView, std::string_view("ms"));
 }
 
-void Format::writeToBuffer(std::chrono::seconds duration) noexcept
+void Format::writeToBuffer(BufferView& bufferView, std::chrono::seconds duration) noexcept
 {
-	writeToBuffer(duration.count());
-	writeToBuffer(std::string_view("s"));
+	writeToBuffer(bufferView, duration.count());
+	writeToBuffer(bufferView, std::string_view("s"));
 }
 
-void Format::writeToBuffer(std::chrono::minutes duration) noexcept
+void Format::writeToBuffer(BufferView& bufferView, std::chrono::minutes duration) noexcept
 {
-	writeToBuffer(duration.count());
-	writeToBuffer(std::string_view("min"));
+	writeToBuffer(bufferView, duration.count());
+	writeToBuffer(bufferView, std::string_view("min"));
 }
 
-void Format::writeToBuffer(std::chrono::hours duration) noexcept
+void Format::writeToBuffer(BufferView& bufferView, std::chrono::hours duration) noexcept
 {
-	writeToBuffer(duration.count());
-	writeToBuffer(std::string_view("h"));
+	writeToBuffer(bufferView, duration.count());
+	writeToBuffer(bufferView, std::string_view("h"));
 }
 
 } // namespace ArenaAllocator
