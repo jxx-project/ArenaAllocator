@@ -21,17 +21,18 @@ class Format
 {
 public:
 	template<typename... Args>
-	Format(std::string_view fmt, Args const&... args) noexcept :
-		result{format(buffer.data(), buffer.size(), fmt, std::forward<Args const&>(args)...)}
+	// NOLINTNEXTLINE no read on buffer until getResult() returns the corresponding std::string_view
+	explicit Format(std::string_view fmt, Args const&... args) noexcept :
+		result{format(buffer.data(), buffer.size(), fmt, std::forward<Args const&>(args)...)} // NOLINT buffer used write-only
 	{
 	}
 
+	Format(Format const& other) noexcept;
+	Format& operator=(Format const& other) noexcept;
+	~Format() noexcept = default;
+
 	template<typename... Args>
-	[[nodiscard]] static constexpr std::string_view format(
-		char* buffer,
-		std::size_t bufferSize,
-		std::string_view fmt,
-		Args const&... args)
+	[[nodiscard]] static std::string_view format(char* buffer, std::size_t bufferSize, std::string_view fmt, Args const&... args)
 	{
 		char const* first{buffer};
 		BufferView bufferView{buffer, bufferSize};
@@ -48,24 +49,11 @@ private:
 	class BufferView
 	{
 	public:
-		BufferView(char* first, std::size_t bufferSize) noexcept : first{first}, bufferSize{bufferSize}
-		{
-		}
-		char* data() noexcept
-		{
-			return first;
-		}
+		BufferView(char* first, std::size_t bufferSize) noexcept;
 
-		std::size_t size() noexcept
-		{
-			return bufferSize;
-		}
-
-		void removePrefix(std::size_t n)
-		{
-			first += n;
-			bufferSize -= n;
-		}
+		[[nodiscard]] char* data() noexcept;
+		[[nodiscard]] std::size_t size() const noexcept;
+		void removePrefix(std::size_t n) noexcept;
 
 	private:
 		char* first;

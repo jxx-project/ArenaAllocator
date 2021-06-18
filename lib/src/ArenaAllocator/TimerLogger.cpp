@@ -52,12 +52,12 @@ void writeToBuffer(std::string_view message) noexcept
 
 TimerLogger::TimerLogger() noexcept : logLevel{LogLevel::NONE}
 {
-	TimerLogger::operator()(LogLevel::DEBUG, [&] { return Format("TimerLogger::TimerLogger() -> this:{}\n", this); });
+	TimerLogger::log(LogLevel::DEBUG, FormattingCallback{[&] { return Format("TimerLogger::TimerLogger() -> this:{}\n", this); }});
 }
 
 TimerLogger::~TimerLogger() noexcept
 {
-	TimerLogger::operator()(LogLevel::DEBUG, [&] { return Format("TimerLogger::~TimerLogger(this:{})\n", this); });
+	TimerLogger::log(LogLevel::DEBUG, FormattingCallback{[&] { return Format("TimerLogger::~TimerLogger(this:{})\n", this); }});
 }
 
 bool TimerLogger::isLevel(LogLevel level) const noexcept
@@ -78,7 +78,7 @@ void TimerLogger::log(Formatter const& formatter) const noexcept
 
 void TimerLogger::log(std::chrono::nanoseconds duration, OperationType operationType, Formatter const& formatter) const noexcept
 {
-	write(Format{"[pid:{}]\tTimerLogger:{},{}", ::getpid(), to_string(operationType), duration.count()}.getResult());
+	write(Format{"[pid:{}]\tTimerLogger:{},{}\n", ::getpid(), to_string(operationType), duration.count()}.getResult());
 }
 
 void TimerLogger::log(LogLevel level, Formatter const& formatter) const noexcept

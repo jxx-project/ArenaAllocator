@@ -53,7 +53,7 @@ protected:
 	class FormattingCallback : public Formatter
 	{
 	public:
-		FormattingCallback(F callback) : callback{callback}
+		explicit FormattingCallback(F callback) : callback{callback}
 		{
 		}
 		~FormattingCallback() noexcept override = default;

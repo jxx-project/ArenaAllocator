@@ -11,15 +11,50 @@
 
 namespace ArenaAllocator {
 
+Format::Format(Format const& other) noexcept
+{
+	std::memcpy(buffer.data(), other.buffer.data(), other.result.size());
+	result = std::string_view(buffer.data(), other.result.size());
+}
+
+Format& Format::operator=(Format const& other) noexcept
+{
+	if (this != &other) {
+		std::memcpy(buffer.data(), other.buffer.data(), other.result.size());
+		result = std::string_view(buffer.data(), other.result.size());
+	}
+	return *this;
+}
+
 std::string_view Format::getResult() const noexcept
 {
 	return result;
 }
 
+Format::BufferView::BufferView(char* first, std::size_t bufferSize) noexcept : first{first}, bufferSize{bufferSize}
+{
+}
+
+char* Format::BufferView::data() noexcept
+{
+	return first;
+}
+
+std::size_t Format::BufferView::size() const noexcept
+{
+	return bufferSize;
+}
+
+void Format::BufferView::removePrefix(std::size_t n) noexcept
+{
+	first += n;
+	bufferSize -= n;
+}
+
 void Format::writeToBuffer(BufferView& bufferView, std::string_view value) noexcept
 {
 	std::size_t size{std::min(value.size(), bufferView.size())};
-	::memcpy(bufferView.data(), value.data(), size);
+	std::memcpy(bufferView.data(), value.data(), size);
 	bufferView.removePrefix(size);
 }
 
@@ -54,7 +89,7 @@ void Format::writeToBuffer(BufferView& bufferView, void const* ptr) noexcept
 	} else {
 		writeToBuffer(bufferView, std::string_view("0x"));
 		std::to_chars_result conversionResult{
-			std::to_chars(bufferView.data(), bufferView.data() + bufferView.size(), std::ptrdiff_t(ptr), 16)};
+			std::to_chars(bufferView.data(), bufferView.data() + bufferView.size(), std::uintptr_t(ptr), 16)};
 		if (conversionResult.ec == std::errc{}) {
 			bufferView.removePrefix(conversionResult.ptr - bufferView.data());
 		}

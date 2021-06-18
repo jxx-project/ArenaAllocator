@@ -53,12 +53,14 @@ void writeToBuffer(T prefix, std::string_view message) noexcept
 
 ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
 {
-	ConsoleLogger::operator()(LogLevel::DEBUG, [&] { return Format("ConsoleLogger::ConsoleLogger() -> this:{}\n", this); });
+	ConsoleLogger::log(
+		LogLevel::DEBUG, FormattingCallback{[&] { return Format("ConsoleLogger::ConsoleLogger() -> this:{}\n", this); }});
 }
 
 ConsoleLogger::~ConsoleLogger() noexcept
 {
-	ConsoleLogger::operator()(LogLevel::DEBUG, [&] { return Format("ConsoleLogger::~ConsoleLogger(this:{})\n", this); });
+	ConsoleLogger::log(
+		LogLevel::DEBUG, FormattingCallback{[&] { return Format("ConsoleLogger::~ConsoleLogger(this:{})\n", this); }});
 }
 
 bool ConsoleLogger::isLevel(LogLevel level) const noexcept

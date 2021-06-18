@@ -22,7 +22,7 @@ EnvironmentConfiguration::EnvironmentConfiguration(
 	if (configStr == nullptr) {
 		ConsoleLogger::exit([] { return Format("failed to read environment variable {}", configurationEnvVarName); });
 	}
-	ParseConfiguration(configStr, className, pools, logLevel, loggerName);
+	ParseConfiguration{configStr, pools}(className, logLevel, loggerName);
 	if ((logger = loggerFactory.getLogger(EnvironmentConfiguration::getLogger())) == nullptr) {
 		ConsoleLogger::exit([] { return Format("unexpected logger class in environment variable {}", configurationEnvVarName); });
 	}

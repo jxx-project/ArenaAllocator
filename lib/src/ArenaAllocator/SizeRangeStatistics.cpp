@@ -68,7 +68,7 @@ void* SizeRangeStatistics::malloc(std::size_t size) noexcept
 void SizeRangeStatistics::free(void* ptr) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
-	if (ptr != 0 && ptr != ptrToEmpty) {
+	if (ptr != nullptr && ptr != ptrToEmpty) {
 		delegate.free(ptr);
 		allocations.registerDeallocate(ptr);
 	}

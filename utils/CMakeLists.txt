@@ -16,6 +16,15 @@ set(CMAKE_CXX_EXTENSIONS NO)
 
 find_package(Threads REQUIRED)  
 
+file(GLOB Utils_SRCS_G lib/src/*.cpp)
+
+add_library(Utils STATIC ${Utils_SRCS_G})
+set_target_properties(Utils PROPERTIES DEBUG_POSTFIX d)
+target_compile_options(Utils PRIVATE)
+target_include_directories(Utils PUBLIC
+	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/lib/src>)
+target_link_libraries(Utils PUBLIC ArenaAllocatorStatic)
+
 add_executable(allocatorSmokeTest src/allocatorSmokeTest.cpp)
 target_compile_options(allocatorSmokeTest PRIVATE -Wno-alloc-size-larger-than)
 

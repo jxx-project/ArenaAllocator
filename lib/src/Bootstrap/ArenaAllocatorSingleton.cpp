@@ -88,7 +88,6 @@ ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	allocator{nullptr},
 	allocatorFactory{configuration, logger},
 	logger{nullptr},
-	loggerFactory{},
 	configuration{std::getenv("ARENA_ALLOCATOR_CONFIGURATION"), allocatorFactory, allocator, loggerFactory, logger}
 {
 	logger->operator()(ArenaAllocator::LogLevel::DEBUG, [&] {
