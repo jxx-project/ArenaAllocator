@@ -34,11 +34,10 @@ public:
 	template<typename... Args>
 	[[nodiscard]] static std::string_view format(char* buffer, std::size_t bufferSize, std::string_view fmt, Args const&... args)
 	{
-		char const* first{buffer};
-		BufferView bufferView{buffer, bufferSize};
-		((writeToBuffer(bufferView, fmt, args)), ...);
-		writeToBuffer(bufferView, fmt);
-		return std::string_view{first, std::size_t(bufferView.data() - first)};
+		Span out{buffer, bufferSize};
+		((write(out, fmt, args)), ...);
+		write(out, fmt);
+		return std::string_view{buffer, std::size_t(out.data() - buffer)};
 	}
 
 	[[nodiscard]] std::string_view getResult() const noexcept;
@@ -46,49 +45,49 @@ public:
 	static constexpr std::size_t bufferSize{1024};
 
 private:
-	class BufferView
+	class Span
 	{
 	public:
-		BufferView(char* first, std::size_t bufferSize) noexcept;
+		Span(char* first, std::size_t count) noexcept;
 
 		[[nodiscard]] char* data() noexcept;
 		[[nodiscard]] std::size_t size() const noexcept;
-		void removePrefix(std::size_t n) noexcept;
+		[[nodiscard]] Span subspan(std::size_t offset) noexcept;
 
 	private:
 		char* first;
-		std::size_t bufferSize;
+		std::size_t extent;
 	};
 
 	template<typename T>
-	static void writeToBuffer(BufferView& bufferView, std::string_view& fmt, T const& value) noexcept
+	static void write(Span& out, std::string_view& fmt, T const& value) noexcept
 	{
 		std::size_t placeholderPos{fmt.find("{}")};
-		writeToBuffer(bufferView, std::string_view(fmt.data(), placeholderPos));
+		write(out, std::string_view(fmt.data(), placeholderPos));
 		fmt.remove_prefix(placeholderPos + 2);
-		writeToBuffer(bufferView, value);
+		write(out, value);
 	}
 
 	template<typename T, typename = typename std::enable_if<std::is_integral<T>::value && !std::is_same<T, bool>::value>::type>
-	static void writeToBuffer(BufferView& bufferView, T const& value) noexcept
+	static void write(Span& out, T const& value) noexcept
 	{
-		std::to_chars_result conversionResult{std::to_chars(bufferView.data(), bufferView.data() + bufferView.size(), value)};
+		std::to_chars_result conversionResult{std::to_chars(out.data(), out.data() + out.size(), value)};
 		if (conversionResult.ec == std::errc{}) {
-			bufferView.removePrefix(conversionResult.ptr - bufferView.data());
+			out = out.subspan(conversionResult.ptr - out.data());
 		}
 	}
 
-	static void writeToBuffer(BufferView& bufferView, std::string_view value) noexcept;
-	static void writeToBuffer(BufferView& bufferView, bool value) noexcept;
-	static void writeToBuffer(BufferView& bufferView, double value) noexcept;
-	static void writeToBuffer(BufferView& bufferView, char const* ptr) noexcept;
-	static void writeToBuffer(BufferView& bufferView, void const* ptr) noexcept;
-	static void writeToBuffer(BufferView& bufferView, std::chrono::nanoseconds duration) noexcept;
-	static void writeToBuffer(BufferView& bufferView, std::chrono::microseconds duration) noexcept;
-	static void writeToBuffer(BufferView& bufferView, std::chrono::milliseconds duration) noexcept;
-	static void writeToBuffer(BufferView& bufferView, std::chrono::seconds duration) noexcept;
-	static void writeToBuffer(BufferView& bufferView, std::chrono::minutes duration) noexcept;
-	static void writeToBuffer(BufferView& bufferView, std::chrono::hours duration) noexcept;
+	static void write(Span& out, std::string_view value) noexcept;
+	static void write(Span& out, bool value) noexcept;
+	static void write(Span& out, double value) noexcept;
+	static void write(Span& out, char const* ptr) noexcept;
+	static void write(Span& out, void const* ptr) noexcept;
+	static void write(Span& out, std::chrono::nanoseconds duration) noexcept;
+	static void write(Span& out, std::chrono::microseconds duration) noexcept;
+	static void write(Span& out, std::chrono::milliseconds duration) noexcept;
+	static void write(Span& out, std::chrono::seconds duration) noexcept;
+	static void write(Span& out, std::chrono::minutes duration) noexcept;
+	static void write(Span& out, std::chrono::hours duration) noexcept;
 
 	std::array<char, bufferSize> buffer;
 	std::string_view result;

@@ -2,7 +2,7 @@
 
 namespace ArenaAllocator {
 
-ParsePrimitives::ParsePrimitives(std::string_view str) noexcept : current{str}
+ParsePrimitives::ParsePrimitives(std::string_view str) noexcept : in{str}
 {
 }
 
@@ -11,9 +11,9 @@ char ParsePrimitives::parseDelimiter(const std::string_view delimiters) noexcept
 	skipSpaceChars();
 	char result{0};
 	for (const char p : delimiters) {
-		if (current.front() == p) {
+		if (in.front() == p) {
 			result = p;
-			current.remove_prefix(1);
+			in.remove_prefix(1);
 			break;
 		}
 	}
@@ -23,23 +23,23 @@ char ParsePrimitives::parseDelimiter(const std::string_view delimiters) noexcept
 std::string_view ParsePrimitives::parseIdentifier() noexcept
 {
 	skipSpaceChars();
-	char const* const indentifierPtr{current.data()};
-	while (!current.empty() && isAlpha(current.front())) {
-		current.remove_prefix(1);
+	char const* const indentifierPtr{in.data()};
+	while (!in.empty() && isAlpha(in.front())) {
+		in.remove_prefix(1);
 	}
-	return std::string_view(indentifierPtr, current.data() - indentifierPtr);
+	return std::string_view(indentifierPtr, in.data() - indentifierPtr);
 }
 
 void ParsePrimitives::skipSpaceChars() noexcept
 {
-	while (!current.empty() && isSpace(current.front())) {
-		current.remove_prefix(1);
+	while (!in.empty() && isSpace(in.front())) {
+		in.remove_prefix(1);
 	}
 }
 
 bool ParsePrimitives::empty() const noexcept
 {
-	return current.empty();
+	return in.empty();
 }
 
 bool ParsePrimitives::isSpace(const char c) noexcept
