@@ -5,7 +5,7 @@ ParseTimeTrace::Error::Error(std::string_view message) noexcept : std::runtime_e
 {
 }
 
-ParseTimeTrace::ParseTimeTrace(std::string_view str) noexcept : ArenaAllocator::ParsePrimitives{str}
+ParseTimeTrace::ParseTimeTrace(std::string_view str) noexcept : Static::ParsePrimitives{str}
 {
 }
 

@@ -36,7 +36,7 @@ SizeRangeStatistics::SizeRangeStatistics(Configuration const& configuration, All
 	allocations{pools, delegatePool, log}
 {
 	log(LogLevel::DEBUG, [&] {
-		return Format(
+		return Message(
 			"{}::{}(Configuration const&, Allocator&, Logger const&) -> {this:{}, ptrToEmpty:{}}",
 			className,
 			className,
@@ -47,7 +47,7 @@ SizeRangeStatistics::SizeRangeStatistics(Configuration const& configuration, All
 
 SizeRangeStatistics::~SizeRangeStatistics() noexcept
 {
-	log(LogLevel::DEBUG, [&] { return Format("{}::~{}(this:{})", className, className, this); });
+	log(LogLevel::DEBUG, [&] { return Message("{}::~{}(this:{})", className, className, this); });
 }
 
 void* SizeRangeStatistics::malloc(std::size_t size) noexcept

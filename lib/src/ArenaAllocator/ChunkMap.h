@@ -54,7 +54,7 @@ public:
 		} else {
 			result.ptr = ptrToEmpty;
 		}
-		log(LogLevel::DEBUG, [&] { return Format("ChunkMap::allocate({}) -> {}", size, result.ptr); });
+		log(LogLevel::DEBUG, [&] { return Message("ChunkMap::allocate({}) -> {}", size, result.ptr); });
 		return result;
 	}
 

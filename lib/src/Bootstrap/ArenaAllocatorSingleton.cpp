@@ -47,7 +47,7 @@ ArenaAllocatorSingleton* instance;
 ArenaAllocatorSingleton::~ArenaAllocatorSingleton() noexcept
 {
 	logger->operator()(ArenaAllocator::LogLevel::DEBUG, [&] {
-		return ArenaAllocator::Format("ArenaAllocatorSingleton::~ArenaAllocatorSingleton(this:{})", this);
+		return ArenaAllocator::Message("ArenaAllocatorSingleton::~ArenaAllocatorSingleton(this:{})", this);
 	});
 }
 
@@ -66,7 +66,7 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 				instance = new (instance) ArenaAllocatorSingleton(); // NOLINT unlimited lifetime intended
 			} else {
 				ArenaAllocator::ConsoleLogger::exit(
-					[] { return ArenaAllocator::Format("failed to allocate Bootstrap::ArenaAllocatorSingleton\n"); });
+					[] { return ArenaAllocator::Message("failed to allocate Bootstrap::ArenaAllocatorSingleton\n"); });
 			}
 		}
 	}
@@ -91,7 +91,7 @@ ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	configuration{std::getenv("ARENA_ALLOCATOR_CONFIGURATION"), allocatorFactory, allocator, loggerFactory, logger}
 {
 	logger->operator()(ArenaAllocator::LogLevel::DEBUG, [&] {
-		return ArenaAllocator::Format("ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:{}", this);
+		return ArenaAllocator::Message("ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:{}", this);
 	});
 }
 
@@ -100,14 +100,14 @@ ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 extern "C" void initializeArenaAllocator()
 {
 	Bootstrap::ArenaAllocatorSingleton::getInstance().getLogger()(
-		ArenaAllocator::LogLevel::DEBUG, [&] { return ArenaAllocator::Format("initializeArenaAllocator()"); });
+		ArenaAllocator::LogLevel::DEBUG, [&] { return ArenaAllocator::Message("initializeArenaAllocator()"); });
 }
 
 extern "C" void finishArenaAllocator()
 {
 	if (Bootstrap::instance != nullptr) {
 		Bootstrap::instance->getLogger()(
-			ArenaAllocator::LogLevel::DEBUG, [&] { return ArenaAllocator::Format("finishArenaAllocator()"); });
+			ArenaAllocator::LogLevel::DEBUG, [&] { return ArenaAllocator::Message("finishArenaAllocator()"); });
 		Bootstrap::instance->getAllocator().dump();
 	}
 }

@@ -16,7 +16,7 @@ AllocationMap::AllocationMap(PoolMap<PoolStatistics>& pools, PoolStatistics& del
 
 void AllocationMap::registerAllocate(std::size_t size, void* result) noexcept
 {
-	log(LogLevel::DEBUG, [&] { return Format("AllocationMap::registerAllocate({}, {})", size, result); });
+	log(LogLevel::DEBUG, [&] { return Message("AllocationMap::registerAllocate({}, {})", size, result); });
 	PoolStatistics* pool{pools.at(size)};
 	if (pool == nullptr) {
 		pool = &delegatePool;
@@ -26,7 +26,7 @@ void AllocationMap::registerAllocate(std::size_t size, void* result) noexcept
 
 void AllocationMap::registerAllocate(std::size_t size, void* result, std::size_t alignment) noexcept
 {
-	log(LogLevel::DEBUG, [&] { return Format("AllocationMap::registerAllocate({}, {})", size, result); });
+	log(LogLevel::DEBUG, [&] { return Message("AllocationMap::registerAllocate({}, {})", size, result); });
 	PoolStatistics* pool{alignment <= sizeof(std::max_align_t) ? pools.at(size) : &delegatePool};
 	if (pool == nullptr) {
 		pool = &delegatePool;
@@ -36,13 +36,13 @@ void AllocationMap::registerAllocate(std::size_t size, void* result, std::size_t
 
 void AllocationMap::registerDeallocate(void* ptr) noexcept
 {
-	log(LogLevel::DEBUG, [&] { return Format("AllocationMap::registerDeallocate({})", ptr); });
+	log(LogLevel::DEBUG, [&] { return Message("AllocationMap::registerDeallocate({})", ptr); });
 	if (ptr != nullptr) {
 		AggregateType::iterator it{allocations.find(ptr)};
 		if (it != allocations.end()) {
 			eraseAllocation(it);
 		} else {
-			log(LogLevel::ERROR, [&] { return Format("AllocationMap::registerDeallocate({}) allocation not found", ptr); });
+			log(LogLevel::ERROR, [&] { return Message("AllocationMap::registerDeallocate({}) allocation not found", ptr); });
 			if (log.isLevel(LogLevel::DEBUG)) {
 				dump();
 			}
@@ -52,7 +52,7 @@ void AllocationMap::registerDeallocate(void* ptr) noexcept
 
 void AllocationMap::registerReallocate(void* ptr, std::size_t size, void* result) noexcept
 {
-	log(LogLevel::DEBUG, [&] { return Format("AllocationMap::registerReallocate({}, {}, {})", ptr, size, result); });
+	log(LogLevel::DEBUG, [&] { return Message("AllocationMap::registerReallocate({}, {}, {})", ptr, size, result); });
 	if (ptr != nullptr) {
 		AggregateType::iterator it{allocations.find(ptr)};
 		if (it != allocations.end()) {
@@ -62,7 +62,7 @@ void AllocationMap::registerReallocate(void* ptr, std::size_t size, void* result
 					destinationPool = &delegatePool;
 					if (it->second.pool != &delegatePool) {
 						log(LogLevel::ERROR, [&] {
-							return Format(
+							return Message(
 								"AllocationMap::registerReallocate({}, {}, {}) allocation moved out of arena pools",
 								ptr,
 								size,
@@ -76,7 +76,7 @@ void AllocationMap::registerReallocate(void* ptr, std::size_t size, void* result
 			}
 		} else {
 			log(LogLevel::ERROR,
-				[&] { return Format("AllocationMap::registerReallocate({}, {}, {}): allocation not found", ptr, size, result); });
+				[&] { return Message("AllocationMap::registerReallocate({}, {}, {}): allocation not found", ptr, size, result); });
 			if (log.isLevel(LogLevel::DEBUG)) {
 				dump();
 			}
@@ -91,7 +91,7 @@ void AllocationMap::insertAllocation(void* ptr, Allocation const& allocation) no
 {
 	if (allocations.emplace(ptr, allocation).second) {
 		log(LogLevel::DEBUG, [&] {
-			return Format(
+			return Message(
 				"AllocationMap::insertAllocation({}, {[{}, {}], {}})",
 				ptr,
 				allocation.pool->getRange().first,
@@ -101,7 +101,7 @@ void AllocationMap::insertAllocation(void* ptr, Allocation const& allocation) no
 		allocation.pool->registerAllocate(allocation.size);
 	} else {
 		log(LogLevel::ERROR, [&] {
-			return Format(
+			return Message(
 				"AllocationMap::insertAllocation({}, {[{}, {}], {}}): pointer already registered",
 				ptr,
 				allocation.pool->getRange().first,
@@ -114,7 +114,7 @@ void AllocationMap::insertAllocation(void* ptr, Allocation const& allocation) no
 void AllocationMap::eraseAllocation(AggregateType::iterator it) noexcept
 {
 	log(LogLevel::DEBUG, [&] {
-		return Format(
+		return Message(
 			"AllocationMap::eraseAllocation({}, {[{}, {}], {}})",
 			it->first,
 			it->second.pool->getRange().first,
@@ -129,7 +129,7 @@ void AllocationMap::updateAllocation(AggregateType::iterator it, void* ptr, Allo
 {
 	if (it->first == ptr) {
 		log(LogLevel::DEBUG, [&] {
-			return Format(
+			return Message(
 				"AllocationMap::updateAllocation({}, {[{}, {}], {}})",
 				ptr,
 				allocation.pool->getRange().first,
@@ -149,7 +149,7 @@ void AllocationMap::dump() const noexcept
 {
 	for (typename AggregateType::value_type const& allocation : allocations) {
 		log([&] {
-			return Format(
+			return Message(
 				"{}: {pool: [{}, {}], size: {}}",
 				allocation.first,
 				allocation.second.pool->getRange().first,

@@ -18,46 +18,22 @@ namespace ArenaAllocator {
 
 namespace {
 
-void write(std::string_view str) noexcept
+void writeToBuffer(Static::FormatResult message) noexcept
 {
-	int propagateErrno{errno};
-
-	std::size_t totalBytesWritten{0};
-	::ssize_t bytesWritten{0};
-	while ((bytesWritten = ::write(STDERR_FILENO, &str[totalBytesWritten], str.size() - totalBytesWritten)) > 0) {
-		totalBytesWritten += bytesWritten;
-	}
-
-	errno = propagateErrno;
-}
-
-void writeToBuffer(std::string_view message) noexcept
-{
-	std::array<char, TimerLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
-
-	Format prefixFormat{"[pid:{}]\t\t", ::getpid()};
-	std::string_view prefixStr{prefixFormat.getResult()};
-	std::size_t prefixLength{std::min(prefixStr.size(), buffer.size() - 1)};
-	std::memcpy(buffer.data(), prefixStr.data(), prefixLength);
-
-	std::size_t messageLength{std::min(message.size(), buffer.size() - 1 - prefixLength)};
-	std::memcpy(&buffer[prefixLength], message.data(), messageLength);
-
-	std::size_t totalLength{std::min(prefixLength + messageLength, buffer.size() - 1)};
-	buffer[totalLength++] = '\n'; // NOLINT available buffer size checked above
-	write(std::string_view(buffer.data(), totalLength));
+	Message out("[pid:{}]\t\t{}", ::getpid(), message);
+	Static::BasicLogger::writeLine(out.getResult());
 }
 
 } // namespace
 
 TimerLogger::TimerLogger() noexcept : logLevel{LogLevel::NONE}
 {
-	TimerLogger::log(LogLevel::DEBUG, FormattingCallback{[&] { return Format("TimerLogger::TimerLogger() -> this:{}\n", this); }});
+	TimerLogger::log(LogLevel::DEBUG, FormattingCallback{[&] { return Message("TimerLogger::TimerLogger() -> this:{}\n", this); }});
 }
 
 TimerLogger::~TimerLogger() noexcept
 {
-	TimerLogger::log(LogLevel::DEBUG, FormattingCallback{[&] { return Format("TimerLogger::~TimerLogger(this:{})\n", this); }});
+	TimerLogger::log(LogLevel::DEBUG, FormattingCallback{[&] { return Message("TimerLogger::~TimerLogger(this:{})\n", this); }});
 }
 
 bool TimerLogger::isLevel(LogLevel level) const noexcept
@@ -72,19 +48,20 @@ void TimerLogger::setLevel(LogLevel level) noexcept
 
 void TimerLogger::log(Formatter const& formatter) const noexcept
 {
-	Format message = formatter();
+	Message message = formatter();
 	writeToBuffer(message.getResult());
 }
 
 void TimerLogger::log(std::chrono::nanoseconds duration, OperationType operationType, Formatter const& formatter) const noexcept
 {
-	write(Format{"[pid:{}]\tTimerLogger:{},{}\n", ::getpid(), to_string(operationType), duration.count()}.getResult());
+	Static::BasicLogger::writeLine(
+		Message{"[pid:{}]\tTimerLogger:{},{}\n", ::getpid(), to_string(operationType), duration.count()}.getResult());
 }
 
 void TimerLogger::log(LogLevel level, Formatter const& formatter) const noexcept
 {
 	if (isLevel(level)) {
-		Format message = formatter();
+		Message message = formatter();
 		writeToBuffer(message.getResult());
 	}
 }

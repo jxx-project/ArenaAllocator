@@ -26,11 +26,6 @@ target_include_directories(testEnvironmentConfiguration PRIVATE $<BUILD_INTERFAC
 target_link_libraries(testEnvironmentConfiguration ArenaAllocatorStatic Mock GTest::GTest)
 add_test(NAME EnvironmentConfigurationTest COMMAND testEnvironmentConfiguration)
 
-add_executable(testFormat testFormat.cpp)
-target_include_directories(testFormat PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
-target_link_libraries(testFormat ArenaAllocatorStatic GTest::GTest)
-add_test(NAME FormatTest COMMAND testFormat)
-
 add_executable(testSizeRangeMap testSizeRangeMap.cpp)
 target_include_directories(testSizeRangeMap PRIVATE $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>)
 target_link_libraries(testSizeRangeMap ArenaAllocatorStatic GTest::GTest)

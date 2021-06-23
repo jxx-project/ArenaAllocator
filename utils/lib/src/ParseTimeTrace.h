@@ -2,11 +2,11 @@
 #define ParseTimeTrace_h_INCLUDED
 
 #include <ArenaAllocator/OperationType.h>
-#include <ArenaAllocator/ParsePrimitives.h>
+#include <Static/ParsePrimitives.h>
 #include <stdexcept>
 #include <sys/types.h>
 
-class ParseTimeTrace : public ArenaAllocator::ParsePrimitives
+class ParseTimeTrace : public Static::ParsePrimitives
 {
 public:
 	class Error : public std::runtime_error

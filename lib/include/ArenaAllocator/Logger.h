@@ -8,14 +8,16 @@
 #ifndef ArenaAllocator_Logger_h_INCLUDED
 #define ArenaAllocator_Logger_h_INCLUDED
 
-#include "ArenaAllocator/Format.h"
 #include "ArenaAllocator/LogLevel.h"
 #include "ArenaAllocator/OperationType.h"
+#include <Static/BasicLogger.h>
 #include <chrono>
 
 namespace ArenaAllocator {
 
-class Logger
+using Message = Static::Format::Buffer<Static::BasicLogger::maxLength>;
+
+class Logger : public Static::BasicLogger
 {
 public:
 	virtual ~Logger() = default;
@@ -23,7 +25,7 @@ public:
 	template<typename F>
 	void operator()(F callback) const noexcept
 	{
-		log(FormattingCallback{callback});
+		Static::BasicLogger::log(FormattingCallback{callback});
 	}
 
 	template<typename F>
@@ -42,32 +44,6 @@ public:
 	virtual void setLevel(LogLevel level) noexcept = 0;
 
 protected:
-	class Formatter
-	{
-	public:
-		virtual ~Formatter() noexcept = default;
-		virtual Format operator()() const noexcept = 0;
-	};
-
-	template<typename F>
-	class FormattingCallback : public Formatter
-	{
-	public:
-		explicit FormattingCallback(F callback) : callback{callback}
-		{
-		}
-		~FormattingCallback() noexcept override = default;
-
-		Format operator()() const noexcept override
-		{
-			return callback();
-		}
-
-	private:
-		F callback;
-	};
-
-	virtual void log(Formatter const& formatter) const noexcept = 0;
 	virtual void log(std::chrono::nanoseconds duration, OperationType operationType, Formatter const& formatter) const noexcept = 0;
 	virtual void log(LogLevel level, Formatter const& formatter) const noexcept = 0;
 };

@@ -135,7 +135,7 @@ void ParseConfiguration::parsePool() noexcept
 
 void ParseConfiguration::raiseError(std::string_view message)
 {
-	ConsoleLogger::exit([&] { return Format("ParseConfiguration: {}", message); });
+	ConsoleLogger::exit([&] { return Message("ParseConfiguration: {}", message); });
 }
 
 } // namespace ArenaAllocator

@@ -16,51 +16,16 @@
 
 namespace ArenaAllocator {
 
-namespace {
-
-void write(std::string_view str) noexcept
-{
-	int propagateErrno{errno};
-
-	std::size_t totalBytesWritten{0};
-	::ssize_t bytesWritten{0};
-	while ((bytesWritten = ::write(STDERR_FILENO, &str[totalBytesWritten], str.size() - totalBytesWritten)) > 0) {
-		totalBytesWritten += bytesWritten;
-	}
-
-	errno = propagateErrno;
-}
-
-template<typename T>
-void writeToBuffer(T prefix, std::string_view message) noexcept
-{
-	std::array<char, ConsoleLogger::bufferSize> buffer; // NOLINT initialized by subsequent write operations
-
-	Format prefixFormat{"[pid:{}]\t{}\t", ::getpid(), prefix};
-	std::string_view prefixStr{prefixFormat.getResult()};
-	std::size_t prefixLength{std::min(prefixStr.size(), buffer.size() - 1)};
-	std::memcpy(buffer.data(), prefixStr.data(), prefixLength);
-
-	std::size_t messageLength{std::min(message.size(), buffer.size() - 1 - prefixLength)};
-	std::memcpy(&buffer[prefixLength], message.data(), messageLength);
-
-	std::size_t totalLength{std::min(prefixLength + messageLength, buffer.size() - 1)};
-	buffer[totalLength++] = '\n'; // NOLINT available buffer size checked above
-	write(std::string_view(buffer.data(), totalLength));
-}
-
-} // namespace
-
 ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
 {
 	ConsoleLogger::log(
-		LogLevel::DEBUG, FormattingCallback{[&] { return Format("ConsoleLogger::ConsoleLogger() -> this:{}\n", this); }});
+		LogLevel::DEBUG, FormattingCallback{[&] { return Message("ConsoleLogger::ConsoleLogger() -> this:{}\n", this); }});
 }
 
 ConsoleLogger::~ConsoleLogger() noexcept
 {
 	ConsoleLogger::log(
-		LogLevel::DEBUG, FormattingCallback{[&] { return Format("ConsoleLogger::~ConsoleLogger(this:{})\n", this); }});
+		LogLevel::DEBUG, FormattingCallback{[&] { return Message("ConsoleLogger::~ConsoleLogger(this:{})\n", this); }});
 }
 
 bool ConsoleLogger::isLevel(LogLevel level) const noexcept
@@ -73,36 +38,47 @@ void ConsoleLogger::setLevel(LogLevel level) noexcept
 	logLevel = level;
 }
 
+namespace {
+
+template<typename T>
+void writeToBuffer(T prefix, Static::FormatResult message) noexcept
+{
+	Message out("[pid:{}]\t{}\t{}", ::getpid(), prefix, message);
+	Static::BasicLogger::writeLine(out.getResult());
+}
+
+} // namespace
+
 void ConsoleLogger::log(Formatter const& formatter) const noexcept
 {
-	Format message{formatter()};
+	Message message{formatter()};
 	writeToBuffer(std::string_view{}, message.getResult());
 }
 
 void ConsoleLogger::log(std::chrono::nanoseconds duration, OperationType, Formatter const& formatter) const noexcept
 {
-	Format message = formatter();
+	Message message = formatter();
 	writeToBuffer(duration, message.getResult());
 }
 
 void ConsoleLogger::log(LogLevel level, Formatter const& formatter) const noexcept
 {
 	if (isLevel(level)) {
-		Format message{formatter()};
+		Message message{formatter()};
 		writeToBuffer(std::string_view{}, message.getResult());
 	}
 }
 
-void ConsoleLogger::logAbort(Formatter const& formatter) noexcept
+void ConsoleLogger::logAbort(Static::BasicLogger::Formatter const& formatter) noexcept
 {
-	Format message{formatter()};
+	Message message{formatter()};
 	writeToBuffer(std::string_view{"ArenaAllocator abort:"}, message.getResult());
 	std::abort();
 }
 
-void ConsoleLogger::logExit(Formatter const& formatter) noexcept
+void ConsoleLogger::logExit(Static::BasicLogger::Formatter const& formatter) noexcept
 {
-	Format message{formatter()};
+	Message message{formatter()};
 	writeToBuffer(std::string_view{"ArenaAllocator exit:"}, message.getResult());
 	std::exit(-1);
 }

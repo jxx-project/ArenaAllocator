@@ -21,12 +21,12 @@ SegregatedFreeLists::SegregatedFreeLists(Configuration const& configuration, All
 	delegate{delegate}, log{log}, pools{configuration, log}, chunks{pools, delegate, log}
 {
 	log(LogLevel::DEBUG,
-		[&] { return Format("{}::{}(Configuration const&, Allocator*, Logger const&) -> this:{}", className, className, this); });
+		[&] { return Message("{}::{}(Configuration const&, Allocator*, Logger const&) -> this:{}", className, className, this); });
 }
 
 SegregatedFreeLists::~SegregatedFreeLists() noexcept
 {
-	log(LogLevel::DEBUG, [&] { return Format("{}::~{}(this:{})", className, className, this); });
+	log(LogLevel::DEBUG, [&] { return Message("{}::~{}(this:{})", className, className, this); });
 }
 
 void* SegregatedFreeLists::malloc(std::size_t size) noexcept
@@ -42,7 +42,7 @@ void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 		result = chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
-				return Format("{}::malloc({}) -> {}", className, size, result.ptr);
+				return Message("{}::malloc({}) -> {}", className, size, result.ptr);
 			});
 		}
 	} else {
@@ -59,7 +59,7 @@ void SegregatedFreeLists::free(void* ptr) noexcept
 		Timer timer;
 		result = chunks.deallocate(ptr);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::FREE, [&] { return Format("{}::free({})", className, ptr); });
+			log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
 		}
 	} else {
 		result = chunks.deallocate(ptr);
@@ -80,7 +80,7 @@ void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 		result = chunks.allocate(nmemb, size, delegateCallocFunc);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
-				return Format("{}::calloc({}, {}) -> {}", className, nmemb, size, result.ptr);
+				return Message("{}::calloc({}, {}) -> {}", className, nmemb, size, result.ptr);
 			});
 		}
 	} else {
@@ -98,7 +98,7 @@ void* SegregatedFreeLists::realloc(void* ptr, std::size_t size) noexcept
 		result = chunks.reallocate(ptr, size);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
-				return Format("{}::realloc({}, {}) -> {}", className, ptr, size, result.ptr);
+				return Message("{}::realloc({}, {}) -> {}", className, ptr, size, result.ptr);
 			});
 		}
 	} else {
@@ -116,7 +116,7 @@ void* SegregatedFreeLists::reallocarray(void* ptr, std::size_t nmemb, std::size_
 		result = chunks.reallocate(ptr, nmemb, size);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::REALLOCARRAY, [&] {
-				return Format("{}::reallocarray({}, {}, {}) -> {}", className, ptr, nmemb, size, result.ptr);
+				return Message("{}::reallocarray({}, {}, {}) -> {}", className, ptr, nmemb, size, result.ptr);
 			});
 		}
 	} else {
@@ -140,7 +140,7 @@ int SegregatedFreeLists::posix_memalign(void** memptr, std::size_t alignment, st
 		result = chunks.allocate(size, delegateMemAlignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::POSIX_MEMALIGN, [&] {
-				return Format("{}::posix_memalign(&{}, {}, {}) -> {}", className, *memptr, alignment, size, result.ptr);
+				return Message("{}::posix_memalign(&{}, {}, {}) -> {}", className, *memptr, alignment, size, result.ptr);
 			});
 		}
 	} else {
@@ -164,7 +164,7 @@ void* SegregatedFreeLists::aligned_alloc(std::size_t alignment, std::size_t size
 		result = chunks.allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::ALIGNED_ALLOC, [&] {
-				return Format("{}::aligned_alloc({}, {}) -> {}", className, alignment, size, result.ptr);
+				return Message("{}::aligned_alloc({}, {}) -> {}", className, alignment, size, result.ptr);
 			});
 		}
 	} else {
@@ -187,7 +187,7 @@ void* SegregatedFreeLists::valloc(std::size_t size) noexcept
 		result = chunks.allocate(size, delegateVallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::VALLOC, [&] {
-				return Format("{}::valloc({}) -> {}", className, size, result.ptr);
+				return Message("{}::valloc({}) -> {}", className, size, result.ptr);
 			});
 		}
 	} else {
@@ -211,7 +211,7 @@ void* SegregatedFreeLists::memalign(std::size_t alignment, std::size_t size) noe
 		result = chunks.allocate(size, delegateMemalignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::MEMALIGN, [&] {
-				return Format("{}::memalign({}, {}) -> {}", className, alignment, size, result.ptr);
+				return Message("{}::memalign({}, {}) -> {}", className, alignment, size, result.ptr);
 			});
 		}
 	} else {
@@ -234,7 +234,7 @@ void* SegregatedFreeLists::pvalloc(std::size_t size) noexcept
 		result = chunks.allocate(size, delegatePvallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::PVALLOC, [&] {
-				return Format("{}::pvalloc({}) -> {}", className, size, result.ptr);
+				return Message("{}::pvalloc({}) -> {}", className, size, result.ptr);
 			});
 		}
 	} else {

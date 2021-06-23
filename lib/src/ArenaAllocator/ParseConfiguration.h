@@ -10,13 +10,13 @@
 
 #include "ArenaAllocator/Configuration.h"
 #include "ArenaAllocator/LogLevel.h"
-#include "ArenaAllocator/ParsePrimitives.h"
 #include "ArenaAllocator/SizeRange.h"
+#include <Static/ParsePrimitives.h>
 #include <optional>
 
 namespace ArenaAllocator {
 
-class ParseConfiguration : public ParsePrimitives
+class ParseConfiguration : public Static::ParsePrimitives
 {
 public:
 	ParseConfiguration(std::string_view str, std::optional<Configuration::PoolMapType>& pools) noexcept;

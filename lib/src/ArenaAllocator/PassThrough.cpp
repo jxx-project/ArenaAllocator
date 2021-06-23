@@ -24,12 +24,12 @@ namespace ArenaAllocator {
 
 PassThrough::PassThrough(Logger const& log) noexcept : log{log}
 {
-	log(LogLevel::DEBUG, [&] { return Format("{}::{}(Logger const&) -> this:{}", className, className, this); });
+	log(LogLevel::DEBUG, [&] { return Message("{}::{}(Logger const&) -> this:{}", className, className, this); });
 }
 
 PassThrough::~PassThrough() noexcept
 {
-	log(LogLevel::DEBUG, [&] { return Format("{}::~{}(this:{})", className, className, this); });
+	log(LogLevel::DEBUG, [&] { return Message("{}::~{}(this:{})", className, className, this); });
 }
 
 void* PassThrough::malloc(std::size_t size) noexcept
@@ -38,7 +38,9 @@ void* PassThrough::malloc(std::size_t size) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_malloc(size);
-		log(timer.getNanoseconds(), OperationType::MALLOC, [&] { return Format("{}::malloc({}) -> {}", className, size, result); });
+		log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
+			return Message("{}::malloc({}) -> {}", className, size, result);
+		});
 	} else {
 		result = __libc_malloc(size);
 	}
@@ -51,7 +53,7 @@ void PassThrough::free(void* ptr) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		__libc_free(ptr);
-		log(timer.getNanoseconds(), OperationType::FREE, [&] { return Format("{}::free({})", className, ptr); });
+		log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
 	} else {
 		__libc_free(ptr);
 	}
@@ -64,7 +66,7 @@ void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 		Timer timer;
 		result = __libc_calloc(nmemb, size);
 		log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
-			return Format("{}::calloc({}, {}) -> {}", className, nmemb, size, result);
+			return Message("{}::calloc({}, {}) -> {}", className, nmemb, size, result);
 		});
 	} else {
 		result = __libc_calloc(nmemb, size);
@@ -79,7 +81,7 @@ void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 		Timer timer;
 		result = __libc_realloc(ptr, size);
 		log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
-			return Format("{}::realloc({}, {}) -> {}", className, ptr, size, result);
+			return Message("{}::realloc({}, {}) -> {}", className, ptr, size, result);
 		});
 	} else {
 		result = __libc_realloc(ptr, size);
@@ -112,7 +114,7 @@ void* PassThrough::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) 
 		Timer timer;
 		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
 		log(timer.getNanoseconds(), OperationType::REALLOCARRAY, [&] {
-			return Format("{}::reallocarray({}, {}, {}) -> {}", className, ptr, nmemb, size, result);
+			return Message("{}::reallocarray({}, {}, {}) -> {}", className, ptr, nmemb, size, result);
 		});
 	} else {
 		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
@@ -150,7 +152,7 @@ int PassThrough::posix_memalign(void** memptr, std::size_t alignment, std::size_
 		Timer timer;
 		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
 		log(timer.getNanoseconds(), OperationType::POSIX_MEMALIGN, [&] {
-			return Format("{}::posix_memalign(&{}, {} {}) -> %d", className, *memptr, alignment, size, result);
+			return Message("{}::posix_memalign(&{}, {} {}) -> %d", className, *memptr, alignment, size, result);
 		});
 	} else {
 		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
@@ -175,7 +177,7 @@ void* PassThrough::aligned_alloc(std::size_t alignment, std::size_t size) noexce
 		Timer timer;
 		result = alignedAllocUsingLibcMemalign(alignment, size);
 		log(timer.getNanoseconds(), OperationType::ALIGNED_ALLOC, [&] {
-			return Format("{}::aligned_alloc({} {}) -> {}", className, alignment, size, result);
+			return Message("{}::aligned_alloc({} {}) -> {}", className, alignment, size, result);
 		});
 	} else {
 		result = alignedAllocUsingLibcMemalign(alignment, size);
@@ -189,7 +191,7 @@ void* PassThrough::valloc(std::size_t size) noexcept
 	if (log.isLevel(LogLevel::TRACE)) {
 		Timer timer;
 		result = __libc_valloc(size);
-		log(timer.getNanoseconds(), OperationType::VALLOC, [&] { return Format("PassThrough::valloc({}) -> {}", size, result); });
+		log(timer.getNanoseconds(), OperationType::VALLOC, [&] { return Message("PassThrough::valloc({}) -> {}", size, result); });
 	} else {
 		result = __libc_valloc(size);
 	}
@@ -203,7 +205,7 @@ void* PassThrough::memalign(std::size_t alignment, std::size_t size) noexcept
 		Timer timer;
 		result = __libc_memalign(alignment, size);
 		log(timer.getNanoseconds(), OperationType::MEMALIGN, [&] {
-			return Format("{}::memalign({} {}) -> {}", className, alignment, size, result);
+			return Message("{}::memalign({} {}) -> {}", className, alignment, size, result);
 		});
 	} else {
 		result = __libc_memalign(alignment, size);
@@ -218,7 +220,7 @@ void* PassThrough::pvalloc(std::size_t size) noexcept
 		Timer timer;
 		result = __libc_pvalloc(size);
 		log(timer.getNanoseconds(), OperationType::PVALLOC, [&] {
-			return Format("{}::pvalloc({}) -> {}", className, size, result);
+			return Message("{}::pvalloc({}) -> {}", className, size, result);
 		});
 	} else {
 		result = __libc_pvalloc(size);

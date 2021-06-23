@@ -4,6 +4,8 @@
 # SPDX-License-Identifier:	BSL-1.0
 #
 
+find_package(Static REQUIRED)
+
 cmake_minimum_required(VERSION 3.13)
 project(ArenaAllocator VERSION 0.0.1 LANGUAGES CXX)
 
@@ -21,6 +23,7 @@ target_compile_options(ArenaAllocatorStatic PRIVATE -fPIC -fno-exceptions -fno-r
 target_include_directories(ArenaAllocatorStatic PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
+target_link_libraries(ArenaAllocatorStatic PUBLIC Static)
 
 file(GLOB ArenaAllocatorLibBootstrap_SRCS_G src/Bootstrap/*.cpp)
 add_library(ArenaAllocatorLib SHARED ${ArenaAllocatorLibBootstrap_SRCS_G})
