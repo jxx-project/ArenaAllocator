@@ -15,6 +15,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS NO)
 
 find_package(Threads REQUIRED)  
+find_package(Static REQUIRED)
+
 
 file(GLOB Utils_SRCS_G lib/src/*.cpp)
 
@@ -29,6 +31,6 @@ add_executable(allocatorSmokeTest src/allocatorSmokeTest.cpp)
 target_compile_options(allocatorSmokeTest PRIVATE -Wno-alloc-size-larger-than)
 
 add_executable(allocatorLoadTest src/allocatorLoadTest.cpp)
-target_link_libraries(allocatorLoadTest Threads::Threads)
+target_link_libraries(allocatorLoadTest Static Threads::Threads)
 
 add_executable(generateGeometricPoolMap src/generateGeometricPoolMap.cpp)

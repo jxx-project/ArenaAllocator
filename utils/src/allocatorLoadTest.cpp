@@ -1,3 +1,4 @@
+#include <Static/BasicLogger.h>
 #include <cstdarg>
 #include <cstddef>
 #include <cstdio>
@@ -8,42 +9,8 @@
 #include <thread>
 #include <unistd.h>
 
-class ConsoleLogger
-{
-public:
-	void log(char const* fmt, ...) const noexcept;
-
-private:
-	void write(char const* fmt, std::va_list argp) const noexcept;
-} logger;
-
-void ConsoleLogger::log(char const* fmt, ...) const noexcept
-{
-	std::va_list argp;
-	::va_start(argp, fmt);
-	write(fmt, argp);
-	::va_end(argp);
-}
-
-void ConsoleLogger::write(char const* fmt, std::va_list argp) const noexcept
-{
-	int propagateErrno{errno};
-
-	char buffer[1024];
-	::ssize_t prefixLengthOrError{std::snprintf(buffer, sizeof(buffer), "[tid:%ld]\t", ::syscall(__NR_gettid))};
-	std::size_t prefixLength{static_cast<std::size_t>(prefixLengthOrError >= 0 ? prefixLengthOrError : 0)};
-	::ssize_t messageLengthOrError{std::vsnprintf(buffer + prefixLength, sizeof(buffer) - prefixLength, fmt, argp)};
-	std::size_t totalLength{std::min(prefixLength + (messageLengthOrError >= 0 ? messageLengthOrError : 0), sizeof(buffer))};
-
-	std::size_t totalBytesWritten{0};
-	::ssize_t bytesWritten{0};
-	while ((bytesWritten = ::write(STDOUT_FILENO, buffer + totalBytesWritten, totalLength - totalBytesWritten)) > 0) {
-		totalBytesWritten += bytesWritten;
-	}
-
-	errno = propagateErrno;
-}
-
+Static::BasicLogger logger;
+using Message = Static::Format::Buffer<Static::BasicLogger::maxLength>;
 
 class Allocation
 {
@@ -83,7 +50,7 @@ void Allocation::malloc(std::size_t size) noexcept
 		::free(ptr);
 	}
 	void* result{::malloc(size)};
-	logger.log("::malloc(%lu) -> %p\n", size, result);
+	logger([&] { return Message("::malloc({}) -> {}", size, result); });
 	ptr = result;
 }
 
@@ -91,7 +58,7 @@ void Allocation::free() noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	::free(ptr);
-	logger.log("::free(%p)\n", ptr);
+	logger([&] { return Message("::free({})", ptr); });
 	ptr = nullptr;
 }
 
@@ -102,7 +69,7 @@ void Allocation::calloc(std::size_t nmemb, std::size_t size) noexcept
 		::free(ptr);
 	}
 	void* result{::calloc(nmemb, size)};
-	logger.log("::calloc(%lu, %lu) -> %p\n", ptr, nmemb, size, result);
+	logger([&] { return Message("::calloc({}, {}) -> {}", ptr, nmemb, size, result); });
 	ptr = result;
 }
 
@@ -110,7 +77,7 @@ void Allocation::realloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	void* result{::realloc(ptr, size)};
-	logger.log("::realloc(%p, %lu) -> %p\n", ptr, size, result);
+	logger([&] { return Message("::realloc({}, {}) -> {}", ptr, size, result); });
 	ptr = result;
 }
 
@@ -118,14 +85,14 @@ void Allocation::reallocarray(std::size_t nmemb, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	void* result{::reallocarray(ptr, nmemb, size)};
-	logger.log("::reallocarray(%p, %lu, %lu) -> %p\n", ptr, nmemb, size, result);
+	logger([&] { return Message("::reallocarray({}, {}, {}) -> {}", ptr, nmemb, size, result); });
 	ptr = result;
 }
 
 
 void loadAllocations(std::vector<Allocation>* allocations, std::size_t invocations, std::uint_fast32_t randomSeed)
 {
-	logger.log("loadAllocations(%p, %lu, %u) start\n", allocations, invocations, randomSeed);
+	logger([&] { return Message("loadAllocations({}, {}, %u) start", allocations, invocations, randomSeed); });
 	std::mt19937 gen(randomSeed);
 	std::uniform_int_distribution<std::size_t> allocationDistribution{0, allocations->size() - 1};
 	std::uniform_int_distribution<std::size_t> sizeDistribution{0, 15};
@@ -149,10 +116,12 @@ void loadAllocations(std::vector<Allocation>* allocations, std::size_t invocatio
 			allocation.reallocarray(sizeDistribution(gen), sizeDistribution(gen));
 			break;
 		default:
-			logger.log("loadAllocations(%p, %lu, %u) unexpected operation index\n", allocations, invocations, randomSeed);
+			logger([&] {
+				return Message("loadAllocations({}, {}, {}) unexpected operation index", allocations, invocations, randomSeed);
+			});
 		}
 	}
-	logger.log("loadAllocations(%p, %lu, %u) end\n", allocations, invocations, randomSeed);
+	logger([&] { return Message("loadAllocations({}, {}, {}) end", allocations, invocations, randomSeed); });
 };
 
 int main(int argc, char* argv[])

@@ -55,7 +55,7 @@ void TimerLogger::log(Formatter const& formatter) const noexcept
 void TimerLogger::log(std::chrono::nanoseconds duration, OperationType operationType, Formatter const& formatter) const noexcept
 {
 	Static::BasicLogger::writeLine(
-		Message{"[pid:{}]\tTimerLogger:{},{}\n", ::getpid(), to_string(operationType), duration.count()}.getResult());
+		Message{"[pid:{}]\tTimerLogger:{},{}", ::getpid(), to_string(operationType), duration.count()}.getResult());
 }
 
 void TimerLogger::log(LogLevel level, Formatter const& formatter) const noexcept
