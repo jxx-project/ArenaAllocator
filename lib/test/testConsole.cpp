@@ -16,8 +16,7 @@ using namespace std::chrono_literals;
 
 TEST(Console, abort)
 {
-	ASSERT_DEATH(
-		ArenaAllocator::Console::abort([] { return ArenaAllocator::Message("testing {}", "abort"); }), "testing abort");
+	ASSERT_DEATH(ArenaAllocator::Console::abort([] { return ArenaAllocator::Message("testing {}", "abort"); }), "testing abort");
 }
 
 TEST(Console, exit)
