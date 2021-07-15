@@ -9,6 +9,7 @@
 #define ArenaAllocator_Timer_h_INCLUDED
 
 #include <chrono>
+#include <sys/resource.h>
 
 namespace ArenaAllocator {
 
@@ -22,6 +23,7 @@ public:
 	[[nodiscard]] std::chrono::nanoseconds getNanoseconds() const noexcept;
 
 private:
+	rusage startUsage;
 	std::chrono::time_point<ClockType> startTime;
 };
 

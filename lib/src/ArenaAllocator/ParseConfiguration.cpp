@@ -1,5 +1,5 @@
 #include "ArenaAllocator/ParseConfiguration.h"
-#include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/Console.h"
 #include <charconv>
 
 namespace ArenaAllocator {
@@ -135,7 +135,7 @@ void ParseConfiguration::parsePool() noexcept
 
 void ParseConfiguration::raiseError(std::string_view message)
 {
-	ConsoleLogger::exit([&] { return Message("ParseConfiguration: {}", message); });
+	Console::exit([&] { return Message("ParseConfiguration: {}", message); });
 }
 
 } // namespace ArenaAllocator

@@ -8,9 +8,9 @@
 #ifndef ArenaAllocator_InternalLoggerFactory_h_INCLUDED
 #define ArenaAllocator_InternalLoggerFactory_h_INCLUDED
 
-#include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/Console.h"
 #include "ArenaAllocator/LoggerFactory.h"
-#include "ArenaAllocator/TimerLogger.h"
+#include "ArenaAllocator/TimeTrace.h"
 #include <optional>
 
 namespace ArenaAllocator {
@@ -26,8 +26,8 @@ public:
 	Logger* getLogger(std::string_view const& className) noexcept override;
 
 private:
-	std::optional<ConsoleLogger> consoleLogger;
-	std::optional<TimerLogger> timerLogger;
+	std::optional<Console> consoleLogger;
+	std::optional<TimeTrace> timerLogger;
 };
 
 } // namespace ArenaAllocator

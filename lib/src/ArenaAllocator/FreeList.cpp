@@ -7,7 +7,7 @@
 
 #include "ArenaAllocator/FreeList.h"
 #include "ArenaAllocator/Chunk.h"
-#include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/Console.h"
 #include <cstring>
 
 namespace ArenaAllocator {
@@ -52,7 +52,7 @@ void* FreeList::reallocate(ListType::iterator it, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
-		ConsoleLogger::abort([&] { return Message("FreeList::reallocate({}, {}) not allocated", it->data, size); });
+		Console::abort([&] { return Message("FreeList::reallocate({}, {}) not allocated", it->data, size); });
 	}
 	it->allocatedSize = size;
 	return it->data;
@@ -62,7 +62,7 @@ void FreeList::deallocate(ListType::const_iterator it) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (it->allocatedSize == 0) {
-		ConsoleLogger::abort([&] { return Message("FreeList::deallocate({}): not allocated", it->data); });
+		Console::abort([&] { return Message("FreeList::deallocate({}): not allocated", it->data); });
 	}
 	free.splice(free.begin(), allocated, it);
 	std::memset(free.front().data, 0, chunkSize);

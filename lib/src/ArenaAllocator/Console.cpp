@@ -5,8 +5,7 @@
 //
 
 
-#include "ArenaAllocator/ConsoleLogger.h"
-#include "ArenaAllocator/Format.h"
+#include "ArenaAllocator/Console.h"
 #include <algorithm>
 #include <cerrno>
 #include <cstdio>
@@ -16,24 +15,22 @@
 
 namespace ArenaAllocator {
 
-ConsoleLogger::ConsoleLogger() noexcept : logLevel{LogLevel::NONE}
+Console::Console() noexcept : logLevel{LogLevel::NONE}
 {
-	ConsoleLogger::log(
-		LogLevel::DEBUG, FormattingCallback{[&] { return Message("ConsoleLogger::ConsoleLogger() -> this:{}\n", this); }});
+	Console::log(LogLevel::DEBUG, FormattingCallback{[&] { return Message("Console::Console() -> this:{}\n", this); }});
 }
 
-ConsoleLogger::~ConsoleLogger() noexcept
+Console::~Console() noexcept
 {
-	ConsoleLogger::log(
-		LogLevel::DEBUG, FormattingCallback{[&] { return Message("ConsoleLogger::~ConsoleLogger(this:{})\n", this); }});
+	Console::log(LogLevel::DEBUG, FormattingCallback{[&] { return Message("Console::~Console(this:{})\n", this); }});
 }
 
-bool ConsoleLogger::isLevel(LogLevel level) const noexcept
+bool Console::isLevel(LogLevel level) const noexcept
 {
 	return logLevel >= level;
 }
 
-void ConsoleLogger::setLevel(LogLevel level) noexcept
+void Console::setLevel(LogLevel level) noexcept
 {
 	logLevel = level;
 }
@@ -49,19 +46,19 @@ void writeToBuffer(T prefix, Static::FormatResult message) noexcept
 
 } // namespace
 
-void ConsoleLogger::log(Formatter const& formatter) const noexcept
+void Console::log(Formatter const& formatter) const noexcept
 {
 	Message message{formatter()};
 	writeToBuffer(std::string_view{}, message.getResult());
 }
 
-void ConsoleLogger::log(std::chrono::nanoseconds duration, OperationType, Formatter const& formatter) const noexcept
+void Console::log(std::chrono::nanoseconds duration, OperationType, Formatter const& formatter) const noexcept
 {
 	Message message = formatter();
 	writeToBuffer(duration, message.getResult());
 }
 
-void ConsoleLogger::log(LogLevel level, Formatter const& formatter) const noexcept
+void Console::log(LogLevel level, Formatter const& formatter) const noexcept
 {
 	if (isLevel(level)) {
 		Message message{formatter()};
@@ -69,14 +66,14 @@ void ConsoleLogger::log(LogLevel level, Formatter const& formatter) const noexce
 	}
 }
 
-void ConsoleLogger::logAbort(Static::BasicLogger::Formatter const& formatter) noexcept
+void Console::logAbort(Static::BasicLogger::Formatter const& formatter) noexcept
 {
 	Message message{formatter()};
 	writeToBuffer(std::string_view{"ArenaAllocator abort:"}, message.getResult());
 	std::abort();
 }
 
-void ConsoleLogger::logExit(Static::BasicLogger::Formatter const& formatter) noexcept
+void Console::logExit(Static::BasicLogger::Formatter const& formatter) noexcept
 {
 	Message message{formatter()};
 	writeToBuffer(std::string_view{"ArenaAllocator exit:"}, message.getResult());

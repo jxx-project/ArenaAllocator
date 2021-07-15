@@ -6,7 +6,7 @@
 
 
 #include "ArenaAllocator/Allocator.h"
-#include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/Console.h"
 #include "ArenaAllocator/EnvironmentConfiguration.h"
 #include "ArenaAllocator/InternalAllocatorFactory.h"
 #include "ArenaAllocator/InternalLoggerFactory.h"
@@ -65,7 +65,7 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 			if (instance != nullptr) {
 				instance = new (instance) ArenaAllocatorSingleton(); // NOLINT unlimited lifetime intended
 			} else {
-				ArenaAllocator::ConsoleLogger::exit(
+				ArenaAllocator::Console::exit(
 					[] { return ArenaAllocator::Message("failed to allocate Bootstrap::ArenaAllocatorSingleton\n"); });
 			}
 		}

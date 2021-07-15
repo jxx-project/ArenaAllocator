@@ -12,12 +12,12 @@ namespace ArenaAllocator {
 Logger* InternalLoggerFactory::getLogger(std::string_view const& className) noexcept
 {
 	Logger* result{nullptr};
-	if (className == ConsoleLogger::className) {
+	if (className == Console::className) {
 		if (!consoleLogger.has_value()) {
 			consoleLogger.emplace();
 		}
 		result = &consoleLogger.value();
-	} else if (className == TimerLogger::className) {
+	} else if (className == TimeTrace::className) {
 		if (!timerLogger.has_value()) {
 			timerLogger.emplace();
 		}

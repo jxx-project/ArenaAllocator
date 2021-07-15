@@ -129,8 +129,8 @@ int main(int argc, char* argv[])
 	std::mt19937 gen(0);
 	std::vector<Allocation> allocations{1000};
 	std::vector<std::thread> threads;
-	for (int i = 0; i < 10; ++i) {
-		threads.emplace_back(loadAllocations, &allocations, 100 * allocations.size(), gen());
+	for (int i = 0; i < 1; ++i) {
+		threads.emplace_back(loadAllocations, &allocations, 1000 * allocations.size(), gen());
 	}
 	for (std::vector<std::thread>::iterator it = threads.begin(); it != threads.end(); ++it) {
 		it->join();

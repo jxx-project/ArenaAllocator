@@ -6,7 +6,7 @@
 
 
 #include "ArenaAllocator/PoolMap.h"
-#include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/Console.h"
 #include "ArenaAllocator/FreeList.h"
 #include "ArenaAllocator/PoolStatistics.h"
 
@@ -24,7 +24,7 @@ template<typename T>
 void PoolMap<T>::insert(SizeRange const& range, std::size_t nChunks) noexcept
 {
 	if (!aggregate.emplace(range, range, nChunks, log)) {
-		ConsoleLogger::exit([&] {
+		Console::exit([&] {
 			return Message(
 				"PoolMap::insert([{}, {}], {}) failed due to inavlid range or overlap", range.first, range.last, nChunks);
 		});

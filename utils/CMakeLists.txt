@@ -34,3 +34,7 @@ add_executable(allocatorLoadTest src/allocatorLoadTest.cpp)
 target_link_libraries(allocatorLoadTest Static Threads::Threads)
 
 add_executable(generateGeometricPoolMap src/generateGeometricPoolMap.cpp)
+
+add_executable(timeTraceDistribution src/timeTraceDistribution.cpp)
+target_link_libraries(timeTraceDistribution Static Utils)
+

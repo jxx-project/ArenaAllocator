@@ -7,36 +7,36 @@
 
 #include "gtest/gtest.h"
 
-#include "ArenaAllocator/ConsoleLogger.h"
+#include "ArenaAllocator/Console.h"
 #include "Mock/NullAllocatorFactory.h"
 #include "Mock/NullLogger.h"
 #include <chrono>
 
 using namespace std::chrono_literals;
 
-TEST(ConsoleLogger, abort)
+TEST(Console, abort)
 {
 	ASSERT_DEATH(
-		ArenaAllocator::ConsoleLogger::abort([] { return ArenaAllocator::Message("testing {}", "abort"); }), "testing abort");
+		ArenaAllocator::Console::abort([] { return ArenaAllocator::Message("testing {}", "abort"); }), "testing abort");
 }
 
-TEST(ConsoleLogger, exit)
+TEST(Console, exit)
 {
-	ASSERT_DEATH(ArenaAllocator::ConsoleLogger::exit([] { return ArenaAllocator::Message("testing {}", "exit"); }), "testing exit");
+	ASSERT_DEATH(ArenaAllocator::Console::exit([] { return ArenaAllocator::Message("testing {}", "exit"); }), "testing exit");
 }
 
-TEST(ConsoleLogger, logPlain)
+TEST(Console, logPlain)
 {
-	ArenaAllocator::ConsoleLogger log;
+	ArenaAllocator::Console log;
 	testing::internal::CaptureStderr();
 	log([] { return ArenaAllocator::Message("testing {}", "plain"); });
 	std::string capturedStderr{testing::internal::GetCapturedStderr()};
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing plain", capturedStderr));
 }
 
-TEST(ConsoleLogger, logTimerMessage)
+TEST(Console, logTimerMessage)
 {
-	ArenaAllocator::ConsoleLogger log;
+	ArenaAllocator::Console log;
 	testing::internal::CaptureStderr();
 	log(4711ns, ArenaAllocator::OperationType::FREE, [] { return ArenaAllocator::Message("testing {}", "timer message"); });
 	std::string capturedStderr{testing::internal::GetCapturedStderr()};
@@ -44,9 +44,9 @@ TEST(ConsoleLogger, logTimerMessage)
 	EXPECT_TRUE(testing::IsSubstring("", "", "testing timer message", capturedStderr));
 }
 
-TEST(ConsoleLogger, logLevelNone)
+TEST(Console, logLevelNone)
 {
-	ArenaAllocator::ConsoleLogger log;
+	ArenaAllocator::Console log;
 	log.setLevel(ArenaAllocator::LogLevel::NONE);
 
 	testing::internal::CaptureStderr();
@@ -74,9 +74,9 @@ TEST(ConsoleLogger, logLevelNone)
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));
 }
 
-TEST(ConsoleLogger, logLevelError)
+TEST(Console, logLevelError)
 {
-	ArenaAllocator::ConsoleLogger log;
+	ArenaAllocator::Console log;
 	log.setLevel(ArenaAllocator::LogLevel::ERROR);
 
 	testing::internal::CaptureStderr();
@@ -104,9 +104,9 @@ TEST(ConsoleLogger, logLevelError)
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));
 }
 
-TEST(ConsoleLogger, logLevelInfo)
+TEST(Console, logLevelInfo)
 {
-	ArenaAllocator::ConsoleLogger log;
+	ArenaAllocator::Console log;
 	log.setLevel(ArenaAllocator::LogLevel::INFO);
 
 	testing::internal::CaptureStderr();
@@ -134,9 +134,9 @@ TEST(ConsoleLogger, logLevelInfo)
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));
 }
 
-TEST(ConsoleLogger, logLevelTrace)
+TEST(Console, logLevelTrace)
 {
-	ArenaAllocator::ConsoleLogger log;
+	ArenaAllocator::Console log;
 	log.setLevel(ArenaAllocator::LogLevel::TRACE);
 
 	testing::internal::CaptureStderr();
@@ -164,9 +164,9 @@ TEST(ConsoleLogger, logLevelTrace)
 	EXPECT_FALSE(log.isLevel(ArenaAllocator::LogLevel::DEBUG));
 }
 
-TEST(ConsoleLogger, logLevelDebug)
+TEST(Console, logLevelDebug)
 {
-	ArenaAllocator::ConsoleLogger log;
+	ArenaAllocator::Console log;
 	log.setLevel(ArenaAllocator::LogLevel::DEBUG);
 
 	testing::internal::CaptureStderr();

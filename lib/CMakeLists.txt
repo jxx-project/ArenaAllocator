@@ -49,4 +49,4 @@ install(FILES
 	${CMAKE_CURRENT_BINARY_DIR}/ArenaAllocatorConfigVersion.cmake
 	DESTINATION share/ArenaAllocator/cmake)
 
-add_subdirectory(gtest)
+add_subdirectory(test)

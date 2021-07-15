@@ -24,8 +24,8 @@ void ParseTimeTrace::operator()(::pid_t& pid, ArenaAllocator::OperationType& ope
 	if (parseDelimiter("]") != ']') {
 		raiseError("expected ']' at log line prefix end");
 	}
-	if (parseIdentifier() != "TimerLogger") {
-		raiseError("expected 'TimerLogger' log line entry prefix");
+	if (parseIdentifier() != "TimeTrace") {
+		raiseError("expected 'TimeTrace' log line entry prefix");
 	}
 	if (parseDelimiter(":") != ':') {
 		raiseError("expected ':' after log line entry prefix");
@@ -45,7 +45,7 @@ ArenaAllocator::OperationType ParseTimeTrace::parseOperationType()
 {
 	std::string_view operationTypeStr{parseIdentifier()};
 	ArenaAllocator::OperationType result{ArenaAllocator::OperationType::UNKNOWN};
-	for (unsigned typeIndex{0}; typeIndex != static_cast<unsigned>(ArenaAllocator::OperationType::UNKNOWN); typeIndex) {
+	for (unsigned typeIndex{0}; typeIndex != static_cast<unsigned>(ArenaAllocator::OperationType::UNKNOWN); ++typeIndex) {
 		ArenaAllocator::OperationType operationType{typeIndex};
 		if (operationTypeStr == to_string(operationType)) {
 			result = operationType;

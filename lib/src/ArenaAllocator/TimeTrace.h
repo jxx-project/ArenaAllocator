@@ -5,25 +5,25 @@
 //
 
 
-#ifndef ArenaAllocator_TimerLogger_h_INCLUDED
-#define ArenaAllocator_TimerLogger_h_INCLUDED
+#ifndef ArenaAllocator_TimeTrace_h_INCLUDED
+#define ArenaAllocator_TimeTrace_h_INCLUDED
 
 #include "ArenaAllocator/Logger.h"
 
 namespace ArenaAllocator {
 
-class TimerLogger : public Logger
+class TimeTrace : public Logger
 {
 public:
-	TimerLogger() noexcept;
-	TimerLogger(Logger const&) = delete;
-	TimerLogger& operator=(TimerLogger const&) = delete;
-	~TimerLogger() noexcept override;
+	TimeTrace() noexcept;
+	TimeTrace(Logger const&) = delete;
+	TimeTrace& operator=(TimeTrace const&) = delete;
+	~TimeTrace() noexcept override;
 
 	[[nodiscard]] bool isLevel(LogLevel level) const noexcept override;
 	void setLevel(LogLevel level) noexcept override;
 
-	static constexpr char const* className{"TimerLogger"};
+	static constexpr char const* className{"TimeTrace"};
 	static constexpr std::size_t bufferSize{1024};
 
 protected:
@@ -37,4 +37,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ArenaAllocator_TimerLogger_h_INCLUDED
+#endif // ArenaAllocator_TimeTrace_h_INCLUDED

@@ -5,20 +5,20 @@
 //
 
 
-#ifndef ArenaAllocator_ConsoleLogger_h_INCLUDED
-#define ArenaAllocator_ConsoleLogger_h_INCLUDED
+#ifndef ArenaAllocator_Console_h_INCLUDED
+#define ArenaAllocator_Console_h_INCLUDED
 
 #include "ArenaAllocator/Logger.h"
 
 namespace ArenaAllocator {
 
-class ConsoleLogger : public Logger
+class Console : public Logger
 {
 public:
-	ConsoleLogger() noexcept;
-	ConsoleLogger(Logger const&) = delete;
-	ConsoleLogger& operator=(ConsoleLogger const&) = delete;
-	~ConsoleLogger() noexcept override;
+	Console() noexcept;
+	Console(Logger const&) = delete;
+	Console& operator=(Console const&) = delete;
+	~Console() noexcept override;
 
 	template<typename F>
 	[[noreturn]] static void abort(F callback) noexcept
@@ -35,7 +35,7 @@ public:
 	[[nodiscard]] bool isLevel(LogLevel level) const noexcept override;
 	void setLevel(LogLevel level) noexcept override;
 
-	static constexpr char const* className{"ConsoleLogger"};
+	static constexpr char const* className{"Console"};
 	static constexpr std::size_t bufferSize{1024};
 
 protected:
@@ -52,4 +52,4 @@ private:
 
 } // namespace ArenaAllocator
 
-#endif // ArenaAllocator_ConsoleLogger_h_INCLUDED
+#endif // ArenaAllocator_Console_h_INCLUDED
