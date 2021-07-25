@@ -5,11 +5,11 @@
 //
 
 
-#include <atomic>
 #include <chrono>
 #include <iostream>
 #include <map>
 #include <random>
+#include <sched.h>
 #include <sys/resource.h>
 
 constexpr int maxKey{1000};
@@ -27,8 +27,8 @@ public:
 
 	[[nodiscard]] bool hasContextSwitch() const noexcept
 	{
-		std::atomic<rusage> usage{getUsage()};
-		return usage.load().ru_nvcsw > startUsage.load().ru_nvcsw || usage.load().ru_nivcsw > startUsage.load().ru_nivcsw;
+		rusage usage{getUsage()};
+		return usage.ru_nvcsw > startUsage.ru_nvcsw || usage.ru_nivcsw > startUsage.ru_nivcsw;
 	}
 
 private:
@@ -42,7 +42,7 @@ private:
 		return result;
 	}
 
-	std::atomic<rusage> startUsage;
+	rusage startUsage;
 };
 
 // Timing starts with Timer instantiation. At any time getNanoseconds() will return nanoseconds since instantiation.
@@ -57,8 +57,8 @@ public:
 
 	[[nodiscard]] std::chrono::nanoseconds getNanoseconds() const noexcept
 	{
-		std::atomic<std::chrono::time_point<ClockType>> now{ClockType::now()};
-		return std::chrono::duration_cast<std::chrono::nanoseconds>(now.load() - startTime.load());
+		std::chrono::time_point<ClockType> now{ClockType::now()};
+		return std::chrono::duration_cast<std::chrono::nanoseconds>(now - startTime);
 	}
 
 private:
@@ -72,11 +72,18 @@ private:
 		return result;
 	}
 
-	std::atomic<std::chrono::time_point<ClockType>> startTime;
+	std::chrono::time_point<ClockType> startTime;
 };
 
 int main(int argc, char* argv[])
 {
+	sched_param schedulingParameter{};
+	schedulingParameter.sched_priority = 99;
+	if (sched_setscheduler(0, SCHED_FIFO, &schedulingParameter) < 0) {
+		perror("sched_setscheduler");
+		return 1;
+	}
+
 	// std::map element access is logathmic in time. Implementation must keep node tree balanced.
 	std::map<int, int> testee;
 
