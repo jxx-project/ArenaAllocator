@@ -62,16 +62,6 @@ public:
 	}
 
 private:
-	static rusage getUsage()
-	{
-		rusage result;
-		if (getrusage(RUSAGE_SELF, &result) == -1) {
-			std::perror("getrusage");
-			std::exit(EXIT_FAILURE);
-		}
-		return result;
-	}
-
 	std::chrono::time_point<ClockType> startTime;
 };
 
