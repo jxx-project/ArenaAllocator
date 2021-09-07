@@ -38,7 +38,7 @@ void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 		return result;
 	}};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::MALLOC};
 		result = chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
@@ -56,7 +56,7 @@ void SegregatedFreeLists::free(void* ptr) noexcept
 {
 	ChunkMap::DeallocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::FREE};
 		result = chunks.deallocate(ptr);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
@@ -76,7 +76,7 @@ void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 		return result;
 	}};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::CALLOC};
 		result = chunks.allocate(nmemb, size, delegateCallocFunc);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
@@ -94,7 +94,7 @@ void* SegregatedFreeLists::realloc(void* ptr, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::REALLOC};
 		result = chunks.reallocate(ptr, size);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
@@ -112,7 +112,7 @@ void* SegregatedFreeLists::reallocarray(void* ptr, std::size_t nmemb, std::size_
 {
 	ChunkMap::AllocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::REALLOCARRAY};
 		result = chunks.reallocate(ptr, nmemb, size);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::REALLOCARRAY, [&] {
@@ -136,7 +136,7 @@ int SegregatedFreeLists::posix_memalign(void** memptr, std::size_t alignment, st
 	}};
 	auto alignWordTypeSize{[&]() { return alignment <= sizeof(std::max_align_t); }};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::POSIX_MEMALIGN};
 		result = chunks.allocate(size, delegateMemAlignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::POSIX_MEMALIGN, [&] {
@@ -160,7 +160,7 @@ void* SegregatedFreeLists::aligned_alloc(std::size_t alignment, std::size_t size
 	}};
 	auto alignWordTypeSize{[&]() { return alignment <= sizeof(std::max_align_t); }};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::ALIGNED_ALLOC};
 		result = chunks.allocate(size, delegateAlignedAllocFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::ALIGNED_ALLOC, [&] {
@@ -183,7 +183,7 @@ void* SegregatedFreeLists::valloc(std::size_t size) noexcept
 		return result;
 	}};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::VALLOC};
 		result = chunks.allocate(size, delegateVallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::VALLOC, [&] {
@@ -207,7 +207,7 @@ void* SegregatedFreeLists::memalign(std::size_t alignment, std::size_t size) noe
 	}};
 	auto alignWordTypeSize{[&]() { return alignment <= sizeof(std::max_align_t); }};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::MEMALIGN};
 		result = chunks.allocate(size, delegateMemalignFunc, alignWordTypeSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::MEMALIGN, [&] {
@@ -230,7 +230,7 @@ void* SegregatedFreeLists::pvalloc(std::size_t size) noexcept
 		return result;
 	}};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer{OperationType::PVALLOC};
 		result = chunks.allocate(size, delegatePvallocFunc, alignPageSize);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::PVALLOC, [&] {

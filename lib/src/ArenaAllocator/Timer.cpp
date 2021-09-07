@@ -6,53 +6,27 @@
 
 
 #include "ArenaAllocator/Timer.h"
-#include "ArenaAllocator/BuildConfiguration.h"
-#include <cerrno>
-#include <cstdio>
-#include <cstdlib>
+#include <stm/stm.h>
 
 namespace ArenaAllocator {
 
-namespace {
-
-// Ensure that errno is preserved across the Timer::ClockType::now() call.
-std::chrono::time_point<Timer::ClockType> now()
+Timer::Timer(OperationType operationType) noexcept : operationType{operationType}, terminated{false}
 {
-	std::chrono::time_point<Timer::ClockType> result;
-	int propagateErrno{errno};
-	result = Timer::ClockType::now();
-	errno = propagateErrno;
-	return result;
+	stm_trace[operationType] = 0x1;
 }
 
-rusage getUsage()
+Timer::~Timer() noexcept
 {
-	rusage result;
-	if constexpr (BuildConfiguration::discardTimingAcrossContextSwitch) {
-		if (getrusage(RUSAGE_SELF, &result) == -1) {
-			std::perror("getrusage");
-			std::exit(EXIT_FAILURE);
-		}
+	if (!terminated) {
+		stm_trace[operationType] = 0x3;
 	}
-	return result;
 }
 
-} // namespace
-
-Timer::Timer() noexcept : startUsage{getUsage()}, startTime{now()}
+std::chrono::nanoseconds Timer::getNanoseconds() noexcept
 {
-}
-
-std::chrono::nanoseconds Timer::getNanoseconds() const noexcept
-{
-	std::chrono::nanoseconds result{std::chrono::duration_cast<std::chrono::nanoseconds>(now() - startTime)};
-	if constexpr (BuildConfiguration::discardTimingAcrossContextSwitch) {
-		rusage usage{getUsage()};
-		if (usage.ru_nvcsw > startUsage.ru_nvcsw || usage.ru_nivcsw > startUsage.ru_nivcsw) {
-			result = std::chrono::nanoseconds{0};
-		}
-	}
-	return result;
+	stm_trace[operationType] = 0x2;
+	terminated = true;
+	return std::chrono::nanoseconds{0};
 }
 
 } // namespace ArenaAllocator
