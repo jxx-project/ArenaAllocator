@@ -11,6 +11,7 @@ std::size_t nAllocations;
 unsigned nThreads;
 std::size_t nInvocations;
 std::size_t maxChunkSize;
+unsigned long separationNanos;
 bool doWriteToAllocated;
 
 class Allocation
@@ -132,6 +133,7 @@ void loadAllocations(std::vector<Allocation>* allocations, std::uint_fast32_t ra
 		default:
 			logger([&] { return Message("loadAllocations({}, {}) unexpected operation index", allocations, randomSeed); });
 		}
+		std::this_thread::sleep_for(std::chrono::nanoseconds{separationNanos});
 	}
 	logger([&] { return Message("loadAllocations({}, {}) end", allocations, randomSeed); });
 };
@@ -162,6 +164,7 @@ int main(int argc, char* argv[])
 			"Number of invocations per thread >= 0 (0 -> infinite)",
 			cxxopts::value<std::size_t>()->default_value("1000000"))(
 			"m,maxsize", "Max number of bytes per chunk >= 1", cxxopts::value<std::size_t>()->default_value("15"))(
+			"s,separation", "Nanoseconds between invocations >= 0", cxxopts::value<unsigned long>()->default_value("0"))(
 			"w,write", "Write after allocation", cxxopts::value<bool>()->default_value("false"));
 
 		cxxopts::ParseResult result{options.parse(argc, argv)};
@@ -176,6 +179,7 @@ int main(int argc, char* argv[])
 		nThreads = result["threads"].as<unsigned>();
 		nInvocations = result["invocations"].as<std::size_t>();
 		maxChunkSize = result["maxsize"].as<std::size_t>();
+		separationNanos = result["separation"].as<unsigned long>();
 		doWriteToAllocated = result["write"].as<bool>();
 	}
 
