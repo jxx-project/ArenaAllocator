@@ -1,7 +1,11 @@
 #include <Logger.h>
+#include <cerrno>
 #include <cxxopts/cxxopts.hpp>
 #include <mutex>
 #include <random>
+#include <set>
+#include <sys/wait.h>
+#include <system_error>
 #include <thread>
 #include <unistd.h>
 
@@ -9,6 +13,7 @@ Logger logger;
 std::size_t preallocateBytes;
 std::size_t nAllocations;
 unsigned nThreads;
+unsigned nRandomProcs;
 std::size_t nInvocations;
 std::size_t maxChunkSize;
 unsigned long separationNanos;
@@ -133,7 +138,9 @@ void loadAllocations(std::vector<Allocation>* allocations, std::uint_fast32_t ra
 		default:
 			logger([&] { return Message("loadAllocations({}, {}) unexpected operation index", allocations, randomSeed); });
 		}
-		std::this_thread::sleep_for(std::chrono::nanoseconds{separationNanos});
+		if (separationNanos > 0) {
+			std::this_thread::sleep_for(std::chrono::nanoseconds{separationNanos});
+		}
 	}
 	logger([&] { return Message("loadAllocations({}, {}) end", allocations, randomSeed); });
 };
@@ -150,6 +157,50 @@ void preallocate(std::size_t size)
 	}
 }
 
+void runTests()
+{
+	std::mt19937 gen(0);
+	std::vector<Allocation> allocations{nAllocations};
+	std::vector<std::thread> threads;
+	preallocate(preallocateBytes);
+
+	for (int i = 0; i < nThreads; ++i) {
+		threads.emplace_back(loadAllocations, &allocations, gen());
+	}
+	for (std::vector<std::thread>::iterator it = threads.begin(); it != threads.end(); ++it) {
+		it->join();
+	}
+}
+
+::pid_t runProc(std::size_t invocations)
+{
+	::pid_t childPid{::fork()};
+	if (childPid > 0) {
+		return childPid;
+	} else if (childPid == 0) {
+		nInvocations = invocations;
+		nRandomProcs = 0;
+		runTests();
+		::exit(0);
+	} else {
+		throw std::system_error(errno, std::generic_category()); // std::make_error_code(::errno));
+	}
+}
+
+void runRandomProcs()
+{
+	std::mt19937 gen(0);
+	std::uniform_int_distribution<std::size_t> invocationDistribution{1, nInvocations};
+	std::set<::pid_t> childPids;
+	while (true) {
+		while (childPids.size() < nRandomProcs) {
+			childPids.insert(runProc(invocationDistribution(gen)));
+		}
+		int status;
+		childPids.erase(wait(&status));
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	{
@@ -160,6 +211,7 @@ int main(int argc, char* argv[])
 			"p,preallocate", "Number of bytes to preallocate >= 0", cxxopts::value<std::size_t>()->default_value("0"))(
 			"a,allocations", "Number of allocations >= 1", cxxopts::value<std::size_t>()->default_value("1000"))(
 			"t,threads", "Number of allocation threads >= 1", cxxopts::value<unsigned>()->default_value("1"))(
+			"r,randomprocs", "Number of random invocation processes >= 0", cxxopts::value<unsigned>()->default_value("0"))(
 			"i,invocations",
 			"Number of invocations per thread >= 0 (0 -> infinite)",
 			cxxopts::value<std::size_t>()->default_value("1000000"))(
@@ -177,22 +229,17 @@ int main(int argc, char* argv[])
 		preallocateBytes = result["preallocate"].as<std::size_t>();
 		nAllocations = result["allocations"].as<std::size_t>();
 		nThreads = result["threads"].as<unsigned>();
+		nRandomProcs = result["randomprocs"].as<unsigned>();
 		nInvocations = result["invocations"].as<std::size_t>();
 		maxChunkSize = result["maxsize"].as<std::size_t>();
 		separationNanos = result["separation"].as<unsigned long>();
 		doWriteToAllocated = result["write"].as<bool>();
 	}
 
-	std::mt19937 gen(0);
-	std::vector<Allocation> allocations{nAllocations};
-	std::vector<std::thread> threads;
-	preallocate(preallocateBytes);
-
-	for (int i = 0; i < nThreads; ++i) {
-		threads.emplace_back(loadAllocations, &allocations, gen());
-	}
-	for (std::vector<std::thread>::iterator it = threads.begin(); it != threads.end(); ++it) {
-		it->join();
+	if (nRandomProcs > 0) {
+		runRandomProcs();
+	} else {
+		runTests();
 	}
 
 	return 0;
