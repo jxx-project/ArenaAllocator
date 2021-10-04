@@ -127,7 +127,7 @@ void loadAllocations(std::vector<Allocation>* allocations, std::uint_fast32_t ra
 			allocation.realloc(sizeDistribution(gen));
 			break;
 		case 4:
-			allocation.reallocarray(sizeDistribution(gen), sizeDistribution(gen));
+			allocation.realloc(sizeDistribution(gen) * sizeDistribution(gen));
 			break;
 		default:
 			logger([&] { return Message("loadAllocations({}, {}) unexpected operation index", allocations, randomSeed); });

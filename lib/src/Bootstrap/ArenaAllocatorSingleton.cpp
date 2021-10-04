@@ -131,33 +131,3 @@ extern "C" void* realloc(void* ptr, std::size_t size)
 {
 	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().realloc(ptr, size);
 }
-
-extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
-}
-
-extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
-}
-
-extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().aligned_alloc(alignment, size);
-}
-
-extern "C" void* valloc(std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().valloc(size);
-}
-
-extern "C" void* memalign(std::size_t alignment, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().memalign(alignment, size);
-}
-
-extern "C" void* pvalloc(std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().pvalloc(size);
-}
