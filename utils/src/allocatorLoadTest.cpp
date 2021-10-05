@@ -87,15 +87,6 @@ void Allocation::realloc(std::size_t size) noexcept
 	write(size);
 }
 
-void Allocation::reallocarray(std::size_t nmemb, std::size_t size) noexcept
-{
-	std::lock_guard<std::mutex> guard{mutex};
-	void* result{::reallocarray(ptr, nmemb, size)};
-	logger([&] { return Message("Allocation::reallocarray({}, {}, {}) -> {}", ptr, nmemb, size, result); });
-	ptr = result;
-	write(nmemb * size);
-}
-
 void Allocation::write(std::size_t size) noexcept
 {
 	if (doWriteToAllocated && ptr != nullptr) {
