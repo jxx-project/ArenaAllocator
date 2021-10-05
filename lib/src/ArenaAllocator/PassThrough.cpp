@@ -13,12 +13,6 @@ extern "C" void* __libc_malloc(std::size_t size);
 extern "C" void __libc_free(void* ptr);
 extern "C" void* __libc_calloc(std::size_t nmemb, std::size_t size);
 extern "C" void* __libc_realloc(void* ptr, std::size_t size);
-extern "C" void* __libc_reallocarray(void* ptr, std::size_t nmemb, std::size_t size);
-extern "C" int __libc_posix_memalign(void** memptr, std::size_t alignment, std::size_t size);
-extern "C" void* __libc_aligned_alloc(std::size_t alignment, std::size_t size);
-extern "C" void* __libc_valloc(std::size_t size);
-extern "C" void* __libc_memalign(std::size_t alignment, std::size_t size);
-extern "C" void* __libc_pvalloc(std::size_t size);
 
 namespace ArenaAllocator {
 

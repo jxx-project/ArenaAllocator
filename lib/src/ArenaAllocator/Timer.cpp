@@ -27,7 +27,7 @@ std::chrono::time_point<Timer::ClockType> now()
 
 } // namespace
 
-Timer::Timer() noexcept : startUsage{getUsage()}, startTime{now()}
+Timer::Timer() noexcept : startTime{now()}
 {
 }
 
