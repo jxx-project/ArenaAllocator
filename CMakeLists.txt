@@ -5,7 +5,7 @@
 #
 
 cmake_minimum_required(VERSION 3.13)
-project(ArenaAllocator VERSION 0.0.1 LANGUAGES CXX)
+project(ArenaAllocator VERSION 0.0.1)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)

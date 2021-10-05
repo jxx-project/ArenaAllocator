@@ -1,4 +1,5 @@
 #include <Logger.h>
+#include <ArenaAllocator/malloc.h>
 #include <cxxopts/cxxopts.hpp>
 #include <mutex>
 #include <random>
@@ -50,9 +51,9 @@ void Allocation::malloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (ptr != nullptr) {
-		::free(ptr);
+		ArenaAllocator::free(ptr);
 	}
-	void* result{::malloc(size)};
+	void* result{ArenaAllocator::malloc(size)};
 	logger([&] { return Message("Allocation::malloc({}) -> {}", size, result); });
 	ptr = result;
 	write(size);
@@ -61,7 +62,7 @@ void Allocation::malloc(std::size_t size) noexcept
 void Allocation::free() noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
-	::free(ptr);
+	ArenaAllocator::free(ptr);
 	logger([&] { return Message("Allocation::free({})", ptr); });
 	ptr = nullptr;
 }
@@ -70,9 +71,9 @@ void Allocation::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
 	if (ptr != nullptr) {
-		::free(ptr);
+		ArenaAllocator::free(ptr);
 	}
-	void* result{::calloc(nmemb, size)};
+	void* result{ArenaAllocator::calloc(nmemb, size)};
 	logger([&] { return Message("Allocation::calloc({}, {}) -> {}", nmemb, size, result); });
 	ptr = result;
 	write(nmemb * size);
@@ -81,7 +82,7 @@ void Allocation::calloc(std::size_t nmemb, std::size_t size) noexcept
 void Allocation::realloc(std::size_t size) noexcept
 {
 	std::lock_guard<std::mutex> guard{mutex};
-	void* result{::realloc(ptr, size)};
+	void* result{ArenaAllocator::realloc(ptr, size)};
 	logger([&] { return Message("Allocation::realloc({}, {}) -> {}", ptr, size, result); });
 	ptr = result;
 	write(size);

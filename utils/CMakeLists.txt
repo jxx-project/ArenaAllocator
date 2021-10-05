@@ -5,7 +5,7 @@
 #
 
 cmake_minimum_required(VERSION 3.13)
-project(ArenaAllocator VERSION 0.0.1 LANGUAGES CXX)
+project(ArenaAllocator VERSION 0.0.1)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
@@ -31,11 +31,11 @@ add_executable(allocatorSmokeTest src/allocatorSmokeTest.cpp)
 target_compile_options(allocatorSmokeTest PRIVATE -Wno-alloc-size-larger-than)
 
 add_executable(allocatorLoadTest src/allocatorLoadTest.cpp)
-target_link_libraries(allocatorLoadTest Static Utils Threads::Threads)
+target_link_libraries(allocatorLoadTest Static ArenaAllocatorStatic Utils Threads::Threads)
 target_compile_options(allocatorLoadTest PRIVATE -fno-rtti -DCXXOPTS_NO_RTTI)
 
 add_executable(generateGeometricPoolMap src/generateGeometricPoolMap.cpp)
 
 add_executable(timeTraceDistribution src/timeTraceDistribution.cpp)
-target_link_libraries(timeTraceDistribution Static Utils)
+target_link_libraries(timeTraceDistribution Static ArenaAllocatorStatic Utils)
 
