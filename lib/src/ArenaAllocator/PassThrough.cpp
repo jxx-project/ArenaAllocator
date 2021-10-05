@@ -30,7 +30,7 @@ void* PassThrough::malloc(std::size_t size) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::MALLOC);
 		result = __libc_malloc(size);
 		log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
 			return Message("{}::malloc({}) -> {}", className, size, result);
@@ -45,7 +45,7 @@ void PassThrough::free(void* ptr) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::FREE);
 		__libc_free(ptr);
 		log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
 	} else {
@@ -57,7 +57,7 @@ void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::CALLOC);
 		result = __libc_calloc(nmemb, size);
 		log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
 			return Message("{}::calloc({}, {}) -> {}", className, nmemb, size, result);
@@ -72,7 +72,7 @@ void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::REALLOC);
 		result = __libc_realloc(ptr, size);
 		log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
 			return Message("{}::realloc({}, {}) -> {}", className, ptr, size, result);

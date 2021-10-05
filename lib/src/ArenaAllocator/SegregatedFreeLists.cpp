@@ -38,7 +38,7 @@ void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 		return result;
 	}};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::MALLOC);
 		result = chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
@@ -56,7 +56,7 @@ void SegregatedFreeLists::free(void* ptr) noexcept
 {
 	ChunkMap::DeallocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::FREE);
 		result = chunks.deallocate(ptr);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
@@ -76,7 +76,7 @@ void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 		return result;
 	}};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::CALLOC);
 		result = chunks.allocate(nmemb, size, delegateCallocFunc);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
@@ -94,7 +94,7 @@ void* SegregatedFreeLists::realloc(void* ptr, std::size_t size) noexcept
 {
 	ChunkMap::AllocateResult result{};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer;
+		Timer timer(OperationType::REALLOC);
 		result = chunks.reallocate(ptr, size);
 		if (!result.fromDelegate) {
 			log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
