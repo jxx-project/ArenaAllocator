@@ -25,18 +25,6 @@ std::chrono::time_point<Timer::ClockType> now()
 	return result;
 }
 
-rusage getUsage()
-{
-	rusage result;
-	if constexpr (BuildConfiguration::discardTimingAcrossContextSwitch) {
-		if (getrusage(RUSAGE_SELF, &result) == -1) {
-			std::perror("getrusage");
-			std::exit(EXIT_FAILURE);
-		}
-	}
-	return result;
-}
-
 } // namespace
 
 Timer::Timer() noexcept : startUsage{getUsage()}, startTime{now()}
@@ -46,12 +34,6 @@ Timer::Timer() noexcept : startUsage{getUsage()}, startTime{now()}
 std::chrono::nanoseconds Timer::getNanoseconds() const noexcept
 {
 	std::chrono::nanoseconds result{std::chrono::duration_cast<std::chrono::nanoseconds>(now() - startTime)};
-	if constexpr (BuildConfiguration::discardTimingAcrossContextSwitch) {
-		rusage usage{getUsage()};
-		if (usage.ru_nvcsw > startUsage.ru_nvcsw || usage.ru_nivcsw > startUsage.ru_nivcsw) {
-			result = std::chrono::nanoseconds{0};
-		}
-	}
 	return result;
 }
 

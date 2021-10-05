@@ -14,7 +14,6 @@ class BuildConfiguration
 {
 public:
 	constexpr static bool useMlock{true};
-	constexpr static bool discardTimingAcrossContextSwitch{true};
 };
 
 } // namespace ArenaAllocator
