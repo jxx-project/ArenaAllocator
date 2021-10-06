@@ -10,6 +10,7 @@
 #include "ArenaAllocator/EnvironmentConfiguration.h"
 #include "ArenaAllocator/InternalAllocatorFactory.h"
 #include "ArenaAllocator/InternalLoggerFactory.h"
+#include "NativeAllocator/malloc.h"
 #include <cstdlib>
 #include <optional>
 #include <unistd.h>
@@ -61,7 +62,7 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 		static std::mutex mutex;
 		std::lock_guard<std::mutex> guard{mutex};
 		if (instance == nullptr) {
-			instance = static_cast<ArenaAllocatorSingleton*>(__libc_malloc(sizeof(ArenaAllocatorSingleton)));
+			instance = static_cast<ArenaAllocatorSingleton*>(NativeAllocator::malloc(sizeof(ArenaAllocatorSingleton)));
 			if (instance != nullptr) {
 				instance = new (instance) ArenaAllocatorSingleton(); // NOLINT unlimited lifetime intended
 			} else {
