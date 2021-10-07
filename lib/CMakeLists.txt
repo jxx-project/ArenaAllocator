@@ -42,16 +42,16 @@ endif()
 check_cxx_source_compiles("
 	#include <cstddef>
 
-	extern \"C\" void* _malloc(std::size_t size);
-	extern \"C\" void _free(void* ptr);
-	extern \"C\" void* _calloc(std::size_t nmemb, std::size_t size);
-	extern \"C\" void* _realloc(void* ptr, std::size_t size);
+	extern \"C\" void* __malloc(std::size_t size);
+	extern \"C\" void __free(void* ptr);
+	extern \"C\" void* __calloc(std::size_t nmemb, std::size_t size);
+	extern \"C\" void* __realloc(void* ptr, std::size_t size);
 
 	int main(int argc, char* argv[]) {
-		void* ptr{_malloc(1)};
-		ptr = _realloc(ptr, 2);
-		_free(ptr);
-		ptr = _calloc(1, 2);
+		void* ptr{__malloc(1)};
+		ptr = __realloc(ptr, 2);
+		__free(ptr);
+		ptr = __calloc(1, 2);
 		return 0;
 	}
 	" HasNativeAllocator_Prefix)
