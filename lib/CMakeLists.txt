@@ -7,60 +7,16 @@
 find_package(Static REQUIRED)
 
 cmake_minimum_required(VERSION 3.13)
-project(ArenaAllocator VERSION 0.0.1 LANGUAGES CXX)
 
 include(GNUInstallDirs)
 include(CMakePackageConfigHelpers)
-include(CheckCXXSourceCompiles)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS NO)
 
-add_library(NativeAllocator INTERFACE)
-check_cxx_source_compiles("
-	#include <cstddef>
-
-	extern \"C\" void* __libc_malloc(std::size_t size);
-	extern \"C\" void __libc_free(void* ptr);
-	extern \"C\" void* __libc_calloc(std::size_t nmemb, std::size_t size);
-	extern \"C\" void* __libc_realloc(void* ptr, std::size_t size);
-
-	int main(int argc, char* argv[]) {
-		void* ptr{__libc_malloc(1)};
-		ptr = __libc_realloc(ptr, 2);
-		__libc_free(ptr);
-		ptr = __libc_calloc(1, 2);
-		return 0;
-	}
-	" HasNativeAllocator__libc_Prefix)
-if(HasNativeAllocator__libc_Prefix)
-	target_include_directories(NativeAllocator INTERFACE
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativeAllocator__libc_Prefix/include>
-		$<INSTALL_INTERFACE:NativeAllocator__libc_Prefix/include>)
-endif()
-check_cxx_source_compiles("
-	#include <cstddef>
-
-	extern \"C\" void* __malloc(std::size_t size);
-	extern \"C\" void __free(void* ptr);
-	extern \"C\" void* __calloc(std::size_t nmemb, std::size_t size);
-	extern \"C\" void* __realloc(void* ptr, std::size_t size);
-
-	int main(int argc, char* argv[]) {
-		void* ptr{__malloc(1)};
-		ptr = __realloc(ptr, 2);
-		__free(ptr);
-		ptr = __calloc(1, 2);
-		return 0;
-	}
-	" HasNativeAllocator_Prefix)
-if(HasNativeAllocator_Prefix)
-	target_include_directories(NativeAllocator INTERFACE
-		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/NativeAllocator_Prefix/include>
-		$<INSTALL_INTERFACE:NativeAllocator_Prefix/include>)
-endif()
-      
+add_subdirectory(native_allocator)
+     
 file(GLOB ArenaAllocatorLib_SRCS_G src/ArenaAllocator/*.cpp)
 add_library(ArenaAllocatorStatic STATIC ${ArenaAllocatorLib_SRCS_G})
 set_target_properties(ArenaAllocatorStatic PROPERTIES DEBUG_POSTFIX d)

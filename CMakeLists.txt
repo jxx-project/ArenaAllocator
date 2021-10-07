@@ -5,10 +5,7 @@
 #
 
 cmake_minimum_required(VERSION 3.13)
-project(ArenaAllocator VERSION 0.0.1 LANGUAGES CXX)
-
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
+project(ArenaAllocator VERSION 0.0.1)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
