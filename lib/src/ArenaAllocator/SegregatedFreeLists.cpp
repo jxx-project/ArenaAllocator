@@ -31,22 +31,20 @@ SegregatedFreeLists::~SegregatedFreeLists() noexcept
 
 void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result{};
 	auto delegateMallocFunc{[&](std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->malloc(size), 0, true};
 		result.propagateErrno = errno;
 		return result;
 	}};
+	Timer timer(OperationType::MALLOC);
+	ChunkMap::AllocateResult result{chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways)};
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::MALLOC);
-		result = chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
+			log(nanosecondsUsed, OperationType::MALLOC, [&] {
 				return Message("{}::malloc({}) -> {}", className, size, result.ptr);
 			});
 		}
-	} else {
-		result = chunks.allocate(size, delegateMallocFunc, ChunkMap::alignAlways);
 	}
 	errno = result.propagateErrno;
 	return result.ptr;
@@ -54,37 +52,33 @@ void* SegregatedFreeLists::malloc(std::size_t size) noexcept
 
 void SegregatedFreeLists::free(void* ptr) noexcept
 {
-	ChunkMap::DeallocateResult result{};
+	Timer timer(OperationType::FREE);
+	ChunkMap::DeallocateResult result{chunks.deallocate(ptr)};
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::FREE);
-		result = chunks.deallocate(ptr);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
+			log(nanosecondsUsed, OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
 		}
-	} else {
-		result = chunks.deallocate(ptr);
 	}
 	errno = result.propagateErrno;
 }
 
 void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result{};
 	auto delegateCallocFunc{[&](std::size_t nmemb, std::size_t size) {
 		ChunkMap::AllocateResult result{delegate->calloc(nmemb, size), 0, true};
 		result.propagateErrno = errno;
 		return result;
 	}};
+	Timer timer(OperationType::CALLOC);
+	ChunkMap::AllocateResult result{chunks.allocate(nmemb, size, delegateCallocFunc)};
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::CALLOC);
-		result = chunks.allocate(nmemb, size, delegateCallocFunc);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
+			log(nanosecondsUsed, OperationType::CALLOC, [&] {
 				return Message("{}::calloc({}, {}) -> {}", className, nmemb, size, result.ptr);
 			});
 		}
-	} else {
-		result = chunks.allocate(nmemb, size, delegateCallocFunc);
 	}
 	errno = result.propagateErrno;
 	return result.ptr;
@@ -92,17 +86,15 @@ void* SegregatedFreeLists::calloc(std::size_t nmemb, std::size_t size) noexcept
 
 void* SegregatedFreeLists::realloc(void* ptr, std::size_t size) noexcept
 {
-	ChunkMap::AllocateResult result{};
+	Timer timer(OperationType::REALLOC);
+	ChunkMap::AllocateResult result{chunks.reallocate(ptr, size)};
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::REALLOC);
-		result = chunks.reallocate(ptr, size);
 		if (!result.fromDelegate) {
-			log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
+			log(nanosecondsUsed, OperationType::REALLOC, [&] {
 				return Message("{}::realloc({}, {}) -> {}", className, ptr, size, result.ptr);
 			});
 		}
-	} else {
-		result = chunks.reallocate(ptr, size);
 	}
 	errno = result.propagateErrno;
 	return result.ptr;

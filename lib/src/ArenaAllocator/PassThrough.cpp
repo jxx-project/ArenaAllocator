@@ -24,57 +24,47 @@ PassThrough::~PassThrough() noexcept
 
 void* PassThrough::malloc(std::size_t size) noexcept
 {
-	void* result{nullptr};
+	Timer timer(OperationType::MALLOC);
+	void* result{NativeAllocator::malloc(size)};
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::MALLOC);
-		result = NativeAllocator::malloc(size);
-		log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
-			return Message("{}::malloc({}) -> {}", className, size, result);
-		});
-	} else {
-		result = NativeAllocator::malloc(size);
+		log(nanosecondsUsed, OperationType::MALLOC, [&] { return Message("{}::malloc({}) -> {}", className, size, result); });
 	}
 	return result;
 }
 
 void PassThrough::free(void* ptr) noexcept
 {
-	void* result{nullptr};
+	Timer timer(OperationType::FREE);
+	NativeAllocator::free(ptr);
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::FREE);
-		NativeAllocator::free(ptr);
-		log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
-	} else {
-		NativeAllocator::free(ptr);
+		log(nanosecondsUsed, OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
 	}
 }
 
 void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
-	void* result{nullptr};
+	Timer timer(OperationType::CALLOC);
+	void* result{NativeAllocator::calloc(nmemb, size)};
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::CALLOC);
-		result = NativeAllocator::calloc(nmemb, size);
-		log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
+		log(nanosecondsUsed, OperationType::CALLOC, [&] {
 			return Message("{}::calloc({}, {}) -> {}", className, nmemb, size, result);
 		});
-	} else {
-		result = NativeAllocator::calloc(nmemb, size);
 	}
 	return result;
 }
 
 void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 {
-	void* result{nullptr};
+	Timer timer(OperationType::REALLOC);
+	void* result{NativeAllocator::realloc(ptr, size)};
+	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::REALLOC);
-		result = NativeAllocator::realloc(ptr, size);
-		log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
+		log(nanosecondsUsed, OperationType::REALLOC, [&] {
 			return Message("{}::realloc({}, {}) -> {}", className, ptr, size, result);
 		});
-	} else {
-		result = NativeAllocator::realloc(ptr, size);
 	}
 	return result;
 }

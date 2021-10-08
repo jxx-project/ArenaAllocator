@@ -13,6 +13,7 @@
 #include "NativeAllocator/malloc.h"
 #include <cstdlib>
 #include <optional>
+#include <stm/stm.h>
 #include <unistd.h>
 
 namespace Bootstrap {
@@ -94,6 +95,8 @@ ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	logger->operator()(ArenaAllocator::LogLevel::DEBUG, [&] {
 		return ArenaAllocator::Message("ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:{}", this);
 	});
+	stm_trace_init();
+	stm_trace[0] = 0x41;
 }
 
 } // namespace Bootstrap
