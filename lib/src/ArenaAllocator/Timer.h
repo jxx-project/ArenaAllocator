@@ -10,7 +10,6 @@
 
 #include "ArenaAllocator/OperationType.h"
 #include <chrono>
-#include <sys/resource.h>
 
 namespace ArenaAllocator {
 

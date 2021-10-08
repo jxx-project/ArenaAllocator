@@ -93,15 +93,6 @@ void Allocation::realloc(std::size_t size) noexcept
 	write(size);
 }
 
-void Allocation::reallocarray(std::size_t nmemb, std::size_t size) noexcept
-{
-	std::lock_guard<std::mutex> guard{mutex};
-	void* result{::reallocarray(ptr, nmemb, size)};
-	logger([&] { return Message("Allocation::reallocarray({}, {}, {}) -> {}", ptr, nmemb, size, result); });
-	ptr = result;
-	write(nmemb * size);
-}
-
 void Allocation::write(std::size_t size) noexcept
 {
 	if (doWriteToAllocated && ptr != nullptr) {
@@ -133,7 +124,7 @@ void loadAllocations(std::vector<Allocation>* allocations, std::uint_fast32_t ra
 			allocation.realloc(sizeDistribution(gen));
 			break;
 		case 4:
-			allocation.reallocarray(sizeDistribution(gen), sizeDistribution(gen));
+			allocation.realloc(sizeDistribution(gen) * sizeDistribution(gen));
 			break;
 		default:
 			logger([&] { return Message("loadAllocations({}, {}) unexpected operation index", allocations, randomSeed); });

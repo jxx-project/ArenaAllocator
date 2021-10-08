@@ -70,34 +70,6 @@ ChunkMap::AllocateResult ChunkMap::reallocate(void* ptr, std::size_t size) const
 	return result;
 }
 
-ChunkMap::AllocateResult ChunkMap::reallocate(void* ptr, std::size_t nmemb, std::size_t size) const noexcept
-{
-	AllocateResult result{nullptr, 0, false};
-	if (ptr != nullptr && ptr != ptrToEmpty) {
-		AggregateType::const_iterator it{chunks.find(ptr)};
-		if (it != chunks.end()) {
-			if (size > 0 && nmemb > std::numeric_limits<std::size_t>::max() / size) {
-				// nmemb * size would overflow
-				result.ptr = nullptr;
-				result.propagateErrno = ENOMEM;
-			} else {
-				result = reallocate(it->second, nmemb * size);
-			}
-		} else if (delegate != nullptr) {
-			result.ptr = delegate->reallocarray(ptr, nmemb, size);
-			result.propagateErrno = errno;
-			result.fromDelegate = true;
-		}
-	} else {
-		result = allocate(nmemb, size, [&](std::size_t nmemb, std::size_t size) {
-			AllocateResult result{delegate->reallocarray(nullptr, nmemb, size), 0, true};
-			result.propagateErrno = errno;
-			return result;
-		});
-	}
-	return result;
-}
-
 ChunkMap::AllocateResult ChunkMap::reallocate(FreeList::ListType::iterator const& currentChunk, std::size_t size) const noexcept
 {
 	AllocateResult result{nullptr, 0, false};

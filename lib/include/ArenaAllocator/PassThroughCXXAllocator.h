@@ -9,11 +9,9 @@
 #define ArenaAllocator_PassThroughCXXAllocator_h_INCLUDED
 
 #include "ArenaAllocator/BuildConfiguration.h"
+#include "NativeAllocator/malloc.h"
 #include <cstddef>
 #include <sys/mman.h>
-
-extern "C" void* __libc_malloc(std::size_t size);
-extern "C" void __libc_free(void* ptr);
 
 namespace ArenaAllocator {
 
@@ -37,7 +35,7 @@ public:
 
 	T* allocate(std::size_t size)
 	{
-		T* result{static_cast<T*>(__libc_malloc(size * sizeof(T)))};
+		T* result{static_cast<T*>(NativeAllocator::malloc(size * sizeof(T)))};
 		if constexpr (BuildConfiguration::useMlock) {
 			::mlock(result, size * sizeof(T));
 		}
@@ -46,7 +44,7 @@ public:
 
 	void deallocate(T* ptr, std::size_t)
 	{
-		__libc_free(ptr);
+		NativeAllocator::free(ptr);
 	}
 };
 

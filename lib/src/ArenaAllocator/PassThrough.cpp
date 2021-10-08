@@ -7,18 +7,8 @@
 
 #include "ArenaAllocator/PassThrough.h"
 #include "ArenaAllocator/Timer.h"
+#include "NativeAllocator/malloc.h"
 #include <cerrno>
-
-extern "C" void* __libc_malloc(std::size_t size);
-extern "C" void __libc_free(void* ptr);
-extern "C" void* __libc_calloc(std::size_t nmemb, std::size_t size);
-extern "C" void* __libc_realloc(void* ptr, std::size_t size);
-extern "C" void* __libc_reallocarray(void* ptr, std::size_t nmemb, std::size_t size);
-extern "C" int __libc_posix_memalign(void** memptr, std::size_t alignment, std::size_t size);
-extern "C" void* __libc_aligned_alloc(std::size_t alignment, std::size_t size);
-extern "C" void* __libc_valloc(std::size_t size);
-extern "C" void* __libc_memalign(std::size_t alignment, std::size_t size);
-extern "C" void* __libc_pvalloc(std::size_t size);
 
 namespace ArenaAllocator {
 
@@ -36,13 +26,13 @@ void* PassThrough::malloc(std::size_t size) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::MALLOC};
-		result = __libc_malloc(size);
+		Timer timer(OperationType::MALLOC);
+		result = NativeAllocator::malloc(size);
 		log(timer.getNanoseconds(), OperationType::MALLOC, [&] {
 			return Message("{}::malloc({}) -> {}", className, size, result);
 		});
 	} else {
-		result = __libc_malloc(size);
+		result = NativeAllocator::malloc(size);
 	}
 	return result;
 }
@@ -51,11 +41,11 @@ void PassThrough::free(void* ptr) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::FREE};
-		__libc_free(ptr);
+		Timer timer(OperationType::FREE);
+		NativeAllocator::free(ptr);
 		log(timer.getNanoseconds(), OperationType::FREE, [&] { return Message("{}::free({})", className, ptr); });
 	} else {
-		__libc_free(ptr);
+		NativeAllocator::free(ptr);
 	}
 }
 
@@ -63,13 +53,13 @@ void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::CALLOC};
-		result = __libc_calloc(nmemb, size);
+		Timer timer(OperationType::CALLOC);
+		result = NativeAllocator::calloc(nmemb, size);
 		log(timer.getNanoseconds(), OperationType::CALLOC, [&] {
 			return Message("{}::calloc({}, {}) -> {}", className, nmemb, size, result);
 		});
 	} else {
-		result = __libc_calloc(nmemb, size);
+		result = NativeAllocator::calloc(nmemb, size);
 	}
 	return result;
 }
@@ -78,152 +68,13 @@ void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 {
 	void* result{nullptr};
 	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::REALLOC};
-		result = __libc_realloc(ptr, size);
+		Timer timer(OperationType::REALLOC);
+		result = NativeAllocator::realloc(ptr, size);
 		log(timer.getNanoseconds(), OperationType::REALLOC, [&] {
 			return Message("{}::realloc({}, {}) -> {}", className, ptr, size, result);
 		});
 	} else {
-		result = __libc_realloc(ptr, size);
-	}
-	return result;
-}
-
-namespace {
-
-// glibc as of version 2.31 implements __libc_reallocarray in terms of realloc, which results in a recursion
-// into the custom allocator: Deflect into __libc_realloc directly.
-void* reallocarrayUsingLibcRealloc(void* ptr, std::size_t nmemb, std::size_t size) noexcept
-{
-	void* result{nullptr};
-	if (size > 0 && nmemb > std::numeric_limits<std::size_t>::max() / size) {
-		// nmemb * size would overflow
-		errno = ENOMEM;
-	} else {
-		result = __libc_realloc(ptr, nmemb * size);
-	}
-	return result;
-}
-
-} // namespace
-
-void* PassThrough::reallocarray(void* ptr, std::size_t nmemb, std::size_t size) noexcept
-{
-	void* result{nullptr};
-	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::REALLOCARRAY};
-		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
-		log(timer.getNanoseconds(), OperationType::REALLOCARRAY, [&] {
-			return Message("{}::reallocarray({}, {}, {}) -> {}", className, ptr, nmemb, size, result);
-		});
-	} else {
-		result = reallocarrayUsingLibcRealloc(ptr, nmemb, size);
-	}
-	return result;
-}
-
-namespace {
-
-// glibc as of version 2.31 does not provide __libc_posix_memalign.
-int posixMemalignUsingLibcMemalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
-{
-	int result{0};
-	if ((alignment & (alignment - 1)) == 0 && alignment >= sizeof(void*)) {
-		int propagateErrno{errno};
-		void* memalignResult{__libc_memalign(alignment, size)};
-		if (memalignResult != nullptr) {
-			*memptr = memalignResult;
-		} else {
-			result = ENOMEM;
-		}
-		errno = propagateErrno;
-	} else {
-		result = EINVAL;
-	}
-	return result;
-}
-
-} // namespace
-
-int PassThrough::posix_memalign(void** memptr, std::size_t alignment, std::size_t size) noexcept
-{
-	int result{0};
-	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::POSIX_MEMALIGN};
-		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
-		log(timer.getNanoseconds(), OperationType::POSIX_MEMALIGN, [&] {
-			return Message("{}::posix_memalign(&{}, {} {}) -> %d", className, *memptr, alignment, size, result);
-		});
-	} else {
-		result = posixMemalignUsingLibcMemalign(memptr, alignment, size);
-	}
-	return result;
-}
-
-namespace {
-
-// glibc as of version 2.31 does not provide __libc_aligned_alloc.
-void* alignedAllocUsingLibcMemalign(std::size_t alignment, std::size_t size) noexcept
-{
-	return __libc_memalign(alignment, size);
-}
-
-} // namespace
-
-void* PassThrough::aligned_alloc(std::size_t alignment, std::size_t size) noexcept
-{
-	void* result{nullptr};
-	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::ALIGNED_ALLOC};
-		result = alignedAllocUsingLibcMemalign(alignment, size);
-		log(timer.getNanoseconds(), OperationType::ALIGNED_ALLOC, [&] {
-			return Message("{}::aligned_alloc({} {}) -> {}", className, alignment, size, result);
-		});
-	} else {
-		result = alignedAllocUsingLibcMemalign(alignment, size);
-	}
-	return result;
-}
-
-void* PassThrough::valloc(std::size_t size) noexcept
-{
-	void* result{nullptr};
-	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::VALLOC};
-		result = __libc_valloc(size);
-		log(timer.getNanoseconds(), OperationType::VALLOC, [&] { return Message("PassThrough::valloc({}) -> {}", size, result); });
-	} else {
-		result = __libc_valloc(size);
-	}
-	return result;
-}
-
-void* PassThrough::memalign(std::size_t alignment, std::size_t size) noexcept
-{
-	void* result{nullptr};
-	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::MEMALIGN};
-		result = __libc_memalign(alignment, size);
-		log(timer.getNanoseconds(), OperationType::MEMALIGN, [&] {
-			return Message("{}::memalign({} {}) -> {}", className, alignment, size, result);
-		});
-	} else {
-		result = __libc_memalign(alignment, size);
-	}
-	return result;
-}
-
-void* PassThrough::pvalloc(std::size_t size) noexcept
-{
-	void* result{nullptr};
-	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer{OperationType::PVALLOC};
-		result = __libc_pvalloc(size);
-		log(timer.getNanoseconds(), OperationType::PVALLOC, [&] {
-			return Message("{}::pvalloc({}) -> {}", className, size, result);
-		});
-	} else {
-		result = __libc_pvalloc(size);
+		result = NativeAllocator::realloc(ptr, size);
 	}
 	return result;
 }

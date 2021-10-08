@@ -18,12 +18,6 @@ enum class OperationType : unsigned
 	FREE,
 	CALLOC,
 	REALLOC,
-	REALLOCARRAY,
-	POSIX_MEMALIGN,
-	ALIGNED_ALLOC,
-	VALLOC,
-	MEMALIGN,
-	PVALLOC,
 	UNKNOWN // Last entry, index indicating number of types
 };
 

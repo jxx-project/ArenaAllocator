@@ -10,6 +10,7 @@
 #include "ArenaAllocator/EnvironmentConfiguration.h"
 #include "ArenaAllocator/InternalAllocatorFactory.h"
 #include "ArenaAllocator/InternalLoggerFactory.h"
+#include "NativeAllocator/malloc.h"
 #include <cstdlib>
 #include <optional>
 #include <unistd.h>
@@ -61,7 +62,7 @@ ArenaAllocatorSingleton& ArenaAllocatorSingleton::getInstance() noexcept
 		static std::mutex mutex;
 		std::lock_guard<std::mutex> guard{mutex};
 		if (instance == nullptr) {
-			instance = static_cast<ArenaAllocatorSingleton*>(__libc_malloc(sizeof(ArenaAllocatorSingleton)));
+			instance = static_cast<ArenaAllocatorSingleton*>(NativeAllocator::malloc(sizeof(ArenaAllocatorSingleton)));
 			if (instance != nullptr) {
 				instance = new (instance) ArenaAllocatorSingleton(); // NOLINT unlimited lifetime intended
 			} else {
@@ -130,34 +131,4 @@ extern "C" void* calloc(std::size_t nmemb, std::size_t size)
 extern "C" void* realloc(void* ptr, std::size_t size)
 {
 	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().realloc(ptr, size);
-}
-
-extern "C" void* reallocarray(void* ptr, std::size_t nmemb, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().reallocarray(ptr, nmemb, size);
-}
-
-extern "C" int posix_memalign(void** memptr, std::size_t alignment, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().posix_memalign(memptr, alignment, size);
-}
-
-extern "C" void* aligned_alloc(std::size_t alignment, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().aligned_alloc(alignment, size);
-}
-
-extern "C" void* valloc(std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().valloc(size);
-}
-
-extern "C" void* memalign(std::size_t alignment, std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().memalign(alignment, size);
-}
-
-extern "C" void* pvalloc(std::size_t size)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().pvalloc(size);
 }

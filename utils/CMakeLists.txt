@@ -5,10 +5,6 @@
 #
 
 cmake_minimum_required(VERSION 3.13)
-project(ArenaAllocator VERSION 0.0.1 LANGUAGES CXX)
-
-include(GNUInstallDirs)
-include(CMakePackageConfigHelpers)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -16,7 +12,6 @@ set(CMAKE_CXX_EXTENSIONS NO)
 
 find_package(Threads REQUIRED)  
 find_package(Static REQUIRED)
-
 
 file(GLOB Utils_SRCS_G lib/src/*.cpp)
 
