@@ -95,7 +95,11 @@ ArenaAllocatorSingleton::ArenaAllocatorSingleton() noexcept :
 	logger->operator()(ArenaAllocator::LogLevel::DEBUG, [&] {
 		return ArenaAllocator::Message("ArenaAllocatorSingleton::ArenaAllocatorSingleton() -> this:{}", this);
 	});
-	stm_trace_init();
+	if (stm_trace_init() != 0) {
+		ArenaAllocator::Console::exit([&] {
+			return ArenaAllocator::Message("ArenaAllocatorSingleton::ArenaAllocatorSingleton(): failed to initialize STM");
+		});
+	}
 	stm_trace[0] = 0x41;
 }
 

@@ -5,6 +5,7 @@
 #
 
 find_package(Static REQUIRED)
+find_package(Stm REQUIRED)
 
 cmake_minimum_required(VERSION 3.13)
 
@@ -24,7 +25,7 @@ target_compile_options(ArenaAllocatorStatic PRIVATE -fPIC -fno-exceptions -fno-r
 target_include_directories(ArenaAllocatorStatic PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
-target_link_libraries(ArenaAllocatorStatic PUBLIC NativeAllocator Static)
+target_link_libraries(ArenaAllocatorStatic PUBLIC NativeAllocator Static stm)
 
 file(GLOB ArenaAllocatorLibBootstrap_SRCS_G src/Bootstrap/*.cpp)
 add_library(ArenaAllocatorLib SHARED ${ArenaAllocatorLibBootstrap_SRCS_G})
