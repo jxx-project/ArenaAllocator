@@ -10,7 +10,7 @@
 
 namespace ArenaAllocator {
 
-Timer::Timer(OperationType operationType) noexcept : operationType{operationType}, terminated{false}
+Timer::Timer(OperationType operationType, std::size_t size) noexcept : operationType{operationType}, size{size}, terminated{false}
 {
 	stm_trace[0] = (static_cast<unsigned>(operationType) + 1) * 3;
 }
@@ -24,7 +24,7 @@ Timer::~Timer() noexcept
 
 std::chrono::nanoseconds Timer::getNanoseconds() noexcept
 {
-	stm_trace[0] = (static_cast<unsigned>(operationType) + 1) * 3 + 1;
+	stm_trace[0] = (static_cast<unsigned>(operationType) + 1) * 3 + 1 + (size << 8);
 	terminated = true;
 	return std::chrono::nanoseconds{0};
 }

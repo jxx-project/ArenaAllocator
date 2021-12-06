@@ -107,7 +107,7 @@ void loadAllocations(std::vector<Allocation>* allocations, std::uint_fast32_t ra
 	std::mt19937 gen(randomSeed);
 	std::uniform_int_distribution<std::size_t> allocationDistribution{0, allocations->size() - 1};
 	std::uniform_int_distribution<std::size_t> sizeDistribution{0, maxChunkSize};
-	std::uniform_int_distribution<int> opIndexDistribution{0, 4};
+	std::uniform_int_distribution<int> opIndexDistribution{0, 2};
 	for (std::size_t i = 0; nInvocations == 0 || i < nInvocations; ++i) {
 		Allocation& allocation{allocations->at(allocationDistribution(gen))};
 		switch (opIndexDistribution(gen)) {
@@ -118,13 +118,7 @@ void loadAllocations(std::vector<Allocation>* allocations, std::uint_fast32_t ra
 			allocation.free();
 			break;
 		case 2:
-			allocation.calloc(sizeDistribution(gen), sizeDistribution(gen));
-			break;
-		case 3:
 			allocation.realloc(sizeDistribution(gen));
-			break;
-		case 4:
-			allocation.realloc(sizeDistribution(gen) * sizeDistribution(gen));
 			break;
 		default:
 			logger([&] { return Message("loadAllocations({}, {}) unexpected operation index", allocations, randomSeed); });

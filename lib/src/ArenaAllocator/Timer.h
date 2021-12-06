@@ -10,6 +10,7 @@
 
 #include "ArenaAllocator/OperationType.h"
 #include <chrono>
+#include <cstddef>
 
 namespace ArenaAllocator {
 
@@ -18,13 +19,14 @@ class Timer
 public:
 	using ClockType = std::chrono::steady_clock;
 
-	Timer(OperationType operationType) noexcept;
+	Timer(OperationType operationType, std::size_t size = 0) noexcept;
 	~Timer() noexcept;
 
 	[[nodiscard]] std::chrono::nanoseconds getNanoseconds() noexcept;
 
 private:
 	OperationType operationType;
+	std::size_t size;
 	bool terminated;
 };
 

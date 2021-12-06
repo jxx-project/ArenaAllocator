@@ -24,7 +24,7 @@ PassThrough::~PassThrough() noexcept
 
 void* PassThrough::malloc(std::size_t size) noexcept
 {
-	Timer timer(OperationType::MALLOC);
+	Timer timer(OperationType::MALLOC, size);
 	void* result{NativeAllocator::malloc(size)};
 	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -45,7 +45,7 @@ void PassThrough::free(void* ptr) noexcept
 
 void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 {
-	Timer timer(OperationType::CALLOC);
+	Timer timer(OperationType::CALLOC, nmemb * size);
 	void* result{NativeAllocator::calloc(nmemb, size)};
 	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
@@ -58,7 +58,7 @@ void* PassThrough::calloc(std::size_t nmemb, std::size_t size) noexcept
 
 void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 {
-	Timer timer(OperationType::REALLOC);
+	Timer timer(OperationType::REALLOC, size);
 	void* result{NativeAllocator::realloc(ptr, size)};
 	std::chrono::nanoseconds nanosecondsUsed{timer.getNanoseconds()};
 	if (log.isLevel(LogLevel::TRACE)) {
