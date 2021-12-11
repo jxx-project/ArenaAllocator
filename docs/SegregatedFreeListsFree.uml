@@ -1,0 +1,18 @@
+@startuml
+
+skinparam style strictuml
+skinparam dpi 300
+
+participant ArenaAllocatorSingleton
+participant SegregatedFreeLists
+participant ChunkMap
+participant FreeList
+
+ArenaAllocatorSingleton -> SegregatedFreeLists : free(ptr)
+SegregatedFreeLists -> ChunkMap : at(ptr)
+ChunkMap -> ChunkMap : hash search
+ChunkMap --> SegregatedFreeLists : iterator
+SegregatedFreeLists -> FreeList : deallocate(iterator)
+FreeList -> FreeList : free.splice(free.begin(), allocated, iterator);
+
+@enduml

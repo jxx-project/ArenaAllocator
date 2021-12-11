@@ -13,7 +13,7 @@ namespace ArenaAllocator {
 std::string_view to_string(OperationType operationType)
 {
 	static const std::array<const std::string_view, unsigned(OperationType::UNKNOWN) + 1> names{
-		"malloc", "free", "calloc", "realloc", "unknown"};
+		"malloc", "free", "calloc", "realloc", "mmap", "munmap", "unknown"};
 	return names.at(unsigned(operationType));
 }
 

@@ -132,3 +132,13 @@ extern "C" void* realloc(void* ptr, std::size_t size)
 {
 	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().realloc(ptr, size);
 }
+
+extern "C" void* mmap(void* addr, std::size_t length, int prot, int flags, int fd, off_t offset)
+{
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().mmap(addr, length, prot, flags, fd, offset);
+}
+
+extern "C" int munmap(void* addr, std::size_t length)
+{
+	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().munmap(addr, length);
+}

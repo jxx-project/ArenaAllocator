@@ -16,6 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS NO)
 
 add_subdirectory(native_allocator)
+add_subdirectory(native_mmap)
      
 file(GLOB ArenaAllocatorLib_SRCS_G src/ArenaAllocator/*.cpp)
 add_library(ArenaAllocatorStatic STATIC ${ArenaAllocatorLib_SRCS_G})
@@ -24,7 +25,7 @@ target_compile_options(ArenaAllocatorStatic PRIVATE -fPIC -fno-exceptions -fno-r
 target_include_directories(ArenaAllocatorStatic PUBLIC
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 	$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/src>)
-target_link_libraries(ArenaAllocatorStatic PUBLIC NativeAllocator Static)
+target_link_libraries(ArenaAllocatorStatic PUBLIC NativeAllocator NativeMmap Static)
 
 file(GLOB ArenaAllocatorLibBootstrap_SRCS_G src/Bootstrap/*.cpp)
 add_library(ArenaAllocatorLib SHARED ${ArenaAllocatorLibBootstrap_SRCS_G})
@@ -39,7 +40,7 @@ target_include_directories(ArenaAllocatorLib PUBLIC
 	$<INSTALL_INTERFACE:include>)
 target_link_libraries(ArenaAllocatorLib PUBLIC ArenaAllocatorStatic)
 
-install(TARGETS ArenaAllocatorLib ArenaAllocatorStatic NativeAllocator EXPORT ArenaAllocatorTargets
+install(TARGETS ArenaAllocatorLib ArenaAllocatorStatic NativeAllocator NativeMmap EXPORT ArenaAllocatorTargets
 	RUNTIME DESTINATION ${CMAKE_INSTALL_LIBDIR})
 install(DIRECTORY include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
 install(EXPORT ArenaAllocatorTargets NAMESPACE ${PROJECT_NAME}:: DESTINATION share/ArenaAllocator/cmake)

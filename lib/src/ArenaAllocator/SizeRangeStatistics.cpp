@@ -103,6 +103,16 @@ void* SizeRangeStatistics::realloc(void* ptr, std::size_t size) noexcept
 	return result;
 }
 
+void* SizeRangeStatistics::mmap(void* addr, std::size_t length, int prot, int flags, int fd, off_t offset) noexcept
+{
+	return delegate.mmap(addr, length, prot, flags, fd, offset);
+}
+
+int SizeRangeStatistics::munmap(void* addr, std::size_t length) noexcept
+{
+	return delegate.munmap(addr, length);
+}
+
 void SizeRangeStatistics::dump() const noexcept
 {
 	if (log.isLevel(LogLevel::INFO)) {

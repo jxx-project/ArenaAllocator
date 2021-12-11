@@ -31,6 +31,8 @@ public:
 	void free(void* ptr) noexcept override;
 	void* calloc(std::size_t nmemb, std::size_t size) noexcept override;
 	void* realloc(void* ptr, std::size_t size) noexcept override;
+	void* mmap(void* addr, std::size_t length, int prot, int flags, int fd, off_t offset) noexcept override;
+	int munmap(void* addr, std::size_t length) noexcept override;
 	void dump() const noexcept override;
 
 	static constexpr char const* className{"SegregatedFreeLists"};

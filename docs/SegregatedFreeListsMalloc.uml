@@ -1,0 +1,20 @@
+@startuml
+
+skinparam style strictuml
+skinparam dpi 300
+
+participant ArenaAllocatorSingleton
+participant SegregatedFreeLists
+participant PoolMap
+participant FreeList
+
+ArenaAllocatorSingleton -> SegregatedFreeLists : malloc(size)
+SegregatedFreeLists -> PoolMap : at(size)
+PoolMap -> PoolMap : binary search
+PoolMap --> SegregatedFreeLists : FreeList*
+SegregatedFreeLists -> FreeList : allocate(size)
+FreeList -> FreeList : allocated.splice(allocated.begin(), free, free.begin())
+FreeList --> SegregatedFreeLists : allocated.front().data
+SegregatedFreeLists --> ArenaAllocatorSingleton : pointer to chunk data
+
+@enduml

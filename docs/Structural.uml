@@ -1,0 +1,122 @@
+@startuml
+
+skinparam style strictuml
+
+set namespaceSeparator ::
+
+namespace ArenaAllocator {
+
+ class Timer
+
+ class "PassThroughCXXAllocator<T>" as PassThroughCXXAllocator_T {
+  + allocate(size): T*
+  + deallocate(ptr, size): void
+ }
+ 
+ class "SizeRangeMap<T>" as SizeRangeMap_T {
+  + at(size): T*
+  + emplace(SizeRange, Args&&... args): bool
+  - aggregate: std::map<SizeRange, T>
+ }
+ SizeRangeMap_T -- PassThroughCXXAllocator_T
+ 
+ class "PoolMap<T>" as PoolMap_T {
+  + at(chunkSize): T*
+ }
+ SizeRangeMap_T --* PoolMap_T
+
+ class AllocationMap {
+  + registerAllocate(size, ptr): void
+  + registerReallocate(ptr, size, ptr): void
+  + registerDeallocate(ptr): void
+  - allocations: std::unordered_map<void*, Allocation>
+ }
+ AllocationMap -- PassThroughCXXAllocator_T
+ 
+ class Chunk {
+  + data: void*
+  + pool: FreeList*
+  + allocatedSize: size_t
+ }
+ 
+ class ChunkMap {
+  + allocate(size) : AllocateResult
+  + reallocate(ptr, size) : AllocateResult
+  + deallocate(ptr) : DellocateResult
+  - chunks: std::unordered_map<void*, std::list<Chunk>::iterator>
+  - pools: PoolMap<FreeList>&
+ }
+ ChunkMap -- Chunk
+ ChunkMap -- PassThroughCXXAllocator_T
+
+ interface Configuration
+ Configuration -- SizeRangeMap_T
+ 
+ class EnvironmentConfiguration
+ EnvironmentConfiguration --|> Configuration
+
+ interface Allocator {
+  + malloc(size) : void*
+  + free(ptr) : void
+  + calloc(nmemb, size) : void*
+  + realloc(ptr, size) : void*
+ }
+
+ interface Logger {
+  + operator()(callback): void
+  + operator()(duration, OperationType, callback): void
+  + operator()(LogLevel, callback): void
+  # log(duration, OperationType, Formatter)
+  # log(LogLevel, Formatter)
+ }
+
+ class FreeList {
+  + allocate(size): void*
+  + reallocate(std::list<Chunk>::iterator, size)
+  + deallocate(std::list<Chunk>::iterator)
+  - storage: std::vector<std::max_align_t>
+  - free: std::list<Chunk>
+  - allocated: std::list<Chunk>
+ }
+ FreeList -- Chunk
+ FreeList -- PassThroughCXXAllocator_T
+
+ class TimeTrace
+ TimeTrace --|> Logger
+ 
+ class Console
+ Console --|> Logger
+
+ class PassThrough
+ Allocator <|-- PassThrough
+ Logger --o PassThrough
+ PassThrough -- Timer
+
+ class SegregatedFreeLists {
+  - pools: PoolMap<FreeList>
+  - chunks: ChunkMap
+ }
+ Configuration --o SegregatedFreeLists
+ Allocator <|-- SegregatedFreeLists
+ Logger --o SegregatedFreeLists
+ SegregatedFreeLists -- Timer
+ SegregatedFreeLists -- FreeList
+ SegregatedFreeLists *-- PoolMap_T
+ SegregatedFreeLists *-- ChunkMap
+
+ class SizeRangeStatistics {
+  - pools: PoolMap<PoolStatistics>
+ }
+ Configuration --o SizeRangeStatistics
+ Allocator <|-- SizeRangeStatistics
+ Logger --o SizeRangeStatistics
+ SizeRangeStatistics *-- PoolMap_T
+ SizeRangeStatistics *-- AllocationMap
+
+'note top of PassThrough: Propagates malloc, free, calloc,\nrealloc to libc entry points.
+'note right of SegregatedFreeLists: Implements segregated free\nlists in pre-allocated pools.
+'note right of SizeRangeStatistics: Records pool usage while propagating\nto ArenaAllocator::PassThrough.
+
+}
+
+@enduml

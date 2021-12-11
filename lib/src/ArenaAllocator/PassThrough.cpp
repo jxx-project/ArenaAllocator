@@ -8,6 +8,7 @@
 #include "ArenaAllocator/PassThrough.h"
 #include "ArenaAllocator/Timer.h"
 #include "NativeAllocator/malloc.h"
+#include "NativeMmap/mman.h"
 #include <cerrno>
 
 namespace ArenaAllocator {
@@ -75,6 +76,36 @@ void* PassThrough::realloc(void* ptr, std::size_t size) noexcept
 		});
 	} else {
 		result = NativeAllocator::realloc(ptr, size);
+	}
+	return result;
+}
+
+void* PassThrough::mmap(void* addr, std::size_t length, int prot, int flags, int fd, off_t offset) noexcept
+{
+	void* result{nullptr};
+	if (log.isLevel(LogLevel::TRACE)) {
+		Timer timer(OperationType::MMAP);
+		result = NativeMmap::mmap(addr, length, prot, flags, fd, offset);
+		log(timer.getNanoseconds(), OperationType::MMAP, [&] {
+			return Message("{}::mmap({}, {}, {}, {}, {}, {}) -> {}", className, addr, length, prot, flags, fd, offset, result);
+		});
+	} else {
+		result = NativeMmap::mmap(addr, length, prot, flags, fd, offset);
+	}
+	return result;
+}
+
+int PassThrough::munmap(void* addr, std::size_t length) noexcept
+{
+	int result{-1};
+	if (log.isLevel(LogLevel::TRACE)) {
+		Timer timer(OperationType::MUNMAP);
+		result = NativeMmap::munmap(addr, length);
+		log(timer.getNanoseconds(), OperationType::MUNMAP, [&] {
+			return Message("{}::munmap({}, {}) -> {}", className, addr, length, result);
+		});
+	} else {
+		result = NativeMmap::munmap(addr, length);
 	}
 	return result;
 }

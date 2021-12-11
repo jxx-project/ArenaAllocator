@@ -18,6 +18,8 @@ enum class OperationType : unsigned
 	FREE,
 	CALLOC,
 	REALLOC,
+	MMAP,
+	MUNMAP,
 	UNKNOWN // Last entry, index indicating number of types
 };
 

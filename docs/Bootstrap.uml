@@ -1,0 +1,47 @@
+@startuml
+
+skinparam style strictuml
+skinparam dpi 300
+
+set namespaceSeparator ::
+
+namespace Bootstrap {
+
+ class ArenaAllocatorSingleton
+
+ ArenaAllocatorSingleton *-- ArenaAllocator::InternalAllocatorFactory
+ ArenaAllocatorSingleton *-- ArenaAllocator::InternalLoggerFactory
+ ArenaAllocatorSingleton o-- ArenaAllocator::Allocator
+ ArenaAllocatorSingleton o-- ArenaAllocator::Logger
+ ArenaAllocatorSingleton *-- ArenaAllocator::EnvironmentConfiguration
+
+}
+
+note right of Bootstrap::ArenaAllocatorSingleton: Implementation module also provides extern "C"\nhooks for malloc, free, calloc, realloc.
+
+namespace ArenaAllocator {
+
+ interface Configuration
+ 
+ class EnvironmentConfiguration
+ EnvironmentConfiguration --|> Configuration
+ EnvironmentConfiguration -- AllocatorFactory
+ EnvironmentConfiguration -- LoggerFactory
+
+ interface AllocatorFactory
+
+ interface LoggerFactory
+
+ class InternalAllocatorFactory
+ InternalAllocatorFactory --|> AllocatorFactory
+
+ class InternalLoggerFactory
+ InternalLoggerFactory --|> LoggerFactory
+ 
+ interface Allocator
+ 
+ interface Logger
+
+}
+
+@enduml
