@@ -32,4 +32,23 @@ if(HasNativeMmap__Prefix)
 		$<INSTALL_INTERFACE:__Prefix/include>)
 	install(DIRECTORY __Prefix/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
 endif()
+check_cxx_source_compiles("
+	#include <cstddef>
+	#include <unistd.h>
+
+	extern \"C\" void* _mmap(void* addr, std::size_t length, int prot, int flags, int fd, off_t offset);
+	extern \"C\" int _munmap(void* addr, std::size_t length);
+
+	int main(int argc, char* argv[]) {
+		void* ptr{_mmap(nullptr, 0, 0, 0, 0, 0)};
+		int success{_munmap(nullptr, 0)};
+		return 0;
+	}
+	" HasNativeMmap_Prefix)
+if(HasNativeMmap_Prefix)
+	target_include_directories(NativeMmap INTERFACE
+		$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/_Prefix/include>
+		$<INSTALL_INTERFACE:_Prefix/include>)
+	install(DIRECTORY _Prefix/include/ DESTINATION ${CMAKE_INSTALL_INCLUDEDIR} FILES_MATCHING PATTERN "*.h")
+endif()
       
