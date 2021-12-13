@@ -37,11 +37,11 @@ check_cxx_source_compiles("
 	#include <unistd.h>
 
 	extern \"C\" void* _mmap(void* addr, std::size_t length, int prot, int flags, int fd, off_t offset);
-	extern \"C\" int _munmap(void* addr, std::size_t length);
+	//extern \"C\" int _munmap(void* addr, std::size_t length);
 
 	int main(int argc, char* argv[]) {
 		void* ptr{_mmap(nullptr, 0, 0, 0, 0, 0)};
-		int success{_munmap(nullptr, 0)};
+		//int success{_munmap(nullptr, 0)};
 		return 0;
 	}
 	" HasNativeMmap_Prefix)

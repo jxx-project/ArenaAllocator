@@ -108,10 +108,10 @@ void* SizeRangeStatistics::mmap(void* addr, std::size_t length, int prot, int fl
 	return delegate.mmap(addr, length, prot, flags, fd, offset);
 }
 
-int SizeRangeStatistics::munmap(void* addr, std::size_t length) noexcept
-{
-	return delegate.munmap(addr, length);
-}
+// int SizeRangeStatistics::munmap(void* addr, std::size_t length) noexcept
+// {
+// 	return delegate.munmap(addr, length);
+// }
 
 void SizeRangeStatistics::dump() const noexcept
 {

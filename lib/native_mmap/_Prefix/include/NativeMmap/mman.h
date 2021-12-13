@@ -21,10 +21,10 @@ inline void* mmap(void* addr, std::size_t length, int prot, int flags, int fd, o
 	return _mmap(addr, length, prot, flags, fd, offset);
 }
 
-inline int munmap(void* addr, std::size_t length) noexcept
-{
-	return _munmap(addr, length);
-}
+// inline int munmap(void* addr, std::size_t length) noexcept
+// {
+// 	return _munmap(addr, length);
+// }
 
 } // namespace NativeMmap
 

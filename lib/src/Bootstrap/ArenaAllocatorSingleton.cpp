@@ -138,7 +138,7 @@ extern "C" void* mmap(void* addr, std::size_t length, int prot, int flags, int f
 	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().mmap(addr, length, prot, flags, fd, offset);
 }
 
-extern "C" int munmap(void* addr, std::size_t length)
-{
-	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().munmap(addr, length);
-}
+// extern "C" int munmap(void* addr, std::size_t length)
+// {
+// 	return Bootstrap::ArenaAllocatorSingleton::getInstance().getAllocator().munmap(addr, length);
+// }

@@ -95,20 +95,20 @@ void* PassThrough::mmap(void* addr, std::size_t length, int prot, int flags, int
 	return result;
 }
 
-int PassThrough::munmap(void* addr, std::size_t length) noexcept
-{
-	int result{-1};
-	if (log.isLevel(LogLevel::TRACE)) {
-		Timer timer(OperationType::MUNMAP);
-		result = NativeMmap::munmap(addr, length);
-		log(timer.getNanoseconds(), OperationType::MUNMAP, [&] {
-			return Message("{}::munmap({}, {}) -> {}", className, addr, length, result);
-		});
-	} else {
-		result = NativeMmap::munmap(addr, length);
-	}
-	return result;
-}
+// int PassThrough::munmap(void* addr, std::size_t length) noexcept
+// {
+// 	int result{-1};
+// 	if (log.isLevel(LogLevel::TRACE)) {
+// 		Timer timer(OperationType::MUNMAP);
+// 		result = NativeMmap::munmap(addr, length);
+// 		log(timer.getNanoseconds(), OperationType::MUNMAP, [&] {
+// 			return Message("{}::munmap({}, {}) -> {}", className, addr, length, result);
+// 		});
+// 	} else {
+// 		result = NativeMmap::munmap(addr, length);
+// 	}
+// 	return result;
+// }
 
 void PassThrough::dump() const noexcept
 {
